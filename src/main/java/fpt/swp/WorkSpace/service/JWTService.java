@@ -4,15 +4,14 @@ package fpt.swp.WorkSpace.service;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.io.Decoders;
-import io.jsonwebtoken.security.Keys;
+
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
-import java.security.Key;
+
 import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
@@ -34,7 +33,7 @@ public class JWTService {
 
 
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver){
-         Claims claims = exstractAllClaims(token);
+         final Claims claims = exstractAllClaims(token);
         return claimsResolver.apply(claims);
     }
 
@@ -47,27 +46,32 @@ public class JWTService {
     private Claims exstractAllClaims(String token){
         return Jwts
                 .parser()
-                .setSigningKey(getSigningKey())    // create signing key to decoded token
+                .verifyWith(getSigningKey())    // create signing key to decoded token
                 .build()
-                .parseClaimsJws(token)
-                .getBody();   // get all Claims within token
+                .parseSignedClaims(token)
+                .getPayload();   // get all Claims within token
     }
 
 
-
-    public String generateToken(UserDetails userDetails){
-        return generateToken(new HashMap<>(), userDetails);
+    public String generateToken(String username){
+        Map<String, Object> claims = new HashMap<>();
+        return Jwts.builder()
+                .claims(claims)
+                .subject(username)
+                .issuedAt(new Date(System.currentTimeMillis()))
+                .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 30))
+                .signWith(getSigningKey())
+                .compact();
     }
 
-    public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails){
-        return Jwts
-                .builder()
-                .setClaims(extraClaims)
-                .setSubject(userDetails.getUsername())
-                .setIssuedAt(new Date(System.currentTimeMillis()))  // check when claim was created
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 24))
-                .signWith(SignatureAlgorithm.HS512, getSigningKey())
-                .compact();  // compact to use generate and return token
+    public  String generateRefreshToken(HashMap<String, Object> claims, String username ){
+        return Jwts.builder()
+                .claims(claims)
+                .subject(username)
+                .issuedAt(new Date(System.currentTimeMillis()))
+                .expiration(new Date(System.currentTimeMillis() + 1000* 60 * 30))
+                .signWith(getSigningKey())
+                .compact();
     }
 
     public boolean isTokenValid(String token, UserDetails userDetails){

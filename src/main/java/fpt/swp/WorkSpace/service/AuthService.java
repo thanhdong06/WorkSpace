@@ -9,11 +9,13 @@ import fpt.swp.WorkSpace.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.sql.Date;
+import java.util.HashMap;
 
 @Service
 public class AuthService implements IAuthService {
@@ -28,7 +30,7 @@ public class AuthService implements IAuthService {
     private JWTService jwtService;
 
     @Autowired
-    private AuthenticationManager authenticationManager;
+    AuthenticationManager authenticationManager;
 
 
 
@@ -45,13 +47,10 @@ public class AuthService implements IAuthService {
             newUser.setPhoneNumber(request.getPhoneNumber());
             newUser.setRoleName(request.getRole());
             Customer result = repository.save(newUser);
-            System.out.println(result.toString());
-            String jwt = jwtService.generateToken(result);
-            System.out.println(jwt);
             if (result.getUserId() > 0){
                 response.setStatusCode(200);
-                response.setToken(jwt);
                 response.setMessage("User Saved Successfully");
+                response.setRole(request.getRole());
             }
         }catch (Exception e){
             response.setStatusCode(500);
@@ -66,22 +65,28 @@ public class AuthService implements IAuthService {
         AuthenticationResponse response = new AuthenticationResponse();
         try {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getUserName(), request.getPassword()));
-            Customer user = repository.findByuserName(request.getUserName()).orElseThrow();
-            String jwt = jwtService.generateToken(user);
-            if (jwt == null){
-                System.out.println("null");
-            }else {
-                System.out.println(jwt);
-            }
+            Customer user = repository.findByuserName(request.getUserName());
+            String jwt = jwtService.generateToken(user.getUsername());
+            String refreshToken = jwtService.generateRefreshToken(new HashMap<>(), user.getUsername());
             response.setStatusCode(200);
             response.setToken(jwt);
+            response.setRefreshToken(refreshToken);
             response.setExpirationTime("24Hrs");
             response.setMessage("Successfully Logged In");
-
+            response.setRole(user.getRoleName());
         }catch (Exception e){
             response.setStatusCode(500);
             response.setMessage(e.getMessage());
         }
         return response;
     }
+
+    @Override
+    public AuthenticationResponse refresh(LoginRequest request) {
+        AuthenticationResponse response = new AuthenticationResponse();
+
+        return null;
+    }
+
+
 }

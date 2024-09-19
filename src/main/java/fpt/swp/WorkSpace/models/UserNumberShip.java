@@ -7,7 +7,7 @@ import jakarta.persistence.*;
 public class UserNumberShip {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int membershipID;
 
     @Column(name = "membership_name")
