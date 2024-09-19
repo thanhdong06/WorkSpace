@@ -3,7 +3,8 @@ package fpt.swp.WorkSpace.service;
 import fpt.swp.WorkSpace.auth.AuthenticationResponse;
 import fpt.swp.WorkSpace.auth.LoginRequest;
 import fpt.swp.WorkSpace.auth.RegisterRequest;
-import fpt.swp.WorkSpace.models.AppUser;
+
+import fpt.swp.WorkSpace.models.Customer;
 import fpt.swp.WorkSpace.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -35,7 +36,7 @@ public class AuthService implements IAuthService {
     public AuthenticationResponse register(RegisterRequest request) {
         AuthenticationResponse response = new AuthenticationResponse();
         try {
-            AppUser newUser = new AppUser();
+            Customer newUser = new Customer();
             newUser.setUserName(request.getUserName());
             newUser.setPassword(passwordEncoder.encode(request.getPassword()));
             newUser.setFullName(request.getFullName());
@@ -43,8 +44,10 @@ public class AuthService implements IAuthService {
             newUser.setDateOfBirth(request.getDateOfBirth());
             newUser.setPhoneNumber(request.getPhoneNumber());
             newUser.setRoleName(request.getRole());
-            AppUser result = repository.save(newUser);
-            String jwt = jwtService.generateToken(newUser);
+            Customer result = repository.save(newUser);
+            System.out.println(result.toString());
+            String jwt = jwtService.generateToken(result);
+            System.out.println(jwt);
             if (result.getUserId() > 0){
                 response.setStatusCode(200);
                 response.setToken(jwt);
@@ -63,9 +66,13 @@ public class AuthService implements IAuthService {
         AuthenticationResponse response = new AuthenticationResponse();
         try {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getUserName(), request.getPassword()));
-            UserDetails user = repository.findByuserName(request.getUserName()).orElseThrow();
+            Customer user = repository.findByuserName(request.getUserName()).orElseThrow();
             String jwt = jwtService.generateToken(user);
-
+            if (jwt == null){
+                System.out.println("null");
+            }else {
+                System.out.println(jwt);
+            }
             response.setStatusCode(200);
             response.setToken(jwt);
             response.setExpirationTime("24Hrs");
@@ -75,6 +82,6 @@ public class AuthService implements IAuthService {
             response.setStatusCode(500);
             response.setMessage(e.getMessage());
         }
-        return null;
+        return response;
     }
 }

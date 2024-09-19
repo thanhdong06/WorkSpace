@@ -20,6 +20,6 @@ public class UserNumberShip {
     private String utilities;
 
     @OneToOne(mappedBy = "membership")
-    private AppUser appUser;
+    private Customer customer;
 
 }

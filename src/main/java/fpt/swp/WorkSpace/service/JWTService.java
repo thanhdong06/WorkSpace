@@ -21,10 +21,20 @@ import java.util.function.Function;
 @Service
 public class JWTService {
 
-    private static final String SECRET_KEY = "9b488bced5d4247643662db6f15fc9b5a0271f57b4badcf0d42c8dbae345104a";
+    private SecretKey Key;
+
+    private static final String SECRET_KEY = "843567893696976453275974432697R634976R738467TR678T34865R6834R8763T478378637664538745673865783678548735687R3";
+
+    private SecretKey getSigningKey(){
+        // decode secret key to signing key
+        byte[] keyBytes = Base64.getDecoder().decode(SECRET_KEY.getBytes(StandardCharsets.UTF_8));
+        Key = new SecretKeySpec(keyBytes, "HmacSHA256");
+        return Key;
+    }
+
 
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver){
-        final Claims claims = exstractAllClaims(token);
+         Claims claims = exstractAllClaims(token);
         return claimsResolver.apply(claims);
     }
 
@@ -43,11 +53,7 @@ public class JWTService {
                 .getBody();   // get all Claims within token
     }
 
-    private Key getSigningKey(){
-        // decode secret key to signing key
-        byte[] keyBytes = Decoders.BASE64.decode(SECRET_KEY);
-        return Keys.hmacShaKeyFor(keyBytes);
-    }
+
 
     public String generateToken(UserDetails userDetails){
         return generateToken(new HashMap<>(), userDetails);
@@ -60,7 +66,7 @@ public class JWTService {
                 .setSubject(userDetails.getUsername())
                 .setIssuedAt(new Date(System.currentTimeMillis()))  // check when claim was created
                 .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 24))
-                .signWith(getSigningKey(), SignatureAlgorithm.ES256)
+                .signWith(SignatureAlgorithm.HS512, getSigningKey())
                 .compact();  // compact to use generate and return token
     }
 

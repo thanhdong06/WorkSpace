@@ -5,6 +5,7 @@ import fpt.swp.WorkSpace.auth.LoginRequest;
 import fpt.swp.WorkSpace.auth.RegisterRequest;
 
 import fpt.swp.WorkSpace.service.IAuthService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,16 +18,27 @@ public class AuthController {
     private IAuthService service;
 
     @PostMapping("/auth/register")
-    public ResponseEntity<AuthenticationResponse> register(@RequestBody RegisterRequest request){
-
-        return ResponseEntity.ok(service.register(request)) ;
+    public AuthenticationResponse register(@Valid @RequestBody RegisterRequest request){
+        AuthenticationResponse response = service.register(request);
+        return response;
     }
 
     @PostMapping("/auth/login")
-    public ResponseEntity<AuthenticationResponse> login(@RequestBody LoginRequest request){
+    public AuthenticationResponse login(@Valid @RequestBody LoginRequest request){
 
-        return ResponseEntity.ok(service.login(request)) ;
+         AuthenticationResponse response = service.login(request);
+        return response;
     }
+
+
+
+//    @GetMapping("/auth/test")
+//    public AuthenticationResponse test(@RequestBody RegisterRequest request){
+//        AuthenticationResponse response = service.register(request);
+//        return response;
+//    }
+
+
 
 
 

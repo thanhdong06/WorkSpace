@@ -8,8 +8,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonIgnoreProperties(ignoreUnknown = true)
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class AuthenticationResponse {
     private int statusCode;
     private String error;

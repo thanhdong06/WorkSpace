@@ -11,14 +11,15 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.sql.Date;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 
 @Entity
-@Table(name = "user")
+@Table(name = "customer")
 @NoArgsConstructor
 @Getter @Setter
-public class AppUser implements UserDetails {
+public class Customer implements UserDetails  {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int userId;
@@ -50,7 +51,7 @@ public class AppUser implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority(roleName));
+        return Collections.singleton(new SimpleGrantedAuthority(roleName));
     }
 
     @Override
@@ -60,21 +61,23 @@ public class AppUser implements UserDetails {
 
     @Override
     public boolean isAccountNonExpired() {
-        return UserDetails.super.isAccountNonExpired();
+        return true;
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return UserDetails.super.isAccountNonLocked();
+        return true;
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return UserDetails.super.isCredentialsNonExpired();
+        return true;
     }
 
     @Override
     public boolean isEnabled() {
-        return UserDetails.super.isEnabled();
+        return true;
     }
+
+
 }
