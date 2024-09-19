@@ -25,18 +25,14 @@ public class AuthController {
 
     @PostMapping("/auth/login")
     public AuthenticationResponse login(@Valid @RequestBody LoginRequest request){
-
          AuthenticationResponse response = service.login(request);
         return response;
     }
 
 
 
-//    @GetMapping("/auth/test")
-//    public AuthenticationResponse test(@RequestBody RegisterRequest request){
-//        AuthenticationResponse response = service.register(request);
-//        return response;
-//    }
+
+
 
 
 
