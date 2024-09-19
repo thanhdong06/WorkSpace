@@ -32,8 +32,6 @@ public class AuthService implements IAuthService {
     @Autowired
     AuthenticationManager authenticationManager;
 
-
-
     @Override
     public AuthenticationResponse register(RegisterRequest request) {
         AuthenticationResponse response = new AuthenticationResponse();
