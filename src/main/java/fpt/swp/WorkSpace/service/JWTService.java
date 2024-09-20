@@ -24,6 +24,9 @@ public class JWTService {
 
     private static final String SECRET_KEY = "843567893696976453275974432697R634976R738467TR678T34865R6834R8763T478378637664538745673865783678548735687R3";
 
+    private static final long ACCESS_TOKEN_VALIDITY_SECONDS = 86400000;   // A DAY
+    private static final long REFRESH_TOKEN_VALIDITY_SECONDS = 604800000; // A WEEK
+
     private SecretKey getSigningKey(){
         // decode secret key to signing key
         byte[] keyBytes = Base64.getDecoder().decode(SECRET_KEY.getBytes(StandardCharsets.UTF_8));
@@ -53,23 +56,22 @@ public class JWTService {
     }
 
 
-    public String generateToken(String username){
+    public String generateRefreshToken(String username){
         Map<String, Object> claims = new HashMap<>();
         return Jwts.builder()
-                .claims(claims)
                 .subject(username)
                 .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 30))
+                .expiration(new Date(System.currentTimeMillis() + REFRESH_TOKEN_VALIDITY_SECONDS))
                 .signWith(getSigningKey())
                 .compact();
     }
 
-    public  String generateRefreshToken(HashMap<String, Object> claims, String username ){
+    public  String generateAccessToken(HashMap<String, Object> claims, String username ){
         return Jwts.builder()
                 .claims(claims)
                 .subject(username)
                 .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + 1000* 60 * 30))
+                .expiration(new Date(System.currentTimeMillis() + ACCESS_TOKEN_VALIDITY_SECONDS))
                 .signWith(getSigningKey())
                 .compact();
     }
