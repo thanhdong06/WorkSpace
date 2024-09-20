@@ -32,6 +32,8 @@ public class AuthService implements IAuthService {
     @Autowired
     AuthenticationManager authenticationManager;
 
+
+
     @Override
     public AuthenticationResponse register(RegisterRequest request) {
         AuthenticationResponse response = new AuthenticationResponse();
@@ -39,9 +41,6 @@ public class AuthService implements IAuthService {
             Customer newUser = new Customer();
             newUser.setUserName(request.getUserName());
             newUser.setPassword(passwordEncoder.encode(request.getPassword()));
-
-
-
             newUser.setFullName(request.getFullName());
             newUser.setCreatedDate(new Date(System.currentTimeMillis()));
             newUser.setDateOfBirth(request.getDateOfBirth());
