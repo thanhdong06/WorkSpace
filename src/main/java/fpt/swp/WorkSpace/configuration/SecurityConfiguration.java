@@ -26,6 +26,9 @@ public class SecurityConfiguration {
                         .cors(Customizer.withDefaults())
                         .authorizeHttpRequests(configure -> configure
                         .requestMatchers( "/", "/api/auth/**" ).permitAll()
+                                .requestMatchers("/customer/**").hasRole("USER")
+                                .requestMatchers(("/staff/**")).hasRole("STAFF")
+                                .requestMatchers(("/manager/**")).hasRole("MANAGER")
                         .anyRequest().authenticated())
                         .sessionManagement(manager -> manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                         .authenticationProvider(applicationConfiguration.authenticationProvider())
