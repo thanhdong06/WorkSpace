@@ -21,10 +21,10 @@ import java.util.List;
 @Getter @Setter
 public class Customer implements UserDetails  {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int userId;
 
-    @Column(name = "username", nullable = false)
+    @Column(name = "username", nullable = false, unique = true)
     private String userName;
 
     @Column(name = "password", nullable = false )
