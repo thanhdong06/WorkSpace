@@ -33,6 +33,8 @@ public class SecurityConfiguration {
                         .cors(Customizer.withDefaults())
                         .authorizeHttpRequests(configure -> configure
                         .requestMatchers("/api/auth/**" ).permitAll()
+                                .requestMatchers("/customer/**").hasAuthority("USER")
+                                .requestMatchers("/staff/**").hasAnyAuthority("STAFF")
                         .anyRequest().authenticated())
                         .sessionManagement(manager -> manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                         .authenticationProvider(applicationConfiguration.authenticationProvider())
