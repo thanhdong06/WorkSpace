@@ -13,11 +13,9 @@ import lombok.NoArgsConstructor;
 @Builder
 public class AuthenticationResponse {
     private int statusCode;
-    private String error;
     private String message;
-    private String token;
+    private String accesstoken;
     private String refreshToken;
-    private String expirationTime;
     private String role;
 
 
