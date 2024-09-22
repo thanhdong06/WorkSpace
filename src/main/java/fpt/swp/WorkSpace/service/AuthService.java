@@ -4,19 +4,14 @@ import fpt.swp.WorkSpace.auth.AuthenticationResponse;
 import fpt.swp.WorkSpace.auth.LoginRequest;
 import fpt.swp.WorkSpace.auth.RegisterRequest;
 
-import fpt.swp.WorkSpace.models.Customer;
+import fpt.swp.WorkSpace.models.User;
 import fpt.swp.WorkSpace.repository.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Service;
 
 import java.sql.Date;
@@ -44,31 +39,34 @@ public class AuthService implements IAuthService {
         AuthenticationResponse response = new AuthenticationResponse();
 
         try {
+            User findUser = repository.findByuserName(request.getUserName());
+            if (findUser != null){
+                throw new RuntimeException("user already exists");
+            }
             if (!request.getPassword().equals(request.getPasswordConfirm())){
                 throw new IllegalAccessException("Passwords do not match");
             }
-            Customer newUser = new Customer();
+            User newUser = new User();
             newUser.setUserName(request.getUserName());
-
             newUser.setPassword(passwordEncoder.encode(request.getPassword()));
             newUser.setFullName(request.getFullName());
             newUser.setCreatedDate(new Date(System.currentTimeMillis()));
             newUser.setDateOfBirth(request.getDateOfBirth());
             newUser.setPhoneNumber(request.getPhoneNumber());
             newUser.setRoleName(request.getRole());
-            Customer result = repository.save(newUser);
+            User result = repository.save(newUser);
             if (result.getUserId() > 0){
-                response.setRefreshToken(jwtService.generateAccessToken(new HashMap<>(), request.getUserName()));
-                response.setAccesstoken(jwtService.generateRefreshToken(request.getUserName()));
                 response.setStatusCode(200);
                 response.setMessage("User Saved Successfully");
+                response.setUserName(request.getUserName());
+                response.setRefreshToken(jwtService.generateAccessToken(new HashMap<>(), request.getUserName()));
+                response.setAccesstoken(jwtService.generateRefreshToken(request.getUserName()));
                 response.setRole(request.getRole());
             }
         }catch (Exception e){
-            response.setStatusCode(500);
+            response.setStatusCode(400);
             response.setMessage(e.getMessage());
         }
-        System.out.println(response);
         return response;
     }
 
@@ -76,7 +74,7 @@ public class AuthService implements IAuthService {
     public AuthenticationResponse login(LoginRequest request) {
         AuthenticationResponse response = new AuthenticationResponse();
         try {
-            Customer user = repository.findByuserName(request.getUserName());
+            User user = repository.findByuserName(request.getUserName());
             if (user == null || !passwordEncoder.matches(request.getPassword(), user.getPassword())){
                 throw new IllegalAccessException("User not found or Password do not match");
             }
@@ -84,12 +82,13 @@ public class AuthService implements IAuthService {
             String jwt = jwtService.generateAccessToken(new HashMap<>(),user.getUsername());
             String refreshToken = jwtService.generateRefreshToken(user.getUsername());
             response.setStatusCode(200);
+            response.setMessage("Successfully Logged In");
+            response.setUserName(user.getUsername());
+            response.setRole(user.getRoleName());
             response.setAccesstoken(jwt);
             response.setRefreshToken(refreshToken);
-            response.setMessage("Successfully Logged In");
-            response.setRole(user.getRoleName());
         }catch (IllegalAccessException e){
-            response.setStatusCode(500);
+            response.setStatusCode(404);
             response.setMessage(e.getMessage());
         }
         return response;

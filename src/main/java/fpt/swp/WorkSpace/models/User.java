@@ -12,14 +12,13 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.sql.Date;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 
 
 @Entity
 @Table(name = "customer")
 @NoArgsConstructor
 @Getter @Setter
-public class Customer implements UserDetails  {
+public class User implements UserDetails  {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int userId;
