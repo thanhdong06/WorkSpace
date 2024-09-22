@@ -2,9 +2,11 @@ package fpt.swp.WorkSpace.service;
 
 import fpt.swp.WorkSpace.models.User;
 
-public interface ICustomerService {
+public interface IUserService {
 
-    public User updateUserProfile(int id);
+    public User getUserProfile(String token);
+
+
 
 
 }
