@@ -4,7 +4,9 @@ import fpt.swp.WorkSpace.auth.AuthenticationResponse;
 import fpt.swp.WorkSpace.auth.LoginRequest;
 import fpt.swp.WorkSpace.auth.RegisterRequest;
 
+import fpt.swp.WorkSpace.models.Customer;
 import fpt.swp.WorkSpace.models.User;
+import fpt.swp.WorkSpace.repository.CustomerRepository;
 import fpt.swp.WorkSpace.repository.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +26,9 @@ public class AuthService implements IAuthService {
     private UserRepository repository;
 
     @Autowired
+    private CustomerRepository customerRepository;
+
+    @Autowired
     private PasswordEncoder passwordEncoder;
 
     @Autowired
@@ -37,36 +42,50 @@ public class AuthService implements IAuthService {
     @Override
     public AuthenticationResponse register(RegisterRequest request) {
         AuthenticationResponse response = new AuthenticationResponse();
-
+        User newUser = new User();
         try {
             User findUser = repository.findByuserName(request.getUserName());
             if (findUser != null){
                 throw new RuntimeException("user already exists");
             }
-            if (!request.getPassword().equals(request.getPasswordConfirm())){
-                throw new IllegalAccessException("Passwords do not match");
+
+            //case CUSTOMER
+            if (request.getRole().equals("CUSTOMER")){
+
+                Customer newCustomer = new Customer();
+
+                newUser.setUserId(generateCustomerId());
+                newUser.setUserName(request.getUserName());
+                newUser.setPassword(passwordEncoder.encode(request.getPassword()));
+                newUser.setCreatedDate(new Date(System.currentTimeMillis()));
+                newUser.setRoleName(request.getRole());
+
+                User result = repository.save(newUser);
+
+
+                newCustomer.setUser(result);
+                newCustomer.setFullName(request.getFullName());
+                newCustomer.setEmail(request.getEmail());
+                newCustomer.setPhoneNumber(request.getPhoneNumber());
+                newCustomer.setDateOfBirth(request.getDateOfBirth());
+                customerRepository.save(newCustomer);
+                if (result.getUserId() != null ){
+                    response.setStatus("Success");
+                    response.setStatusCode(200);
+                    response.setMessage("User Saved Successfully");
+                    response.setData(result);
+                    response.setRefreshToken(jwtService.generateAccessToken(new HashMap<>(), request.getUserName()));
+                    response.setAccesstoken(jwtService.generateRefreshToken(request.getUserName()));
+                    response.setExpired("1 DAY");
+                }
             }
-            User newUser = new User();
-            newUser.setUserName(request.getUserName());
-            newUser.setPassword(passwordEncoder.encode(request.getPassword()));
-            newUser.setFullName(request.getFullName());
-            newUser.setCreatedDate(new Date(System.currentTimeMillis()));
-            newUser.setDateOfBirth(request.getDateOfBirth());
-            newUser.setPhoneNumber(request.getPhoneNumber());
-            newUser.setRoleName(request.getRole());
-            User result = repository.save(newUser);
-            if (result.getUserId() > 0){
-                response.setStatusCode(200);
-                response.setMessage("User Saved Successfully");
-                response.setUserName(request.getUserName());
-                response.setRefreshToken(jwtService.generateAccessToken(new HashMap<>(), request.getUserName()));
-                response.setAccesstoken(jwtService.generateRefreshToken(request.getUserName()));
-                response.setRole(request.getRole());
-            }
+
         }catch (Exception e){
+            response.setStatus("Error");
             response.setStatusCode(400);
             response.setMessage(e.getMessage());
         }
+
         return response;
     }
 
@@ -83,13 +102,14 @@ public class AuthService implements IAuthService {
             String refreshToken = jwtService.generateRefreshToken(user.getUsername());
             response.setStatusCode(200);
             response.setMessage("Successfully Logged In");
-            response.setUserName(user.getUsername());
-            response.setRole(user.getRoleName());
+            response.setData(user);
+
             response.setAccesstoken(jwt);
             response.setRefreshToken(refreshToken);
         }catch (IllegalAccessException e){
             response.setStatusCode(404);
             response.setMessage(e.getMessage());
+            response.setStatus("Error");
         }
         return response;
     }
@@ -122,7 +142,18 @@ public class AuthService implements IAuthService {
             return authenticationResponse;
         }
 
+    @Override
+    public String generateCustomerId() {
+        // Query the latest customer and extract their ID to increment
+        long latestCustomerId = customerRepository.count();
+        if (latestCustomerId != 0) {
 
+            long newId = latestCustomerId + 1;
+            return "CUS" + String.format("%04d", newId); // Format to 4 digits
+        } else {
+            return "CUS0001"; // Start from CUS0001 if no customers exist
+        }
+    }
 
 
 }

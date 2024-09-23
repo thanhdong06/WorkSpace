@@ -1,5 +1,6 @@
 package fpt.swp.WorkSpace.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import lombok.Getter;
@@ -15,37 +16,27 @@ import java.util.Collections;
 
 
 @Entity
-@Table(name = "customer")
+@Table(name = "user")
 @NoArgsConstructor
 @Getter @Setter
 public class User implements UserDetails  {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int userId;
+    private String userId;
 
     @Column(name = "username", nullable = false, unique = true)
     private String userName;
 
-    @Column(name = "password", nullable = false )
+    @Column(name = "password", nullable = false  )
     private String password;
-
-    @Column(name = "fullName", nullable = false)
-    private String fullName;
-
-    @Column(name = "phonenumber", nullable = false, length = 10)
-    private String phoneNumber;
-
-    @Column(name = "dateOfBirth", nullable = false)
-    private Date dateOfBirth;
-
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "membershipID", referencedColumnName = "membershipID")
-    private UserNumberShip membership;
 
     @Column(name = "createdDate")
     private Date createdDate;
 
     private String roleName;
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private Customer customer;
 
 
     @Override

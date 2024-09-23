@@ -1,24 +1,26 @@
 package fpt.swp.WorkSpace.service;
 
+import fpt.swp.WorkSpace.models.Customer;
 import fpt.swp.WorkSpace.models.User;
+import fpt.swp.WorkSpace.repository.CustomerRepository;
 import fpt.swp.WorkSpace.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class UserService implements IUserService {
+public class CustomerService implements ICustomerService {
 
     @Autowired
     private JWTService jwtService;
 
     @Autowired
-    private UserRepository userRepository;
+    private CustomerRepository customerRepository;
+
 
     @Override
-    public User getUserProfile(String token) {
+    public Customer getCustomerProfile(String token) {
         String username = jwtService.extractUsername(token);
-        User user = userRepository.findByuserName(username);
-
-        return user;
+        Customer customer =  customerRepository.findCustomerByUsername(username);
+        return customer;
     }
 }

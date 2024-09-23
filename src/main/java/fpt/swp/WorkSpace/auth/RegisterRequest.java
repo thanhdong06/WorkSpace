@@ -14,9 +14,9 @@ import java.sql.Date;
 public class RegisterRequest {
     private String userName;
     private String password;
-    private String passwordConfirm;
+    private String email;
     private String fullName;
-    private Date dateOfBirth;
+    private String dateOfBirth;
     private String phoneNumber;
     private String role;
 }
