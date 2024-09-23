@@ -20,7 +20,7 @@ public class AuthenticationResponse {
     private int statusCode;
     private String message;
     private User data;
-    private String accesstoken;
+    private String accessToken;
     private String refreshToken;
     private String expired;
 
