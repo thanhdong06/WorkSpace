@@ -37,6 +37,7 @@ public class AuthController {
     public ResponseEntity<AuthenticationResponse> login(@Valid @RequestBody LoginRequest request){
         AuthenticationResponse response = service.login(request);
         if (response.getStatusCode() ==  404){
+            System.out.println(response);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
         }
         return ResponseEntity.status(HttpStatus.OK).body(response);

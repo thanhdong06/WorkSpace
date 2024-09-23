@@ -20,8 +20,8 @@ public class AuthenticationResponse {
     private int statusCode;
     private String message;
     private User data;
-    private String accesstoken;
-    private String refreshToken;
+    private String access_token;
+    private String refresh_token;
     private String expired;
 
 
