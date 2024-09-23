@@ -12,4 +12,7 @@ public interface IAuthService {
     AuthenticationResponse login(LoginRequest request);
 
     AuthenticationResponse refresh(HttpServletRequest request);
+
+    String generateCustomerId();
+
 }
