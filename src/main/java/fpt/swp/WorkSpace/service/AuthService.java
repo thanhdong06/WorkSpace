@@ -74,8 +74,8 @@ public class AuthService implements IAuthService {
                     response.setStatusCode(200);
                     response.setMessage("User Saved Successfully");
                     response.setData(result);
-                    response.setRefreshToken(jwtService.generateAccessToken(new HashMap<>(), request.getUserName()));
-                    response.setAccesstoken(jwtService.generateRefreshToken(request.getUserName()));
+                    response.setRefresh_token(jwtService.generateAccessToken(new HashMap<>(), request.getUserName()));
+                    response.setAccess_token(jwtService.generateRefreshToken(request.getUserName()));
                     response.setExpired("1 DAY");
                 }
             }
@@ -104,8 +104,8 @@ public class AuthService implements IAuthService {
             response.setMessage("Successfully Logged In");
             response.setData(user);
 
-            response.setAccesstoken(jwt);
-            response.setRefreshToken(refreshToken);
+            response.setAccess_token(jwt);
+            response.setRefresh_token(refreshToken);
         }catch (IllegalAccessException e){
             response.setStatusCode(404);
             response.setMessage(e.getMessage());
@@ -134,8 +134,8 @@ public class AuthService implements IAuthService {
                     if (jwtService.isTokenValid(refreshToken,userDetails)){
                         String accessToken = jwtService.generateAccessToken(new HashMap<>(), userDetails.getUsername());
                         authenticationResponse.setStatusCode(200);
-                        authenticationResponse.setAccesstoken(accessToken);
-                        authenticationResponse.setRefreshToken(refreshToken);
+                        authenticationResponse.setAccess_token(accessToken);
+                        authenticationResponse.setRefresh_token(refreshToken);
                     }
                 }
             }

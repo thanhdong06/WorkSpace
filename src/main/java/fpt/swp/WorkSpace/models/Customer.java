@@ -5,7 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.sql.Date;
+import java.util.Date;
 
 @Entity
 
@@ -27,7 +27,7 @@ public class Customer  {
 
     private String phoneNumber;
     private String email;
-    private String dateOfBirth;
+    private Date dateOfBirth;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "membershipID", referencedColumnName = "membershipID")
