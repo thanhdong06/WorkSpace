@@ -143,6 +143,15 @@ public class AuthService implements IAuthService {
         }
 
     @Override
+    public AuthenticationResponse logout() {
+        AuthenticationResponse response = new AuthenticationResponse();
+        response.setStatus("Successfully");
+        response.setStatusCode(200);
+        response.setMessage("Successfully Logged Out");
+        return response;
+    }
+
+    @Override
     public String generateCustomerId() {
         // Query the latest customer and extract their ID to increment
         long latestCustomerId = customerRepository.count();

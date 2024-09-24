@@ -13,6 +13,10 @@ public interface IAuthService {
 
     AuthenticationResponse refresh(HttpServletRequest request);
 
+    AuthenticationResponse logout();
+
     String generateCustomerId();
+
+
 
 }

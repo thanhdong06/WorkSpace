@@ -22,7 +22,7 @@ public class CustomerController {
         return "Hello User";
     }
 
-    @GetMapping("/profile")
+    @GetMapping("/mnage-profile")
     public ResponseEntity<Customer> getUserProfile(@RequestHeader("Authorization") String token){
         String jwtToken = token.substring(7);
         Customer customer = customerService.getCustomerProfile(jwtToken);

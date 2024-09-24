@@ -23,4 +23,16 @@ public class CustomerService implements ICustomerService {
         Customer customer =  customerRepository.findCustomerByUsername(username);
         return customer;
     }
+
+    @Override
+    public Customer customerChangePassword(String oldPassword, String newPassword) {
+
+        return null;
+    }
+
+    @Override
+    public Customer customerEditProfile(String token, Customer customer) {
+
+        return null;
+    }
 }

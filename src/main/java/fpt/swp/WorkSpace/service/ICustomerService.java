@@ -5,9 +5,11 @@ import fpt.swp.WorkSpace.models.User;
 
 public interface ICustomerService {
 
-    public Customer getCustomerProfile(String token);
+    Customer getCustomerProfile(String token);
 
+    Customer customerChangePassword(String oldPassword, String newPassword);
 
+    Customer customerEditProfile(String token, Customer customer);
 
 
 
