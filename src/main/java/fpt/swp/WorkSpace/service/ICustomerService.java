@@ -7,7 +7,7 @@ public interface ICustomerService {
 
     Customer getCustomerProfile(String token);
 
-    Customer customerChangePassword(String oldPassword, String newPassword);
+    Customer customerChangePassword(String username, String newPassword);
 
     Customer customerEditProfile(String token, Customer customer);
 
