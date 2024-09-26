@@ -48,21 +48,24 @@ public class CustomerService implements ICustomerService {
     }
 
     @Override
-    public Customer customerEditProfile(String username, String newPhonenumber, String newEmail) {
+    public Customer customerEditProfile(String username, Customer newCustomer) {
         Customer customer =  customerRepository.findCustomerByUsername(username);
 
             if (customer != null) {
-                if (newPhonenumber == null || newPhonenumber.length() != 10) {
-                    throw new RuntimeException("PhoneNumber should be 10 digits");
-                }
-                if (newEmail == null || Pattern.compile("^[A-Za-z0-9+_.-]+@(.+)$").matcher(newEmail).matches()) {
+                if (newCustomer.getEmail() == null || !Pattern.compile("^[A-Za-z0-9+_.-]+@(.+)$").matcher(newCustomer.getEmail()).matches()) {
                     throw new RuntimeException("Email is not in valid format");
                 }
-                customer.setPhoneNumber(newPhonenumber);
-                customer.setEmail(newEmail);
-                customerRepository.save(customer);
-            }
+                if ( newCustomer.getFullName() != null){
+                    customer.setFullName(newCustomer.getFullName());
+                }
+                if ( newCustomer.getPhoneNumber() != null){
+                    customer.setPhoneNumber(newCustomer.getPhoneNumber());
+                }
+                if (newCustomer.getEmail() != null){
+                    customer.setEmail(newCustomer.getEmail());
+                }
 
-        return customer;
+            }
+        return customerRepository.save(customer);
     }
 }

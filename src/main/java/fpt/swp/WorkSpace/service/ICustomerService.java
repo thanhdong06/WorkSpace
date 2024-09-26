@@ -9,7 +9,7 @@ public interface ICustomerService {
 
     Customer customerChangePassword(String username, String newPassword);
 
-    Customer customerEditProfile(String username, String newNumberphone, String newEmail);
+    Customer customerEditProfile(String username, Customer newCustomer);
 
 
 

@@ -31,13 +31,12 @@ public class CustomerController {
         return ResponseHandler.responseBuilder("Success", HttpStatus.OK, customer);
     }
 
-    @PutMapping("/manage-profile/change-password")
-    public ResponseEntity<Object> changePassword(HttpServletRequest request){
-        String username = request.getParameter("username");
+    @PutMapping("/manage-profile/change-password/{username}")
+    public ResponseEntity<Object> changePassword(@PathVariable String username, HttpServletRequest request){
+//        String username = request.getParameter("username");
         String newpassword = request.getParameter("newpassword");
-
         try {
-            Customer cus = customerService.customerChangePassword(username, newpassword);
+             customerService.customerChangePassword(username, newpassword);
             // response
             return ResponseHandler.responseBuilder("Change password successfully", HttpStatus.OK);
         }catch (RuntimeException e){
@@ -47,14 +46,13 @@ public class CustomerController {
 
     }
 
-    @PutMapping("/manage-profile/edit-profile")
-    public ResponseEntity<Object> editProfile(HttpServletRequest request){
-        String username = request.getParameter("username");
-        String newPhonenumber = request.getParameter("newPhonenumber");
-        String newEmail = request.getParameter("newEmail");
+    @PutMapping("/manage-profile/edit-profile/{username}")
+    public ResponseEntity<Object> editProfile(@PathVariable String username, @RequestBody Customer customer){
+//        String newPhonenumber = request.getParameter("newPhonenumber");
+//        String newEmail = request.getParameter("newEmail");
 
         try {
-            Customer cus = customerService.customerEditProfile(username, newPhonenumber, newEmail);
+            Customer cus = customerService.customerEditProfile(username, customer);
             return  ResponseHandler.responseBuilder("successfully", HttpStatus.OK);
         }catch (RuntimeException e){
             return ResponseHandler.responseBuilder(e.getMessage(),HttpStatus.BAD_REQUEST);
