@@ -2,6 +2,7 @@ package fpt.swp.WorkSpace.controller;
 
 import fpt.swp.WorkSpace.models.Customer;
 import fpt.swp.WorkSpace.models.User;
+import fpt.swp.WorkSpace.response.ResponseHandler;
 import fpt.swp.WorkSpace.service.ICustomerService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,20 +25,40 @@ public class CustomerController {
     }
 
     @GetMapping("/manage-profile")
-    public ResponseEntity<Customer> getUserProfile(@RequestHeader("Authorization") String token){
+    public ResponseEntity<Object> getUserProfile(@RequestHeader("Authorization") String token){
         String jwtToken = token.substring(7);
         Customer customer = customerService.getCustomerProfile(jwtToken);
-        return  ResponseEntity.ok(customer);
+        return ResponseHandler.responseBuilder("Success", HttpStatus.OK, customer);
     }
 
     @PutMapping("/manage-profile/change-password")
-    public ResponseEntity<Customer> changePassword(HttpServletRequest request){
+    public ResponseEntity<Object> changePassword(HttpServletRequest request){
         String username = request.getParameter("username");
         String newpassword = request.getParameter("newpassword");
-        Customer cus = customerService.customerChangePassword(username, newpassword);
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(cus);
+
+        try {
+            Customer cus = customerService.customerChangePassword(username, newpassword);
+            // response
+            return ResponseHandler.responseBuilder("Change password successfully", HttpStatus.OK);
+        }catch (RuntimeException e){
+            return ResponseHandler.responseBuilder(e.getMessage(),HttpStatus.BAD_REQUEST);
+
+        }
+
+    }
+
+    @PutMapping("/manage-profile/edit-profile")
+    public ResponseEntity<Object> editProfile(HttpServletRequest request){
+        String username = request.getParameter("username");
+        String newPhonenumber = request.getParameter("newPhonenumber");
+        String newEmail = request.getParameter("newEmail");
+
+        try {
+            Customer cus = customerService.customerEditProfile(username, newPhonenumber, newEmail);
+            return  ResponseHandler.responseBuilder("successfully", HttpStatus.OK);
+        }catch (RuntimeException e){
+            return ResponseHandler.responseBuilder(e.getMessage(),HttpStatus.BAD_REQUEST);
+        }
     }
 
 
