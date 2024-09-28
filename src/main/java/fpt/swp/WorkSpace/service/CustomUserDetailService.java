@@ -1,6 +1,6 @@
 package fpt.swp.WorkSpace.service;
 
-import fpt.swp.WorkSpace.models.Customer;
+import fpt.swp.WorkSpace.models.User;
 import fpt.swp.WorkSpace.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -15,7 +15,7 @@ public class CustomUserDetailService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Customer user = userRepository.findByuserName(username);
+        User user = userRepository.findByuserName(username);
         if (user == null){
             throw new UsernameNotFoundException("User not found");
         }
