@@ -1,23 +1,26 @@
 package fpt.swp.WorkSpace.models;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+import lombok.Data;
 
 import java.util.List;
 
 @Entity
 @Table(name = "roomtype")
+@Data
 public class RoomType {
 
     @Id
-    private int id;
+    private String id;
+
     private String roomTypeName;
 
-    @OneToMany
-
+    @OneToMany(mappedBy = "roomType")
     private List<Room> rooms;
+
+
+
+
 
 
 
