@@ -5,28 +5,35 @@ import fpt.swp.WorkSpace.auth.LoginRequest;
 import fpt.swp.WorkSpace.auth.RegisterRequest;
 
 import fpt.swp.WorkSpace.models.Customer;
+import fpt.swp.WorkSpace.models.CustomerWallet;
+import fpt.swp.WorkSpace.models.User;
+import fpt.swp.WorkSpace.repository.CustomerRepository;
+import fpt.swp.WorkSpace.repository.CustomerWalletRepository;
 import fpt.swp.WorkSpace.repository.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Service;
 
 import java.sql.Date;
+import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.UUID;
 
 @Service
 public class AuthService implements IAuthService {
 
     @Autowired
     private UserRepository repository;
+
+    @Autowired
+    private CustomerRepository customerRepository;
+
+    @Autowired
+    private CustomerWalletRepository customerWalletRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -42,33 +49,56 @@ public class AuthService implements IAuthService {
     @Override
     public AuthenticationResponse register(RegisterRequest request) {
         AuthenticationResponse response = new AuthenticationResponse();
-
+        User newUser = new User();
         try {
-            if (!request.getPassword().equals(request.getPasswordConfirm())){
-                throw new IllegalAccessException("Passwords do not match");
+            User findUser = repository.findByuserName(request.getUserName());
+            if (findUser != null){
+                throw new RuntimeException("user already exists");
             }
-            Customer newUser = new Customer();
-            newUser.setUserName(request.getUserName());
 
-            newUser.setPassword(passwordEncoder.encode(request.getPassword()));
-            newUser.setFullName(request.getFullName());
-            newUser.setCreatedDate(new Date(System.currentTimeMillis()));
-            newUser.setDateOfBirth(request.getDateOfBirth());
-            newUser.setPhoneNumber(request.getPhoneNumber());
-            newUser.setRoleName(request.getRole());
-            Customer result = repository.save(newUser);
-            if (result.getUserId() > 0){
-                response.setRefreshToken(jwtService.generateAccessToken(new HashMap<>(), request.getUserName()));
-                response.setAccesstoken(jwtService.generateRefreshToken(request.getUserName()));
-                response.setStatusCode(200);
-                response.setMessage("User Saved Successfully");
-                response.setRole(request.getRole());
+            //case CUSTOMER
+            if (request.getRole().equals("CUSTOMER")){
+
+                // create a wallet for customer
+                CustomerWallet wallet = new CustomerWallet();
+                String walletId = UUID.randomUUID().toString().replace("-", "").substring(0, 10);
+                wallet.setWalletId(walletId);
+                CustomerWallet customerWallet = customerWalletRepository.save(wallet);
+
+                // insert to user table
+                newUser.setUserId(generateCustomerId());
+                newUser.setUserName(request.getUserName());
+                newUser.setPassword(passwordEncoder.encode(request.getPassword()));
+                newUser.setCreationTime(LocalDateTime.now());
+                newUser.setRoleName(request.getRole());
+                User result = repository.save(newUser);
+
+                // insert to customer table
+                Customer newCustomer = new Customer();
+                newCustomer.setUser(result);
+                newCustomer.setFullName(request.getFullName());
+                newCustomer.setEmail(request.getEmail());
+                newCustomer.setPhoneNumber(request.getPhoneNumber());
+                newCustomer.setDateOfBirth(request.getDateOfBirth());
+                newCustomer.setWallet(customerWallet);
+                customerRepository.save(newCustomer);
+                if (result.getUserId() != null ){
+                    response.setStatus("Success");
+                    response.setStatusCode(200);
+                    response.setMessage("User Saved Successfully");
+                    response.setData(result);
+                    response.setRefresh_token(jwtService.generateAccessToken(new HashMap<>(), request.getUserName()));
+                    response.setAccess_token(jwtService.generateRefreshToken(request.getUserName()));
+                    response.setExpired("1 DAY");
+                }
             }
+
         }catch (Exception e){
-            response.setStatusCode(500);
+            response.setStatus("Error");
+            response.setStatusCode(400);
             response.setMessage(e.getMessage());
         }
-        System.out.println(response);
+
         return response;
     }
 
@@ -76,7 +106,7 @@ public class AuthService implements IAuthService {
     public AuthenticationResponse login(LoginRequest request) {
         AuthenticationResponse response = new AuthenticationResponse();
         try {
-            Customer user = repository.findByuserName(request.getUserName());
+            User user = repository.findByuserName(request.getUserName());
             if (user == null || !passwordEncoder.matches(request.getPassword(), user.getPassword())){
                 throw new IllegalAccessException("User not found or Password do not match");
             }
@@ -84,13 +114,15 @@ public class AuthService implements IAuthService {
             String jwt = jwtService.generateAccessToken(new HashMap<>(),user.getUsername());
             String refreshToken = jwtService.generateRefreshToken(user.getUsername());
             response.setStatusCode(200);
-            response.setAccesstoken(jwt);
-            response.setRefreshToken(refreshToken);
             response.setMessage("Successfully Logged In");
-            response.setRole(user.getRoleName());
+            response.setData(user);
+
+            response.setAccess_token(jwt);
+            response.setRefresh_token(refreshToken);
         }catch (IllegalAccessException e){
-            response.setStatusCode(500);
+            response.setStatusCode(404);
             response.setMessage(e.getMessage());
+            response.setStatus("Error");
         }
         return response;
     }
@@ -115,15 +147,35 @@ public class AuthService implements IAuthService {
                     if (jwtService.isTokenValid(refreshToken,userDetails)){
                         String accessToken = jwtService.generateAccessToken(new HashMap<>(), userDetails.getUsername());
                         authenticationResponse.setStatusCode(200);
-                        authenticationResponse.setAccesstoken(accessToken);
-                        authenticationResponse.setRefreshToken(refreshToken);
+                        authenticationResponse.setAccess_token(accessToken);
+                        authenticationResponse.setRefresh_token(refreshToken);
                     }
                 }
             }
             return authenticationResponse;
         }
 
+    @Override
+    public AuthenticationResponse logout() {
+        AuthenticationResponse response = new AuthenticationResponse();
+        response.setStatus("Successfully");
+        response.setStatusCode(200);
+        response.setMessage("Successfully Logged Out");
+        return response;
+    }
 
+    @Override
+    public String generateCustomerId() {
+        // Query the latest customer and extract their ID to increment
+        long latestCustomerId = customerRepository.count();
+        if (latestCustomerId != 0) {
+
+            long newId = latestCustomerId + 1;
+            return "CUS" + String.format("%04d", newId); // Format to 4 digits
+        } else {
+            return "CUS0001"; // Start from CUS0001 if no customers exist
+        }
+    }
 
 
 }

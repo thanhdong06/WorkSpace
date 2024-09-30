@@ -30,11 +30,12 @@ public class SecurityConfiguration {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
         http.csrf(AbstractHttpConfigurer::disable)
-                        .cors(Customizer.withDefaults())
+                        .cors(c -> c.configurationSource(CorsConfig.corsConfigurationSource()))
                         .authorizeHttpRequests(configure -> configure
                         .requestMatchers("/api/auth/**" ).permitAll()
-                                .requestMatchers("/customer/**").hasAuthority("USER")
-                                .requestMatchers("/staff/**").hasAnyAuthority("STAFF")
+                                .requestMatchers("/api/customer/**").hasAuthority("CUSTOMER")
+                                .requestMatchers("/api/staff/**").hasAnyAuthority("STAFF")
+                                .requestMatchers("api/manager/**").hasAuthority("MANAGER")
                         .anyRequest().authenticated())
                         .sessionManagement(manager -> manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                         .authenticationProvider(applicationConfiguration.authenticationProvider())

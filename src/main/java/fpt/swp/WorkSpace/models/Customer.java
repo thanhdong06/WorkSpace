@@ -1,83 +1,51 @@
 package fpt.swp.WorkSpace.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
-
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 
-import java.sql.Date;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-
+import java.util.Date;
 
 @Entity
-@Table(name = "customer")
+
 @NoArgsConstructor
-@Getter @Setter
-public class Customer implements UserDetails  {
+@Table(name = "customer")
+@Getter
+@Setter
+
+public class Customer  {
+
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int userId;
+    private String userId;
+    @OneToOne
+    @MapsId // This ensures the `userId` is shared as the primary key
+    @JoinColumn(name = "user_id", referencedColumnName = "user_Id")
+    @JsonIgnore
+    private User user;
 
-    @Column(name = "username", nullable = false, unique = true)
-    private String userName;
-
-    @Column(name = "password", nullable = false )
-    private String password;
-
-    @Column(name = "fullName", nullable = false)
+    @Column(nullable = false)
     private String fullName;
 
-    @Column(name = "phonenumber", nullable = false, length = 10)
     private String phoneNumber;
-
-    @Column(name = "dateOfBirth", nullable = false)
+    private String email;
     private Date dateOfBirth;
+    private String roleName;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "walletId")
+    @JsonManagedReference
+    private CustomerWallet wallet;
+
+
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "membershipID", referencedColumnName = "membershipID")
     private UserNumberShip membership;
 
-    @Column(name = "createdDate")
-    private Date createdDate;
-
-    private String roleName;
-
-
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Collections.singleton(new SimpleGrantedAuthority(roleName));
+    public String getRoleName() {
+        return user.getRoleName();
     }
-
-    @Override
-    public String getUsername() {
-        return userName;
-    }
-
-    @Override
-    public boolean isAccountNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isAccountNonLocked() {
-        return true;
-    }
-
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return true;
-    }
-
-
 }
