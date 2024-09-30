@@ -73,7 +73,6 @@ public class RoomController {
     public ResponseEntity<Object> updateRoom(@PathVariable int roomId,
                                              @RequestParam(value = "roomName", required = false) String roomName,
                                              @RequestParam(value = "price", required = false) String price,
-                                             @RequestParam(value = "quantity", required = false) String quantity,
                                              @RequestParam(value = "image", required = false) MultipartFile image,
                                              @RequestParam(value = "status", required = false) String status) {
 

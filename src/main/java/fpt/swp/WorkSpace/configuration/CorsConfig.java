@@ -19,8 +19,8 @@ public class CorsConfig {
     @Bean
     public static CorsConfigurationSource corsConfigurationSource(){
         CorsConfiguration corsConfiguration = new CorsConfiguration();
-        corsConfiguration.addAllowedOrigin("http://localhost:5173");
-        corsConfiguration.setAllowedOrigins(Collections.singletonList("http://localhost:5173"));
+        corsConfiguration.addAllowedOrigin("http://localhost:3000");
+        corsConfiguration.setAllowedOrigins(Collections.singletonList("http://localhost:3000"));
         corsConfiguration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE"));
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         corsConfiguration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type"));
