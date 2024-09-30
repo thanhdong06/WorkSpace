@@ -11,6 +11,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.sql.Date;
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -30,7 +31,7 @@ public class User implements UserDetails  {
     private String password;
 
     @Column(name = "createdDate")
-    private Date createdDate;
+     private LocalDateTime creationTime;;
 
     private String roleName;
 

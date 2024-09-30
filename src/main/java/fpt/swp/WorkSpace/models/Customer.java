@@ -1,6 +1,7 @@
 package fpt.swp.WorkSpace.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -32,6 +33,13 @@ public class Customer  {
     private String email;
     private Date dateOfBirth;
     private String roleName;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "walletId")
+    @JsonManagedReference
+    private CustomerWallet wallet;
+
+
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "membershipID", referencedColumnName = "membershipID")

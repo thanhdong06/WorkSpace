@@ -5,8 +5,10 @@ import fpt.swp.WorkSpace.auth.LoginRequest;
 import fpt.swp.WorkSpace.auth.RegisterRequest;
 
 import fpt.swp.WorkSpace.models.Customer;
+import fpt.swp.WorkSpace.models.CustomerWallet;
 import fpt.swp.WorkSpace.models.User;
 import fpt.swp.WorkSpace.repository.CustomerRepository;
+import fpt.swp.WorkSpace.repository.CustomerWalletRepository;
 import fpt.swp.WorkSpace.repository.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +19,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.sql.Date;
+import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.UUID;
 
 @Service
 public class AuthService implements IAuthService {
@@ -27,6 +31,9 @@ public class AuthService implements IAuthService {
 
     @Autowired
     private CustomerRepository customerRepository;
+
+    @Autowired
+    private CustomerWalletRepository customerWalletRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -52,22 +59,28 @@ public class AuthService implements IAuthService {
             //case CUSTOMER
             if (request.getRole().equals("CUSTOMER")){
 
-                Customer newCustomer = new Customer();
+                // create a wallet for customer
+                CustomerWallet wallet = new CustomerWallet();
+                String walletId = UUID.randomUUID().toString().replace("-", "").substring(0, 10);
+                wallet.setWalletId(walletId);
+                CustomerWallet customerWallet = customerWalletRepository.save(wallet);
 
+                // insert to user table
                 newUser.setUserId(generateCustomerId());
                 newUser.setUserName(request.getUserName());
                 newUser.setPassword(passwordEncoder.encode(request.getPassword()));
-                newUser.setCreatedDate(new Date(System.currentTimeMillis()));
+                newUser.setCreationTime(LocalDateTime.now());
                 newUser.setRoleName(request.getRole());
-
                 User result = repository.save(newUser);
 
-
+                // insert to customer table
+                Customer newCustomer = new Customer();
                 newCustomer.setUser(result);
                 newCustomer.setFullName(request.getFullName());
                 newCustomer.setEmail(request.getEmail());
                 newCustomer.setPhoneNumber(request.getPhoneNumber());
                 newCustomer.setDateOfBirth(request.getDateOfBirth());
+                newCustomer.setWallet(customerWallet);
                 customerRepository.save(newCustomer);
                 if (result.getUserId() != null ){
                     response.setStatus("Success");

@@ -58,7 +58,7 @@ public class RoomController {
         }
     }
 
-    @GetMapping("manager/get-room-by-building/building")
+        @GetMapping("manager/get-room-by-building/building")
     public ResponseEntity<Object> getRoomByIdBuilding(@RequestParam("buildingId") String buildingId){
         List<Room> roomList = roomService.getAllRoomsByBuildingId(buildingId);
         try {
