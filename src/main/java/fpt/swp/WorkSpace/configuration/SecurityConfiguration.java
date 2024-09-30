@@ -33,8 +33,9 @@ public class SecurityConfiguration {
                         .cors(c -> c.configurationSource(CorsConfig.corsConfigurationSource()))
                         .authorizeHttpRequests(configure -> configure
                         .requestMatchers("/api/auth/**" ).permitAll()
-                                .requestMatchers("/customer/**").hasAuthority("CUSTOMER")
-                                .requestMatchers("/staff/**").hasAnyAuthority("STAFF")
+                                .requestMatchers("/api/customer/**").hasAuthority("CUSTOMER")
+                                .requestMatchers("/api/staff/**").hasAnyAuthority("STAFF")
+                                .requestMatchers("api/manager/**").hasAuthority("MANAGER")
                         .anyRequest().authenticated())
                         .sessionManagement(manager -> manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                         .authenticationProvider(applicationConfiguration.authenticationProvider())

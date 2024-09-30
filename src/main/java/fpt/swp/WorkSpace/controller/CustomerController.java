@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 
 @RestController
-@RequestMapping("/customer")
+@RequestMapping("/api")
 public class CustomerController {
 
     @Autowired
@@ -24,14 +24,14 @@ public class CustomerController {
         return "Hello User";
     }
 
-    @GetMapping("/manage-profile")
+    @GetMapping("customer/manage-profile")
     public ResponseEntity<Object> getUserProfile(@RequestHeader("Authorization") String token){
         String jwtToken = token.substring(7);
         Customer customer = customerService.getCustomerProfile(jwtToken);
         return ResponseHandler.responseBuilder("Success", HttpStatus.OK, customer);
     }
 
-    @PutMapping("/manage-profile/change-password/{username}")
+    @PutMapping("customer/manage-profile/change-password/{username}")
     public ResponseEntity<Object> changePassword(@PathVariable String username, HttpServletRequest request){
 //        String username = request.getParameter("username");
         String newpassword = request.getParameter("newpassword");
@@ -46,7 +46,7 @@ public class CustomerController {
 
     }
 
-    @PutMapping("/manage-profile/edit-profile/{username}")
+    @PutMapping("customer/manage-profile/edit-profile/{username}")
     public ResponseEntity<Object> editProfile(@PathVariable String username, @RequestBody Customer customer){
 //        String newPhonenumber = request.getParameter("newPhonenumber");
 //        String newEmail = request.getParameter("newEmail");

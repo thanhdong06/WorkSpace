@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDateTime;
 import java.util.List;
 @Service
 public class RoomService implements IRoomService{
@@ -29,7 +30,7 @@ public class RoomService implements IRoomService{
     private RoomTypeRepository roomTypeRepository;
 
     @Override
-    public Room addNewRoom(String buildingId, String romeTypeId, String roomName, String price, String quantity,  MultipartFile file, String status) {
+    public Room addNewRoom(String buildingId, String romeTypeId, String roomName, String price,  MultipartFile file, String status) {
         String img = awsS3Service.saveImgToS3(file);
         Building findBuilding = buildingRepository.findById(buildingId).orElseThrow();
         RoomType roomType = roomTypeRepository.findById(romeTypeId).orElseThrow();
@@ -39,15 +40,16 @@ public class RoomService implements IRoomService{
         if (roomType == null) {
             throw new NotFoundException("Loai phong khong hop le");
         }
-
         Room room = new Room();
         room.setRoomName(roomName);
         room.setPrice(Float.parseFloat(price));
-        room.setQuantity(Integer.parseInt(quantity));
         room.setRoomImg(img);
+        room.setCreationTime(LocalDateTime.now());
         room.setStatus(status);
         room.setBuilding(findBuilding);
         room.setRoomType(roomType);
+        roomType.setQuantity(roomType.getQuantity() + 1);    // update quantity in roomtype
+        roomTypeRepository.save(roomType);
         return roomRepository.save(room);
     }
 
@@ -76,7 +78,7 @@ public class RoomService implements IRoomService{
     }
 
     @Override
-    public Room updateRoom(int roomId, String roomName, String price, String quantity, MultipartFile file, String status) {
+    public Room updateRoom(int roomId, String roomName, String price, MultipartFile file, String status) {
         String imageUrl = null;
         if (file != null && !file.isEmpty()) {
             imageUrl = awsS3Service.saveImgToS3(file);
@@ -87,9 +89,6 @@ public class RoomService implements IRoomService{
         }
         if (price != null) {
             room.setPrice(Float.parseFloat(price));
-        }
-        if (quantity != null){
-            room.setQuantity(Integer.parseInt(quantity));
         }
         if (imageUrl != null){
             room.setRoomImg(imageUrl);
@@ -108,5 +107,9 @@ public class RoomService implements IRoomService{
             throw new RuntimeException("Room not found");
         }
         roomRepository.delete(room);
+    }
+
+    public List<RoomType> getAllRoomType(){
+        return roomTypeRepository.findAll();
     }
 }

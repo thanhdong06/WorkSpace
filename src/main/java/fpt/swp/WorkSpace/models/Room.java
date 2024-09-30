@@ -1,11 +1,14 @@
 package fpt.swp.WorkSpace.models;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -20,7 +23,7 @@ public class Room {
 
     private String roomName;
     private float price;
-    private int quantity;
+    private LocalDateTime creationTime;
     private String roomImg;
     private String status;
 
@@ -31,7 +34,7 @@ public class Room {
 
     @ManyToOne
     @JoinColumn(name = "roomTypeID")
-    @JsonBackReference // Ngăn ngừa vòng lặp
+    @JsonManagedReference // Ngăn ngừa vòng lặp
     private RoomType roomType;
 
 

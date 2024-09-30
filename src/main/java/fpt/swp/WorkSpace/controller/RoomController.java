@@ -1,6 +1,7 @@
 package fpt.swp.WorkSpace.controller;
 
 import fpt.swp.WorkSpace.models.Room;
+import fpt.swp.WorkSpace.models.RoomType;
 import fpt.swp.WorkSpace.response.ResponseHandler;
 import fpt.swp.WorkSpace.service.IRoomService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +25,6 @@ public class RoomController {
                                              @RequestParam(value = "roomTypeId", required = false) String roomTypeId,
                                              @RequestParam(value = "roomName", required = false) String roomName,
                                              @RequestParam(value = "price", required = false) String price,
-                                             @RequestParam(value = "quantity", required = false) String quantity,
                                              @RequestParam(value = "image", required = false) MultipartFile image,
                                              @RequestParam(value = "status", required = false) String status){
         // Use parameter instead of body because image is a file
@@ -32,9 +32,9 @@ public class RoomController {
         // JSON cann't handle this file
 
         try{
-            Room newRoom = roomService.addNewRoom(buildingId, roomTypeId, roomName, price, quantity, image, status);
+            Room newRoom = roomService.addNewRoom(buildingId, roomTypeId, roomName, price, image, status);
             return ResponseHandler.responseBuilder("Them phong thanh cong", HttpStatus.OK, newRoom);
-        } catch (Exception e) {
+        } catch (NullPointerException e) {
             return ResponseHandler.responseBuilder(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
@@ -78,7 +78,7 @@ public class RoomController {
                                              @RequestParam(value = "status", required = false) String status) {
 
         try {
-            Room newRoom = roomService.updateRoom(roomId, roomName, price, quantity, image, status);
+            Room newRoom = roomService.updateRoom(roomId, roomName, price, image, status);
             return ResponseHandler.responseBuilder("Cap nhap thanh cong", HttpStatus.OK, newRoom);
         } catch (Exception e) {
             return ResponseHandler.responseBuilder(e.getMessage(), HttpStatus.BAD_REQUEST);
@@ -95,6 +95,17 @@ public class RoomController {
              }
 
     }
+
+    @GetMapping("manager/get-all-room-type")
+        public ResponseEntity<Object> getRoomType(){
+            try {
+                List<RoomType> roomTypeList = roomService.getAllRoomType();
+                return ResponseHandler.responseBuilder("Success", HttpStatus.OK, roomTypeList);
+            }catch (Exception e){
+                return ResponseHandler.responseBuilder(e.getMessage(), HttpStatus.NOT_FOUND);
+            }
+        }
+
 
 
 
