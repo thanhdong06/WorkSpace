@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface IRoomService {
 
-    Room addNewRoom(String buildingId, String roomTypeId, String roomName, String price, MultipartFile file, String status);
+    Room addNewRoom(String buildingId, String roomTypeId, String roomName, String price, String status);
     List<Room> getAllRooms();
     List<Room> getAllRoomsByBuildingId(String buildingId);
     Room getRoomById(int id);
