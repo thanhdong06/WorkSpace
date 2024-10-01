@@ -12,7 +12,6 @@ import java.util.Date;
 @AllArgsConstructor
 @Builder
 public class ManagerRequest {
-    private String managerId;
     private String email;
     private String fullName;
     private String phoneNumber;

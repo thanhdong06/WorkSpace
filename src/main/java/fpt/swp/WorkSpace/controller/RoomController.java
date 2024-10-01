@@ -15,10 +15,15 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api")
-@PreAuthorize("hasAuthority('MANAGER')")
+//@PreAuthorize("hasAuthority('MANAGER')")
 public class RoomController {
     @Autowired
     private IRoomService roomService;
+
+    @GetMapping("manager/hello")
+    public String hello() {
+        return "Hello World";
+    }
 
     @PostMapping("/manager/add-new-room")
     public ResponseEntity<Object> addNewRoom(@RequestParam(value = "buildingId", required = false) String buildingId,

@@ -10,6 +10,13 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
+
+import java.util.Arrays;
+import java.util.Collections;
 
 @Configuration
 
@@ -30,22 +37,33 @@ public class SecurityConfiguration {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
         http.csrf(AbstractHttpConfigurer::disable)
-                        .cors(c -> c.configurationSource(CorsConfig.corsConfigurationSource()))
                         .authorizeHttpRequests(configure -> configure
                         .requestMatchers("/api/auth/**" ).permitAll()
                                 .requestMatchers("/api/customer/**").hasAuthority("CUSTOMER")
                                 .requestMatchers("/api/staff/**").hasAnyAuthority("STAFF")
-                                .requestMatchers("api/manager/**").hasAuthority("MANAGER")
+                                .requestMatchers("api/manager/**").permitAll()
                         .anyRequest().authenticated())
                         .sessionManagement(manager -> manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                         .authenticationProvider(applicationConfiguration.authenticationProvider())
                         .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class) ;
 
         return http.build();
+    }
 
 
+    @Bean
+    public CorsFilter corsFilter() {
+            CorsConfiguration corsConfiguration = new CorsConfiguration();
+            corsConfiguration.addAllowedOrigin("http://localhost:3000");
+            corsConfiguration.setAllowedOrigins(Collections.singletonList("http://localhost:3000"));
+            corsConfiguration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE"));
+            UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+            corsConfiguration.setAllowCredentials(true);
+            source.registerCorsConfiguration("/**", corsConfiguration);
+            return new CorsFilter(source);
+        }
     }
 
 
 
-}
+

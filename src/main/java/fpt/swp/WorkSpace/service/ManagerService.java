@@ -35,16 +35,17 @@ public class ManagerService {
             throw new RuntimeException("User not found");
         }
         Manager manager = new Manager();
-        manager.setManagerId(request.getManagerId());
+        manager.setManagerId(request.getUserId());
         manager.setEmail(request.getEmail());
         manager.setFullName(request.getFullName());
         manager.setPhoneNumber(request.getPhoneNumber());
         manager.setDateOfBirth(request.getDateOfBirth());
-        manager.setRoleName("Manager");
+        manager.setRoleName("MANAGER");
         manager.setCreateAt(LocalDateTime.now());
         manager.setUserId(request.getUserId());
         manager.setBuildingId(request.getBuildingId());
-        return managerRepository.save(manager);
+        managerRepository.save(manager);
+        return manager;
     }
 
     public Page<Manager> getAllManagers(int page, int size) {
