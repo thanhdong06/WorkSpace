@@ -5,11 +5,13 @@ import fpt.swp.WorkSpace.auth.LoginRequest;
 import fpt.swp.WorkSpace.auth.RegisterRequest;
 
 import fpt.swp.WorkSpace.models.Customer;
-import fpt.swp.WorkSpace.models.CustomerWallet;
+//import fpt.swp.WorkSpace.models.CustomerWallet;
 import fpt.swp.WorkSpace.models.User;
+import fpt.swp.WorkSpace.models.Wallet;
 import fpt.swp.WorkSpace.repository.CustomerRepository;
-import fpt.swp.WorkSpace.repository.CustomerWalletRepository;
+//import fpt.swp.WorkSpace.repository.CustomerWalletRepository;
 import fpt.swp.WorkSpace.repository.UserRepository;
+import fpt.swp.WorkSpace.repository.WalletRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -33,7 +35,7 @@ public class AuthService implements IAuthService {
     private CustomerRepository customerRepository;
 
     @Autowired
-    private CustomerWalletRepository customerWalletRepository;
+    private WalletRepository customerWalletRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -60,10 +62,10 @@ public class AuthService implements IAuthService {
             if (request.getRole().equals("CUSTOMER")){
 
                 // create a wallet for customer
-                CustomerWallet wallet = new CustomerWallet();
+                Wallet wallet = new Wallet();
                 String walletId = UUID.randomUUID().toString().replace("-", "").substring(0, 10);
                 wallet.setWalletId(walletId);
-                CustomerWallet customerWallet = customerWalletRepository.save(wallet);
+                Wallet customerWallet = customerWalletRepository.save(wallet);
 
                 // insert to user table
                 newUser.setUserId(generateCustomerId());
@@ -131,29 +133,29 @@ public class AuthService implements IAuthService {
     public AuthenticationResponse refresh(HttpServletRequest request) {
         AuthenticationResponse authenticationResponse = new AuthenticationResponse();
 
-            // get header
-            final String authHeader = request.getHeader("Authorization");
-            final String refreshToken;     // our token
-            final String userName;
+        // get header
+        final String authHeader = request.getHeader("Authorization");
+        final String refreshToken;     // our token
+        final String userName;
 
-            // check JWT Token
-            if (authHeader != null || authHeader.startsWith("Bearer ")){
-                refreshToken = authHeader.substring(7);
-                //extract the username from JWT token
-                userName = jwtService.extractUsername(refreshToken);
-                // Check validtation of token
-                if (userName != null){
-                    UserDetails userDetails = repository.findByuserName(userName);
-                    if (jwtService.isTokenValid(refreshToken,userDetails)){
-                        String accessToken = jwtService.generateAccessToken(new HashMap<>(), userDetails.getUsername());
-                        authenticationResponse.setStatusCode(200);
-                        authenticationResponse.setAccess_token(accessToken);
-                        authenticationResponse.setRefresh_token(refreshToken);
-                    }
+        // check JWT Token
+        if (authHeader != null || authHeader.startsWith("Bearer ")){
+            refreshToken = authHeader.substring(7);
+            //extract the username from JWT token
+            userName = jwtService.extractUsername(refreshToken);
+            // Check validtation of token
+            if (userName != null){
+                UserDetails userDetails = repository.findByuserName(userName);
+                if (jwtService.isTokenValid(refreshToken,userDetails)){
+                    String accessToken = jwtService.generateAccessToken(new HashMap<>(), userDetails.getUsername());
+                    authenticationResponse.setStatusCode(200);
+                    authenticationResponse.setAccess_token(accessToken);
+                    authenticationResponse.setRefresh_token(refreshToken);
                 }
             }
-            return authenticationResponse;
         }
+        return authenticationResponse;
+    }
 
     @Override
     public AuthenticationResponse logout() {
