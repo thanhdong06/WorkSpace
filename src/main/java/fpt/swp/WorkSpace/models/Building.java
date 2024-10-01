@@ -12,7 +12,7 @@ import java.util.List;
 public class Building {
 
     @Id
-    @Column(name = "buildingId", updatable = false, nullable = false, length = 36)
+    @Column(name = "building_id", updatable = false, nullable = false, length = 36)
     private String buildingId;
 
     @Column(name = "building_name", length = 50, nullable = false)

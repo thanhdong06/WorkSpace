@@ -37,7 +37,7 @@ public class Customer  {
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "walletId")
     @JsonManagedReference
-    private CustomerWallet wallet;
+    private Wallet wallet;
 
 
 
