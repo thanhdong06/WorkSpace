@@ -11,7 +11,6 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 
@@ -37,33 +36,34 @@ public class SecurityConfiguration {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
         http.csrf(AbstractHttpConfigurer::disable)
+
                         .authorizeHttpRequests(configure -> configure
-                        .requestMatchers("/api/auth/**" ).permitAll()
-                                .requestMatchers("/api/customer/**").hasAuthority("CUSTOMER")
-                                .requestMatchers("/api/staff/**").hasAnyAuthority("STAFF")
-                                .requestMatchers("api/manager/**").permitAll()
+                        .requestMatchers("/api/auth/**", "/api/customer/**", "api/manager/**", "/api/staff/**").permitAll()
+//                                .requestMatchers("/api/customer/**").hasAuthority("CUSTOMER")
+//                                .requestMatchers("/api/staff/**").hasAnyAuthority("STAFF")
+                                .requestMatchers("api/manager/**").hasAnyAuthority("MANAGER")
                         .anyRequest().authenticated())
                         .sessionManagement(manager -> manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                         .authenticationProvider(applicationConfiguration.authenticationProvider())
                         .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class) ;
-
         return http.build();
-    }
 
+
+    }
 
     @Bean
     public CorsFilter corsFilter() {
-            CorsConfiguration corsConfiguration = new CorsConfiguration();
-            corsConfiguration.addAllowedOrigin("http://localhost:3000");
-            corsConfiguration.setAllowedOrigins(Collections.singletonList("http://localhost:3000"));
-            corsConfiguration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE"));
-            UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-            corsConfiguration.setAllowCredentials(true);
-            source.registerCorsConfiguration("/**", corsConfiguration);
-            return new CorsFilter(source);
-        }
+        CorsConfiguration corsConfiguration = new CorsConfiguration();
+        corsConfiguration.setAllowedHeaders(Arrays.asList("Origin", "Access-Control-Allow-Origin", "Content-Type",
+                "Accept", "Authorization", "Origin, Accept", "X-Request-With",
+                "Access-Control-Request-Method", "Access-Control-Request-Headers"));
+        corsConfiguration.addAllowedOrigin("http://localhost:3000");
+        corsConfiguration.setAllowedOrigins(Collections.singletonList("http://localhost:3000"));
+        corsConfiguration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE"));
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        corsConfiguration.setAllowCredentials(true);
+        source.registerCorsConfiguration("/**", corsConfiguration);
+        return new CorsFilter(source);
     }
 
-
-
-
+}

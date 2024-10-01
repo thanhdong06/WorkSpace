@@ -36,7 +36,7 @@ public class JWTService {
 
 
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver){
-         final Claims claims = exstractAllClaims(token);
+        final Claims claims = exstractAllClaims(token);
         return claimsResolver.apply(claims);
     }
 

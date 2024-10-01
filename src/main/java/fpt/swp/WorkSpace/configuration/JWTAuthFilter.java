@@ -33,33 +33,33 @@ public class JWTAuthFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
-            // pass token to header
-            final String authHeader = request.getHeader("Authorization");
-            final String jwt;     // our token
-            final String userName;
+        // pass token to header
+        final String authHeader = request.getHeader("Authorization");
+        final String jwt;     // our token
+        final String userName;
 
-            // check JWT Token
-            if (authHeader == null || !authHeader.startsWith("Bearer ")){
-                filterChain.doFilter(request,response);
-                return;
-            }
-            jwt = authHeader.substring(7);
-
-            //extract the username from JWT token
-            userName = jwtService.extractUsername(jwt);
-
-                                    // check user authenticated yet
-            if (userName != null && SecurityContextHolder.getContext().getAuthentication() == null){
-                UserDetails userDetails = this.userDetailsService.loadUserByUsername(userName);
-                if (jwtService.isTokenValid(jwt,userDetails)){
-                    SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
-                    UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(userDetails,null, userDetails.getAuthorities());
-                    authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                    securityContext.setAuthentication(authToken);
-                    SecurityContextHolder.setContext(securityContext);
-                }
-            }
+        // check JWT Token
+        if (authHeader == null || !authHeader.startsWith("Bearer ")){
             filterChain.doFilter(request,response);
+            return;
+        }
+        jwt = authHeader.substring(7);
+
+        //extract the username from JWT token
+        userName = jwtService.extractUsername(jwt);
+
+        // check user authenticated yet
+        if (userName != null && SecurityContextHolder.getContext().getAuthentication() == null){
+            UserDetails userDetails = this.userDetailsService.loadUserByUsername(userName);
+            if (jwtService.isTokenValid(jwt,userDetails)){
+                SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
+                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(userDetails,null, userDetails.getAuthorities());
+                authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                securityContext.setAuthentication(authToken);
+                SecurityContextHolder.setContext(securityContext);
+            }
+        }
+        filterChain.doFilter(request,response);
     }
 
 
