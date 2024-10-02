@@ -36,6 +36,9 @@ public class AuthController {
     @PostMapping("/auth/login")
     public ResponseEntity<AuthenticationResponse> login(@Valid @RequestBody LoginRequest request){
         AuthenticationResponse response = service.login(request);
+        if(response.getData().getRoleName().equals("MANAGER")){
+            System.out.println("OK");
+        }
         if (response.getStatusCode() ==  404){
             System.out.println(response);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
