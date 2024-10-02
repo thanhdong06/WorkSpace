@@ -49,6 +49,7 @@ public class RoomService implements IRoomService{
         // conver array to string
         String staffIDList = String.join(",", staffID);
         room.setStaffAtRoom(staffIDList);
+
         room.setStatus(status);
         room.setBuilding(findBuilding);
         room.setRoomType(roomType);
