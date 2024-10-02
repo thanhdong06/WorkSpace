@@ -22,14 +22,16 @@ public class Room {
     private int roomId;
 
     private String roomName;
-    private float price;
-    private LocalDateTime creationTime;
 
+    private float price;
+
+    private String creationTime;
 
     private String roomImg;
 
     @Column(name = "staff_at_room", nullable = false)
     private String staffAtRoom;
+
     private String status;
 
     @ManyToOne

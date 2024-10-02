@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 @Service
 public class RoomService implements IRoomService{
@@ -44,7 +45,12 @@ public class RoomService implements IRoomService{
         room.setRoomName(roomName);
         room.setPrice(Float.parseFloat(price));
 //        room.setRoomImg(img);
-        room.setCreationTime(LocalDateTime.now());
+
+        // set local day time
+        LocalDateTime now = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
+        String creationTime = now.format(formatter);
+        room.setCreationTime(creationTime);
 
         // conver array to string
         String staffIDList = String.join(",", staffID);
