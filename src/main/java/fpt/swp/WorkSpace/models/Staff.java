@@ -47,5 +47,5 @@ public class Staff {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private StaffStatus status;
+    private StaffStatus status = StaffStatus.active;
 }

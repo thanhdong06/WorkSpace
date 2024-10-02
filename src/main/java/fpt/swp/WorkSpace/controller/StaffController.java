@@ -3,6 +3,7 @@ package fpt.swp.WorkSpace.controller;
 import fpt.swp.WorkSpace.models.Staff;
 import fpt.swp.WorkSpace.response.APIResponse;
 import fpt.swp.WorkSpace.response.StaffRequest;
+import fpt.swp.WorkSpace.response.StaffResponse;
 import fpt.swp.WorkSpace.service.StaffService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -29,12 +30,12 @@ public class StaffController {
     }
 
     @GetMapping
-    public Page<Staff> getAllStaffs(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "5") int size) {
+    public Page<StaffResponse> getAllStaffs(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "5") int size) {
         return staffService.getAllStaffs(page, size);
     }
 
     @GetMapping("/{id}")
-    public Staff getStaffById(@PathVariable String id) {
+    public StaffResponse getStaffById(@PathVariable String id) {
         return staffService.getStaffById(id);
     }
 
