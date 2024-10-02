@@ -5,17 +5,9 @@ import fpt.swp.WorkSpace.auth.LoginRequest;
 import fpt.swp.WorkSpace.auth.RegisterRequest;
 
 import fpt.swp.WorkSpace.models.Customer;
-<<<<<<< HEAD
 import fpt.swp.WorkSpace.models.User;
 import fpt.swp.WorkSpace.models.Wallet;
 import fpt.swp.WorkSpace.repository.CustomerRepository;
-=======
-//import fpt.swp.WorkSpace.models.CustomerWallet;
-import fpt.swp.WorkSpace.models.User;
-import fpt.swp.WorkSpace.models.Wallet;
-import fpt.swp.WorkSpace.repository.CustomerRepository;
-//import fpt.swp.WorkSpace.repository.CustomerWalletRepository;
->>>>>>> 90ce48452f3a8a5269d470b1989b2420b8bdf244
 import fpt.swp.WorkSpace.repository.UserRepository;
 import fpt.swp.WorkSpace.repository.WalletRepository;
 import jakarta.servlet.http.HttpServletRequest;
