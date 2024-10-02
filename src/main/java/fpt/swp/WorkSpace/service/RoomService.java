@@ -47,7 +47,7 @@ public class RoomService implements IRoomService{
         room.setCreationTime(LocalDateTime.now());
 
         // conver array to string
-        String staffIDList = String.join("?", staffID);
+        String staffIDList = String.join(",", staffID);
         room.setStaffAtRoom(staffIDList);
         room.setStatus(status);
         room.setBuilding(findBuilding);
