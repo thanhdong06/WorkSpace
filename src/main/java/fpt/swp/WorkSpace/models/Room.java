@@ -24,6 +24,8 @@ public class Room {
     private String roomName;
     private float price;
     private LocalDateTime creationTime;
+
+
     private String roomImg;
     private String status;
 

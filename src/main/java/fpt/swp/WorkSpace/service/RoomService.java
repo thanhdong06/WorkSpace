@@ -30,8 +30,8 @@ public class RoomService implements IRoomService{
     private RoomTypeRepository roomTypeRepository;
 
     @Override
-    public Room addNewRoom(String buildingId, String romeTypeId, String roomName, String price,  MultipartFile file, String status) {
-        String img = awsS3Service.saveImgToS3(file);
+    public Room addNewRoom(String buildingId, String romeTypeId, String roomName, String price,   String status) {
+//        String img = awsS3Service.saveImgToS3(file);
         Building findBuilding = buildingRepository.findById(buildingId).orElseThrow();
         RoomType roomType = roomTypeRepository.findById(romeTypeId).orElseThrow();
         if (findBuilding == null) {
@@ -43,7 +43,7 @@ public class RoomService implements IRoomService{
         Room room = new Room();
         room.setRoomName(roomName);
         room.setPrice(Float.parseFloat(price));
-        room.setRoomImg(img);
+//        room.setRoomImg(img);
         room.setCreationTime(LocalDateTime.now());
         room.setStatus(status);
         room.setBuilding(findBuilding);

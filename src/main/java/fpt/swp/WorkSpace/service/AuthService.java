@@ -5,9 +5,17 @@ import fpt.swp.WorkSpace.auth.LoginRequest;
 import fpt.swp.WorkSpace.auth.RegisterRequest;
 
 import fpt.swp.WorkSpace.models.Customer;
+<<<<<<< HEAD
 import fpt.swp.WorkSpace.models.User;
 import fpt.swp.WorkSpace.models.Wallet;
 import fpt.swp.WorkSpace.repository.CustomerRepository;
+=======
+//import fpt.swp.WorkSpace.models.CustomerWallet;
+import fpt.swp.WorkSpace.models.User;
+import fpt.swp.WorkSpace.models.Wallet;
+import fpt.swp.WorkSpace.repository.CustomerRepository;
+//import fpt.swp.WorkSpace.repository.CustomerWalletRepository;
+>>>>>>> 90ce48452f3a8a5269d470b1989b2420b8bdf244
 import fpt.swp.WorkSpace.repository.UserRepository;
 import fpt.swp.WorkSpace.repository.WalletRepository;
 import jakarta.servlet.http.HttpServletRequest;
@@ -130,29 +138,29 @@ public class AuthService implements IAuthService {
     public AuthenticationResponse refresh(HttpServletRequest request) {
         AuthenticationResponse authenticationResponse = new AuthenticationResponse();
 
-            // get header
-            final String authHeader = request.getHeader("Authorization");
-            final String refreshToken;     // our token
-            final String userName;
+        // get header
+        final String authHeader = request.getHeader("Authorization");
+        final String refreshToken;     // our token
+        final String userName;
 
-            // check JWT Token
-            if (authHeader != null || authHeader.startsWith("Bearer ")){
-                refreshToken = authHeader.substring(7);
-                //extract the username from JWT token
-                userName = jwtService.extractUsername(refreshToken);
-                // Check validtation of token
-                if (userName != null){
-                    UserDetails userDetails = repository.findByuserName(userName);
-                    if (jwtService.isTokenValid(refreshToken,userDetails)){
-                        String accessToken = jwtService.generateAccessToken(new HashMap<>(), userDetails.getUsername());
-                        authenticationResponse.setStatusCode(200);
-                        authenticationResponse.setAccess_token(accessToken);
-                        authenticationResponse.setRefresh_token(refreshToken);
-                    }
+        // check JWT Token
+        if (authHeader != null || authHeader.startsWith("Bearer ")){
+            refreshToken = authHeader.substring(7);
+            //extract the username from JWT token
+            userName = jwtService.extractUsername(refreshToken);
+            // Check validtation of token
+            if (userName != null){
+                UserDetails userDetails = repository.findByuserName(userName);
+                if (jwtService.isTokenValid(refreshToken,userDetails)){
+                    String accessToken = jwtService.generateAccessToken(new HashMap<>(), userDetails.getUsername());
+                    authenticationResponse.setStatusCode(200);
+                    authenticationResponse.setAccess_token(accessToken);
+                    authenticationResponse.setRefresh_token(refreshToken);
                 }
             }
-            return authenticationResponse;
         }
+        return authenticationResponse;
+    }
 
     @Override
     public AuthenticationResponse logout() {
