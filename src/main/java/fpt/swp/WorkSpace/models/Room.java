@@ -27,6 +27,9 @@ public class Room {
 
 
     private String roomImg;
+
+    @Column(name = "staff_at_room", nullable = false)
+    private String staffAtRoom;
     private String status;
 
     @ManyToOne

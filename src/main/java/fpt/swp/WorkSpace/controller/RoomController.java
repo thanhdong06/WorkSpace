@@ -31,13 +31,15 @@ public class RoomController {
                                              @RequestParam(value = "roomName", required = false) String roomName,
                                              @RequestParam(value = "price", required = false) String price,
 //                                             @RequestParam(value = "image", required = false) MultipartFile image,
-                                             @RequestParam(value = "status", required = false) String status){
+                                             @RequestParam(value = "status", required = false) String status,
+                                             @RequestParam(value = "listStaffID", required = false) String[] listStaffID){
         // Use parameter instead of body because image is a file
         // file should be multipart/form-data
         // JSON cann't handle this file
 
         try{
-            Room newRoom = roomService.addNewRoom(buildingId, roomTypeId, roomName, price, status);
+            System.out.println(listStaffID.length);
+            Room newRoom = roomService.addNewRoom(buildingId, roomTypeId, roomName, price, listStaffID, status);
             return ResponseHandler.responseBuilder("Them phong thanh cong", HttpStatus.OK, newRoom);
         } catch (NullPointerException e) {
             return ResponseHandler.responseBuilder(e.getMessage(), HttpStatus.BAD_REQUEST);
@@ -61,6 +63,34 @@ public class RoomController {
         }catch (Exception e){
             return ResponseHandler.responseBuilder(e.getMessage(), HttpStatus.NOT_FOUND);
         }
+    }
+
+    @PutMapping("/manager/update-room/{roomId}")
+    public ResponseEntity<Object> updateRoom(@PathVariable int roomId,
+                                             @RequestParam(value = "roomName", required = false) String roomName,
+                                             @RequestParam(value = "price", required = false) String price,
+                                             @RequestParam(value = "quantity", required = false) String quantity,
+//                                             @RequestParam(value = "image", required = false) MultipartFile image,
+                                             @RequestParam(value = "status", required = false) String status) {
+
+        try {
+            Room newRoom = roomService.updateRoom(roomId, roomName, price, status);
+            return ResponseHandler.responseBuilder("Cap nhap thanh cong", HttpStatus.OK, newRoom);
+        } catch (Exception e) {
+            return ResponseHandler.responseBuilder(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+
+    @DeleteMapping("/manager/delete-room/{roomId}")
+    public ResponseEntity<Object> deleteRoom(@PathVariable int roomId){
+        try {
+            roomService.deleteRoom(roomId);
+            return ResponseHandler.responseBuilder("Da xoa thanh cong", HttpStatus.OK);
+        }catch (Exception e){
+            return ResponseHandler.responseBuilder(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+
     }
 
     @GetMapping("manager/get-room-by-building/building")
