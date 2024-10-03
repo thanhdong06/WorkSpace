@@ -87,10 +87,13 @@ public class RoomController {
                                              @RequestParam(value = "roomName", required = false) String roomName,
                                              @RequestParam(value = "price", required = false) String price,
 //                                             @RequestParam(value = "image", required = false) MultipartFile image,
-                                             @RequestParam(value = "status", required = false) String status) {
+                                             @RequestParam(value = "status", required = false) String status,
+                                             @RequestParam(value = "listStaffID", required = false) String[] listStaffID,
+                                             @RequestParam(value = "description", required = false) String description) {
 
         try {
-            Room newRoom = roomService.updateRoom(roomId, roomName, price, status);
+
+            Room newRoom = roomService.updateRoom(roomId, roomName, price, status, listStaffID, description);
             return ResponseHandler.responseBuilder("Cap nhap thanh cong", HttpStatus.OK, newRoom);
         } catch (Exception e) {
             return ResponseHandler.responseBuilder(e.getMessage(), HttpStatus.BAD_REQUEST);
