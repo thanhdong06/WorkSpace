@@ -1,9 +1,11 @@
 package fpt.swp.WorkSpace.controller;
 
+import com.amazonaws.services.kms.model.NotFoundException;
 import fpt.swp.WorkSpace.models.Customer;
-import fpt.swp.WorkSpace.models.User;
+import fpt.swp.WorkSpace.models.Room;
 import fpt.swp.WorkSpace.response.ResponseHandler;
 import fpt.swp.WorkSpace.service.ICustomerService;
+import fpt.swp.WorkSpace.service.IRoomService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -11,7 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api")
@@ -20,6 +22,11 @@ public class CustomerController {
 
     @Autowired
     private ICustomerService customerService;
+
+    @Autowired
+    private IRoomService roomService;
+
+
 
     @GetMapping("/hello")
     public String hello() {
@@ -35,7 +42,7 @@ public class CustomerController {
 
     @PutMapping("customer/manage-profile/change-password/{username}")
     public ResponseEntity<Object> changePassword(@PathVariable String username, HttpServletRequest request){
-//        String username = request.getParameter("username");
+
         String newpassword = request.getParameter("newpassword");
         try {
              customerService.customerChangePassword(username, newpassword);
@@ -54,12 +61,13 @@ public class CustomerController {
 //        String newEmail = request.getParameter("newEmail");
 
         try {
-            Customer cus = customerService.customerEditProfile(username, customer);
+            customerService.customerEditProfile(username, customer);
             return  ResponseHandler.responseBuilder("successfully", HttpStatus.OK);
         }catch (RuntimeException e){
             return ResponseHandler.responseBuilder(e.getMessage(),HttpStatus.BAD_REQUEST);
         }
     }
+
 
 
 }

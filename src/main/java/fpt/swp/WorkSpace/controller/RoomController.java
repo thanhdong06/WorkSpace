@@ -1,5 +1,6 @@
 package fpt.swp.WorkSpace.controller;
 
+import com.amazonaws.services.kms.model.NotFoundException;
 import fpt.swp.WorkSpace.models.Room;
 import fpt.swp.WorkSpace.models.RoomType;
 import fpt.swp.WorkSpace.response.ResponseHandler;
@@ -7,9 +8,7 @@ import fpt.swp.WorkSpace.service.IRoomService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -20,10 +19,6 @@ public class RoomController {
     @Autowired
     private IRoomService roomService;
 
-    @GetMapping("manager/hello")
-    public String hello() {
-        return "Hello World";
-    }
 
     @PostMapping("/manager/add-new-room")
     public ResponseEntity<Object> addNewRoom(@RequestParam(value = "buildingId", required = false) String buildingId,
@@ -32,6 +27,7 @@ public class RoomController {
                                              @RequestParam(value = "price", required = false) String price,
 //                                             @RequestParam(value = "image", required = false) MultipartFile image,
                                              @RequestParam(value = "status", required = false) String status,
+                                             @RequestParam(value = "description", required = false) String description,
                                              @RequestParam(value = "listStaffID", required = false) String[] listStaffID){
         // Use parameter instead of body because image is a file
         // file should be multipart/form-data
@@ -39,14 +35,14 @@ public class RoomController {
 
         try{
             System.out.println(listStaffID.length);
-            Room newRoom = roomService.addNewRoom(buildingId, roomTypeId, roomName, price, listStaffID, status);
+            Room newRoom = roomService.addNewRoom(buildingId, roomTypeId, roomName, price, listStaffID, description, status);
             return ResponseHandler.responseBuilder("Them phong thanh cong", HttpStatus.OK, newRoom);
         } catch (NullPointerException e) {
             return ResponseHandler.responseBuilder(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
 
-    @GetMapping("/manager/get-all-room")
+    @GetMapping("/get-all-room")
     public ResponseEntity<Object> getAllRoom(){
         List<Room> roomList = roomService.getAllRooms();
         if (roomList.isEmpty()){
@@ -55,12 +51,33 @@ public class RoomController {
         return ResponseHandler.responseBuilder("Success", HttpStatus.OK, roomList);
     }
 
-    @GetMapping("manager/get-room-by-id/{roomId}")
+    @GetMapping("/get-room-by-id/{roomId}")
     public ResponseEntity<Object> getRoomById(@PathVariable("roomId") int roomId){
-        Room findRoom = roomService.getRoomById(roomId);
+
         try {
+            Room findRoom = roomService.getRoomById(roomId);
             return ResponseHandler.responseBuilder("Success", HttpStatus.OK, findRoom);
         }catch (Exception e){
+            return ResponseHandler.responseBuilder(e.getMessage(), HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @GetMapping("/get-room-by-building")
+    public ResponseEntity<Object> getRoomByBuildingId(@RequestParam(value = "buildingId", required = false) String buildingId){
+        try{
+            List<Room> listRoom = roomService.getRoomsByBuildingId(buildingId);
+            return ResponseHandler.responseBuilder("Success", HttpStatus.OK, listRoom);
+        }catch (NotFoundException e){
+            return ResponseHandler.responseBuilder(e.getMessage(), HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @GetMapping("/get-room-by-type")
+    public ResponseEntity<Object> getRoomByType(@RequestParam(value = "roomTypeId", required = false) String roomTypeId){
+        try{
+            List<Room> listRoom = roomService.getRoomsByRoomType(roomTypeId);
+            return ResponseHandler.responseBuilder("Success", HttpStatus.OK, listRoom);
+        }catch (NotFoundException e){
             return ResponseHandler.responseBuilder(e.getMessage(), HttpStatus.NOT_FOUND);
         }
     }
@@ -69,7 +86,6 @@ public class RoomController {
     public ResponseEntity<Object> updateRoom(@PathVariable int roomId,
                                              @RequestParam(value = "roomName", required = false) String roomName,
                                              @RequestParam(value = "price", required = false) String price,
-                                             @RequestParam(value = "quantity", required = false) String quantity,
 //                                             @RequestParam(value = "image", required = false) MultipartFile image,
                                              @RequestParam(value = "status", required = false) String status) {
 
@@ -90,10 +106,9 @@ public class RoomController {
         }catch (Exception e){
             return ResponseHandler.responseBuilder(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
-
     }
 
-    @GetMapping("manager/get-room-by-building/building")
+    @GetMapping("/manager/get-room-type")
     public ResponseEntity<Object> getRoomType(){
         try {
             List<RoomType> roomTypeList = roomService.getAllRoomType();
@@ -101,6 +116,19 @@ public class RoomController {
         }catch (Exception e){
             return ResponseHandler.responseBuilder(e.getMessage(), HttpStatus.NOT_FOUND);
         }
+    }
+
+    @GetMapping("/get-room-building-and-type")
+    public ResponseEntity<Object> getRoomBuildingAndType(@RequestParam("buildingId") String buildingId,
+                                                         @RequestParam("roomTypeId") String roomTypeId){
+        try {
+            List<Room> roomList = roomService.getRoomsByBuildingAndRoomType(buildingId, roomTypeId);
+            return ResponseHandler.responseBuilder("Success", HttpStatus.OK, roomList);
+        }catch (Exception e){
+            return ResponseHandler.responseBuilder(e.getMessage(), HttpStatus.NOT_FOUND);
+        }
+
+
     }
 
 
