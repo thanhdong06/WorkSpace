@@ -44,6 +44,8 @@ public class Room {
     @JsonManagedReference // Ngăn ngừa vòng lặp
     private RoomType roomType;
 
+    private String description;
+
 
 
 

@@ -7,13 +7,12 @@ import fpt.swp.WorkSpace.models.RoomType;
 import fpt.swp.WorkSpace.repository.BuildingRepository;
 import fpt.swp.WorkSpace.repository.RoomRepository;
 import fpt.swp.WorkSpace.repository.RoomTypeRepository;
-import lombok.Data;
+import fpt.swp.WorkSpace.util.Helper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.function.support.RouterFunctionMapping;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 @Service
 public class RoomService implements IRoomService{
@@ -30,8 +29,9 @@ public class RoomService implements IRoomService{
     @Autowired
     private RoomTypeRepository roomTypeRepository;
 
+
     @Override
-    public Room addNewRoom(String buildingId, String romeTypeId, String roomName, String price, String[] staffID, String status) {
+    public Room addNewRoom(String buildingId, String romeTypeId, String roomName, String price, String[] staffID, String description, String status) {
 //        String img = awsS3Service.saveImgToS3(file);
         Building findBuilding = buildingRepository.findById(buildingId).orElseThrow();
         RoomType roomType = roomTypeRepository.findById(romeTypeId).orElseThrow();
@@ -47,18 +47,17 @@ public class RoomService implements IRoomService{
 //        room.setRoomImg(img);
 
         // set local day time
-        LocalDateTime now = LocalDateTime.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
-        String creationTime = now.format(formatter);
+        String creationTime = Helper.convertLocalDateTime();
         room.setCreationTime(creationTime);
 
         // conver array to string
-        String staffIDList = String.join(",", staffID);
+        String staffIDList = String.join(", ", staffID);
         room.setStaffAtRoom(staffIDList);
 
         room.setStatus(status);
         room.setBuilding(findBuilding);
         room.setRoomType(roomType);
+        room.setDescription(description);
         roomType.setQuantity(roomType.getQuantity() + 1);    // update quantity in roomtype
         roomTypeRepository.save(roomType);
         return roomRepository.save(room);
@@ -66,30 +65,52 @@ public class RoomService implements IRoomService{
 
     @Override
     public List<Room> getAllRooms() {
-        return roomRepository.findAll();
-    }
-
-    @Override
-    public List<Room> getAllRoomsByBuildingId(String buildingId) {
-        List<Room> list = roomRepository.getRoomByBuilding(buildingId);
-        if (list.isEmpty()) {
-            throw new NotFoundException("Co so nay chua co phong");
+        List<Room> roomList = roomRepository.findAll();
+        if (roomList.isEmpty()) {
+            throw new NotFoundException("Chua co phong nao!!!");
         }
-        return list;
-
+        return roomList;
     }
 
     @Override
-    public Room getRoomById(int roomId) {
-        Room room = roomRepository.findById(roomId).orElseThrow();
-            if (room == null) {
-                throw new NullPointerException("Khong tim thay phong");
-            }
+    public Room getRoomById(int id) {
+        Room room = roomRepository.findById(id).orElseThrow();
+        if (room == null) {
+            throw new NotFoundException("Phong khong ton tai");
+        }
         return room;
     }
 
     @Override
-    public Room updateRoom(int roomId, String roomName, String price,  String status) {
+    public List<Room> getRoomsByBuildingId(String buildingId) {
+        List<Room> roomList = roomRepository.getRoomByBuilding(buildingId);
+        if (roomList.isEmpty()) {
+            throw new NotFoundException("Co so nay chua co phong");
+        }
+        return roomList;
+    }
+
+    @Override
+    public List<Room> getRoomsByRoomType(String roomTypeId) {
+        List<Room> roomList = roomRepository.getRoomByRoomType(roomTypeId);
+        if (roomList.isEmpty()) {
+            throw new NotFoundException("Khong co phong hop le");
+        }
+        return roomList;
+    }
+
+    @Override
+    public List<Room> getRoomsByBuildingAndRoomType(String buildingId, String roomTypeId) {
+        List<Room> roomList = roomRepository.getRoomsByBuildingAndRoomType(buildingId, roomTypeId);
+        if (roomList.isEmpty()) {
+            throw new NotFoundException("Khong co phong hop le");
+        }
+        return roomList;
+    }
+
+
+    @Override
+    public Room updateRoom(int roomId, String roomName, String price, String status) {
 //        String imageUrl = null;
 //        if (file != null && !file.isEmpty()) {
 //            imageUrl = awsS3Service.saveImgToS3(file);
