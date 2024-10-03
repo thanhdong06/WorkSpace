@@ -30,8 +30,8 @@ public class User implements UserDetails  {
     @Column(name = "password", nullable = false  )
     private String password;
 
-    @Column(name = "createdDate")
-     private LocalDateTime creationTime;;
+    @Column(name = "creation_time")
+    private LocalDateTime creationTime;;
 
     private String roleName;
 

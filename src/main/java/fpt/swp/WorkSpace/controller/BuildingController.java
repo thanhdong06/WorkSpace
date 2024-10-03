@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/buildings")
+@RequestMapping("/api/auth/buildings")
 public class BuildingController {
     @Autowired
     private BuildingService buildingService;

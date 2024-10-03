@@ -18,7 +18,7 @@ import java.util.Date;
 @Setter
 public class Manager {
     @Id
-    @Column(name = "ManagerID", length = 30, nullable = false)
+    @Column(name = "manager_id", length = 30, nullable = false)
     private String managerId;
 
     @Column(name = "Email", length = 50, nullable = false)
