@@ -8,11 +8,11 @@ import java.util.List;
 
 public interface IRoomService {
 
-    Room addNewRoom(String buildingId, String roomTypeId, String roomName, String price, String status);
+    Room addNewRoom(String buildingId, String roomTypeId, String roomName, String price, String[] staffId , String status);
     List<Room> getAllRooms();
     List<Room> getAllRoomsByBuildingId(String buildingId);
     Room getRoomById(int id);
-    Room updateRoom(int roomId, String roomName, String price, MultipartFile file, String status);
+    Room updateRoom(int roomId, String roomName, String price, String status);
     void deleteRoom(int id);
     List<RoomType> getAllRoomType();
 

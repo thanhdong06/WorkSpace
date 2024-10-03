@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 @Service
 public class RoomService implements IRoomService{
@@ -30,7 +31,7 @@ public class RoomService implements IRoomService{
     private RoomTypeRepository roomTypeRepository;
 
     @Override
-    public Room addNewRoom(String buildingId, String romeTypeId, String roomName, String price,   String status) {
+    public Room addNewRoom(String buildingId, String romeTypeId, String roomName, String price, String[] staffID, String status) {
 //        String img = awsS3Service.saveImgToS3(file);
         Building findBuilding = buildingRepository.findById(buildingId).orElseThrow();
         RoomType roomType = roomTypeRepository.findById(romeTypeId).orElseThrow();
@@ -44,7 +45,17 @@ public class RoomService implements IRoomService{
         room.setRoomName(roomName);
         room.setPrice(Float.parseFloat(price));
 //        room.setRoomImg(img);
-        room.setCreationTime(LocalDateTime.now());
+
+        // set local day time
+        LocalDateTime now = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
+        String creationTime = now.format(formatter);
+        room.setCreationTime(creationTime);
+
+        // conver array to string
+        String staffIDList = String.join(",", staffID);
+        room.setStaffAtRoom(staffIDList);
+
         room.setStatus(status);
         room.setBuilding(findBuilding);
         room.setRoomType(roomType);
@@ -78,11 +89,11 @@ public class RoomService implements IRoomService{
     }
 
     @Override
-    public Room updateRoom(int roomId, String roomName, String price, MultipartFile file, String status) {
-        String imageUrl = null;
-        if (file != null && !file.isEmpty()) {
-            imageUrl = awsS3Service.saveImgToS3(file);
-        }
+    public Room updateRoom(int roomId, String roomName, String price,  String status) {
+//        String imageUrl = null;
+//        if (file != null && !file.isEmpty()) {
+//            imageUrl = awsS3Service.saveImgToS3(file);
+//        }
         Room room = roomRepository.findById(roomId).orElseThrow();
         if (roomName != null){
             room.setRoomName(roomName);
@@ -90,9 +101,9 @@ public class RoomService implements IRoomService{
         if (price != null) {
             room.setPrice(Float.parseFloat(price));
         }
-        if (imageUrl != null){
-            room.setRoomImg(imageUrl);
-        }
+//        if (imageUrl != null){
+//            room.setRoomImg(imageUrl);
+//        }
         if (status != null) {
             room.setStatus(status);
         }

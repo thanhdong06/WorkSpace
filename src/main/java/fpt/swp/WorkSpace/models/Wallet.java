@@ -1,5 +1,6 @@
 package fpt.swp.WorkSpace.models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,5 +20,6 @@ public class Wallet {
     private int amount;
 
     @OneToOne(mappedBy = "wallet")
+    @JsonBackReference
     private Customer customer;
 }
