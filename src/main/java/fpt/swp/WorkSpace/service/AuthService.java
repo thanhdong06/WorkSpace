@@ -5,11 +5,9 @@ import fpt.swp.WorkSpace.auth.LoginRequest;
 import fpt.swp.WorkSpace.auth.RegisterRequest;
 
 import fpt.swp.WorkSpace.models.Customer;
-//import fpt.swp.WorkSpace.models.CustomerWallet;
 import fpt.swp.WorkSpace.models.User;
 import fpt.swp.WorkSpace.models.Wallet;
 import fpt.swp.WorkSpace.repository.CustomerRepository;
-//import fpt.swp.WorkSpace.repository.CustomerWalletRepository;
 import fpt.swp.WorkSpace.repository.UserRepository;
 import fpt.swp.WorkSpace.repository.WalletRepository;
 import jakarta.servlet.http.HttpServletRequest;
@@ -20,7 +18,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.sql.Date;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.UUID;

@@ -13,7 +13,7 @@ import lombok.Setter;
 @Setter
 public class Wallet {
     @Id
-    @Column(name = "walletId", length = 36, nullable = false)
+    @Column(name = "wallet_id", length = 36, nullable = false)
     private String walletId;
 
     @Column(name = "Amount",nullable = false)
