@@ -110,7 +110,7 @@ public class RoomService implements IRoomService{
 
 
     @Override
-    public Room updateRoom(int roomId, String roomName, String price, String status) {
+    public Room updateRoom(int roomId, String roomName, String price, String status, String[] staffID, String description) {
 //        String imageUrl = null;
 //        if (file != null && !file.isEmpty()) {
 //            imageUrl = awsS3Service.saveImgToS3(file);
@@ -127,6 +127,13 @@ public class RoomService implements IRoomService{
 //        }
         if (status != null) {
             room.setStatus(status);
+        }
+        if (staffID != null) {
+            String staffIDList = String.join(", ", staffID);
+            room.setStaffAtRoom(staffIDList);
+        }
+        if (description != null) {
+            room.setDescription(description);
         }
         return roomRepository.save(room);
     }

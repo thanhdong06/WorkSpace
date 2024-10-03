@@ -21,7 +21,7 @@ public interface IRoomService {
 
     List<RoomType> getAllRoomType();
 
-    Room updateRoom(int roomId, String roomName, String price, String status);
+    Room updateRoom(int roomId, String roomName, String price, String status, String[] staffId, String description);
 
     void deleteRoom(int id);
 
