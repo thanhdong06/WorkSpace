@@ -14,16 +14,9 @@ import java.util.Date;
 @AllArgsConstructor
 @Builder
 public class StaffRequest {
-    private String staffId;
-    private String fullName;
-    private String phoneNumber;
-    private Date dateOfBirth;
-    private LocalDateTime createAt;
-    private String email;
-    private String workShift;
-    private String workDays;
-
+    private String userName;
+    private String password;
+    private String role;
     private String buildingId;
-    private String userId;
-    private StaffStatus status;
+
 }

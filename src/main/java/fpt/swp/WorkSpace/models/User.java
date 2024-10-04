@@ -22,6 +22,7 @@ import java.util.Collections;
 @Getter @Setter
 public class User implements UserDetails  {
     @Id
+    @Column(name = "user_id", updatable = false, nullable = false)
     private String userId;
 
     @Column(name = "username", nullable = false, unique = true)
@@ -37,8 +38,7 @@ public class User implements UserDetails  {
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     @JsonIgnore
-    private Customer customer;
-
+    private Staff staff;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
