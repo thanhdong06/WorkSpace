@@ -1,5 +1,6 @@
 package fpt.swp.WorkSpace.models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
@@ -8,6 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.Date;
+import java.util.List;
 
 @Entity
 
@@ -48,4 +50,9 @@ public class Customer  {
     public String getRoleName() {
         return user.getRoleName();
     }
+
+    @OneToMany(mappedBy = "customer")
+    @JsonBackReference
+    private List<OrderBooking> bookingsList;
+
 }
