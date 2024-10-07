@@ -18,7 +18,7 @@ public class Items {
     private String serviceType;
 
      @Enumerated(EnumType.STRING)
-    private Status status = Status.AVAILABLE;
+    private TimeSlotStatus status = TimeSlotStatus.AVAILABLE;
 
     @OneToMany(mappedBy = "service")
     private List<OrderBookingDetail> orderBookingDetails;

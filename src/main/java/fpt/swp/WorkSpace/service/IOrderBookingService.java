@@ -9,7 +9,7 @@ import java.util.List;
 public interface IOrderBookingService {
     List<OrderBookingResponse> getBookedSlotByRoomAndDate(Date date, int roomId);
 
-    OrderBookingResponse createOrderBooking(String jwttoken, int roomId, Date date, List<Integer> slotBooking, String note);
+    OrderBooking createOrderBooking(String jwttoken, int roomId, String date, List<Integer> slotBooking, String note);
 
-    List<OrderBookingResponse> getCustomerHistoryBooking(String customerId);
+    List<OrderBooking> getCustomerHistoryBooking(String jwttoken);
 }

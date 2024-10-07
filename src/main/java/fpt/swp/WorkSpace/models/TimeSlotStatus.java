@@ -1,5 +1,5 @@
 package fpt.swp.WorkSpace.models;
 
-public enum Status {
+public enum TimeSlotStatus {
     AVAILABLE, DISABLED
 }

@@ -35,19 +35,20 @@ public class OrderBookingController {
     @PostMapping("/customer/create-booking")
     public ResponseEntity<Object> createBooking(@RequestHeader("Authorization") String token,
                                                 @RequestParam("roomId") int roomId,
-                                                @RequestParam("checkin-date") Date checkInDay,
+                                                @RequestParam(value = "checkin-date", required = false) String checkInDay,
                                                 @RequestParam("slots") List<Integer> slots,
                                                 @RequestParam(value = "note", required = false) String note) {
         String jwtToken = token.substring(7);
         System.out.println(jwtToken);
-        OrderBookingResponse bookingResponse = orderBookingService.createOrderBooking(jwtToken, roomId, checkInDay, slots, note);
+        OrderBooking bookingResponse = orderBookingService.createOrderBooking(jwtToken, roomId, checkInDay, slots, note);
         return ResponseHandler.responseBuilder("ok", HttpStatus.CREATED, bookingResponse);
     }
 
     @GetMapping("/customer/history-booking")
-    public ResponseEntity<Object> getCustomerHistoryBooking(@RequestParam("customerId") String customerId) {
+    public ResponseEntity<Object> getCustomerHistoryBooking(@RequestHeader("Authorization") String token) {
+        String jwtToken = token.substring(7);
         try{
-            List<OrderBookingResponse> bookedList = orderBookingService.getCustomerHistoryBooking(customerId);
+            List<OrderBooking> bookedList = orderBookingService.getCustomerHistoryBooking(jwtToken);
             return ResponseHandler.responseBuilder("ok", HttpStatus.OK, bookedList);
         } catch (RuntimeException e) {
             return ResponseHandler.responseBuilder(e.getMessage(), HttpStatus.NOT_FOUND);

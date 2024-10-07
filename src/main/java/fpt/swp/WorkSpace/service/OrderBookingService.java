@@ -65,7 +65,7 @@ public class OrderBookingService  implements IOrderBookingService {
     }
 
     @Override
-    public OrderBookingResponse createOrderBooking(String jwttoken, int roomId, Date checkinDate, List<Integer> slotBooking, String note) {
+    public OrderBooking createOrderBooking(String jwttoken, int roomId, String checkinDate, List<Integer> slotBooking, String note) {
 
         String username = jwtService.extractUsername(jwttoken);
         Customer customer =  customerRepository.findCustomerByUsername(username);
@@ -90,41 +90,43 @@ public class OrderBookingService  implements IOrderBookingService {
         orderBooking.setSlot(timeSlots);
         orderBooking.setCreateAt(Helper.convertLocalDateTime());
         orderBooking.setNote(note);
-        orderBookingRepository.save(orderBooking);      // saved
+        OrderBooking result = orderBookingRepository.save(orderBooking);      // saved
 
-        OrderBookingResponse orderBookingResponse = new OrderBookingResponse();
-        orderBookingResponse.setBookingId(orderBooking.getBookingId());
-        orderBookingResponse.setCustomerId(customer.getUserId());
-        orderBookingResponse.setRoomId(room.getRoomId());
-        orderBookingResponse.setSlotId(slotBooking);
-        orderBookingResponse.setCheckinDate(orderBooking.getCheckinDate());
-        orderBookingResponse.setTotalPrice(orderBooking.getTotalPrice());
-        orderBookingResponse.setNote(orderBooking.getNote());
+//        OrderBookingResponse orderBookingResponse = new OrderBookingResponse();
+//        orderBookingResponse.setBookingId(orderBooking.getBookingId());
+//        orderBookingResponse.setCustomerId(customer.getUserId());
+//        orderBookingResponse.setRoomId(room.getRoomId());
+//        orderBookingResponse.setSlotId(slotBooking);
+//        orderBookingResponse.setCheckinDate(orderBooking.getCheckinDate());
+//        orderBookingResponse.setTotalPrice(orderBooking.getTotalPrice());
+//        orderBookingResponse.setNote(orderBooking.getNote());
 
-        return orderBookingResponse;
+        return result;
     }
 
     @Override
-    public List<OrderBookingResponse> getCustomerHistoryBooking(String customerId) {
-        List<OrderBooking> historyBookingList = orderBookingRepository.getCustomerHistoryBooking(customerId);
-        List<OrderBookingResponse> bookingResponsesList = new ArrayList<>();
-        for (OrderBooking orderBooking : historyBookingList){
-            OrderBookingResponse orderBookingResponse = new OrderBookingResponse();
-            orderBookingResponse.setBookingId(orderBooking.getBookingId());
-            orderBookingResponse.setRoomId(orderBooking.getRoom().getRoomId());
-            orderBookingResponse.setCheckinDate(orderBooking.getCheckinDate());
-            orderBookingResponse.setTotalPrice(orderBooking.getTotalPrice());
+    public List<OrderBooking> getCustomerHistoryBooking(String jwttoken) {
+        String userName = jwtService.extractUsername(jwttoken);
+        List<OrderBooking> historyBookingList = orderBookingRepository.getCustomerHistoryBooking(userName);
+//        List<OrderBookingResponse> bookingResponsesList = new ArrayList<>();
+//        for (OrderBooking orderBooking : historyBookingList){
+//            OrderBookingResponse orderBookingResponse = new OrderBookingResponse();
+//            orderBookingResponse.setBookingId(orderBooking.getBookingId());
+//            orderBookingResponse.setRoomId(orderBooking.getRoom().getRoomId());
+//            orderBookingResponse.setCheckinDate(orderBooking.getCheckinDate());
+//            orderBookingResponse.setTotalPrice(orderBooking.getTotalPrice());
+//            orderBookingResponse.setStatus("FINISHED");
+//
+//            // Get all timeslot in Booking
+//            List<Integer> timeSlotIdBooked = new ArrayList<>();
+//            int countSlot = orderBooking.getSlot().size();
+//            for (int i = 0; i < countSlot; i++){
+//                timeSlotIdBooked.add(orderBooking.getSlot().get(i).getTimeSlotId());
+//            }
+//            orderBookingResponse.setSlotId(timeSlotIdBooked);
+//            bookingResponsesList.add(orderBookingResponse);
 
-            // Get all timeslot in Booking
-            List<Integer> timeSlotIdBooked = new ArrayList<>();
-            int countSlot = orderBooking.getSlot().size();
-            for (int i = 0; i < countSlot; i++){
-                timeSlotIdBooked.add(orderBooking.getSlot().get(i).getTimeSlotId());
-            }
-            orderBookingResponse.setSlotId(timeSlotIdBooked);
-            bookingResponsesList.add(orderBookingResponse);
-        }
-        return bookingResponsesList;
+        return historyBookingList;
     }
 
 
