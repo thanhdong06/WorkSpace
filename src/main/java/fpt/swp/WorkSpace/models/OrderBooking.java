@@ -43,4 +43,7 @@ public class OrderBooking {
         private float totalPrice;
 
         private String note;
+
+        @OneToMany(mappedBy = "booking")
+        private List<OrderBookingDetail> orderBookingDetails;
 }

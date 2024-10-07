@@ -39,6 +39,7 @@ public class OrderBookingService  implements IOrderBookingService {
         // get booking list checkin day and room avaiable
         List<OrderBooking> bookings = orderBookingRepository.getTimeSlotBookedByRoomAndDate( date, roomId);
 
+
         List<OrderBookingResponse> bookingResponsesList = new ArrayList<>();
 
         if ( bookings.isEmpty()){
@@ -51,7 +52,7 @@ public class OrderBookingService  implements IOrderBookingService {
             orderBookingResponse.setCheckinDate(orderBooking.getCheckinDate());
             orderBookingResponse.setTotalPrice(orderBooking.getTotalPrice());
 
-            // Get all timeslot has in Booking
+            // Get all timeslot in Booking
             List<Integer> timeSlotIdBooked = new ArrayList<>();
             int countSlot = orderBooking.getSlot().size();
             for (int i = 0; i < countSlot; i++){
@@ -64,11 +65,9 @@ public class OrderBookingService  implements IOrderBookingService {
     }
 
     @Override
-    public OrderBookingResponse createOrderBooking(String token, int roomId, Date checkinDate, List<Integer> slotBooking, String note) {
+    public OrderBookingResponse createOrderBooking(String customerId, int roomId, Date checkinDate, List<Integer> slotBooking, String note) {
 
-
-        String username = jwtService.extractUsername(token);
-        Customer customer =  customerRepository.findCustomerByUsername(username);
+        Customer customer =  customerRepository.findCustomerByCustomerId(customerId);
 
         Room room = roomRepository.findById(roomId).get();
         int countSlot = slotBooking.size();
@@ -104,7 +103,28 @@ public class OrderBookingService  implements IOrderBookingService {
         return orderBookingResponse;
     }
 
+    @Override
+    public List<OrderBookingResponse> getCustomerHistoryBooking(String customerId) {
+        List<OrderBooking> historyBookingList = orderBookingRepository.getCustomerHistoryBooking(customerId);
+        List<OrderBookingResponse> bookingResponsesList = new ArrayList<>();
+        for (OrderBooking orderBooking : historyBookingList){
+            OrderBookingResponse orderBookingResponse = new OrderBookingResponse();
+            orderBookingResponse.setBookingId(orderBooking.getBookingId());
+            orderBookingResponse.setRoomId(orderBooking.getRoom().getRoomId());
+            orderBookingResponse.setCheckinDate(orderBooking.getCheckinDate());
+            orderBookingResponse.setTotalPrice(orderBooking.getTotalPrice());
 
+            // Get all timeslot in Booking
+            List<Integer> timeSlotIdBooked = new ArrayList<>();
+            int countSlot = orderBooking.getSlot().size();
+            for (int i = 0; i < countSlot; i++){
+                timeSlotIdBooked.add(orderBooking.getSlot().get(i).getTimeSlotId());
+            }
+            orderBookingResponse.setSlotId(timeSlotIdBooked);
+            bookingResponsesList.add(orderBookingResponse);
+        }
+        return bookingResponsesList;
+    }
 
 
 }

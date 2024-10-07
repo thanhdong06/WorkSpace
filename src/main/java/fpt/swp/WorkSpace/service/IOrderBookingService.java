@@ -10,4 +10,6 @@ public interface IOrderBookingService {
     List<OrderBookingResponse> getBookedSlotByRoomAndDate(Date date, int roomId);
 
     OrderBookingResponse createOrderBooking(String customerId, int roomId, Date date, List<Integer> slotBooking, String note);
+
+    List<OrderBookingResponse> getCustomerHistoryBooking(String customerId);
 }

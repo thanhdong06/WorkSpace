@@ -5,7 +5,6 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 import java.sql.Time;
-import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -24,7 +23,7 @@ public class TimeSlot {
 
     @Column(name = "status", nullable = false)
     @Enumerated(EnumType.STRING)
-    public TimeSlotStatus status = TimeSlotStatus.AVAILABLE;
+    public Status status = Status.AVAILABLE;
 
     @ManyToMany(mappedBy = "slot")
     @JsonIgnore
