@@ -65,9 +65,10 @@ public class OrderBookingService  implements IOrderBookingService {
     }
 
     @Override
-    public OrderBookingResponse createOrderBooking(String customerId, int roomId, Date checkinDate, List<Integer> slotBooking, String note) {
+    public OrderBookingResponse createOrderBooking(String jwttoken, int roomId, Date checkinDate, List<Integer> slotBooking, String note) {
 
-        Customer customer =  customerRepository.findCustomerByCustomerId(customerId);
+        String username = jwtService.extractUsername(jwttoken);
+        Customer customer =  customerRepository.findCustomerByUsername(username);
 
         Room room = roomRepository.findById(roomId).get();
         int countSlot = slotBooking.size();

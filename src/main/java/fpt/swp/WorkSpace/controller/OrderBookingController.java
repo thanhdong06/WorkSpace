@@ -33,12 +33,14 @@ public class OrderBookingController {
     }
 
     @PostMapping("/customer/create-booking")
-    public ResponseEntity<Object> createBooking(@RequestParam("customerId") String customerId,
+    public ResponseEntity<Object> createBooking(@RequestHeader("Authorization") String token,
                                                 @RequestParam("roomId") int roomId,
                                                 @RequestParam("checkin-date") Date checkInDay,
                                                 @RequestParam("slots") List<Integer> slots,
                                                 @RequestParam(value = "note", required = false) String note) {
-        OrderBookingResponse bookingResponse = orderBookingService.createOrderBooking(customerId, roomId, checkInDay, slots, note);
+        String jwtToken = token.substring(7);
+        System.out.println(jwtToken);
+        OrderBookingResponse bookingResponse = orderBookingService.createOrderBooking(jwtToken, roomId, checkInDay, slots, note);
         return ResponseHandler.responseBuilder("ok", HttpStatus.CREATED, bookingResponse);
     }
 
