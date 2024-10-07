@@ -27,9 +27,11 @@ public class OrderBookingResponse {
 
     private String createAt;
 
-    private Date checkinDate;
+    private String checkinDate;
 
     private float totalPrice;
 
     private String note;
+
+    private String status;
 }

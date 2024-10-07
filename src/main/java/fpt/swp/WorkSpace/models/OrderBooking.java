@@ -1,5 +1,6 @@
 package fpt.swp.WorkSpace.models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
@@ -31,18 +32,21 @@ public class OrderBooking {
 
         @ManyToOne
         @JoinColumn(name = "customer_id" )
-        @JsonManagedReference
+        @JsonBackReference
         private Customer customer;
 
         private String createAt;
 
         @Column(nullable = false)
-        private Date checkinDate;
+        private String checkinDate;
 
         @Column(nullable = false)
         private float totalPrice;
 
         private String note;
+
+        @Enumerated(EnumType.STRING)
+        private BookingStatus status = BookingStatus.UPCOMING;
 
         @OneToMany(mappedBy = "booking")
         private List<OrderBookingDetail> orderBookingDetails;
