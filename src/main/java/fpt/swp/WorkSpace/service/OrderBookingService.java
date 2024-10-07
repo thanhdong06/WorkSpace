@@ -74,7 +74,7 @@ public class OrderBookingService  implements IOrderBookingService {
         int countSlot = slotBooking.size();
         float totalPrice = room.getPrice() * countSlot;
 
-        // get time slot customer booked
+        // get time slot booked by customer
         List<TimeSlot> timeSlots = new ArrayList<>();
         for (int i = 0; i < countSlot; i++){
             TimeSlot timeSlot = timeSlotRepository.findById(slotBooking.get(i)).get();
