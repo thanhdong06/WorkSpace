@@ -16,7 +16,7 @@ public class Wallet {
     private String walletId;
 
     @Column(name = "Amount",nullable = false)
-    private int amount;
+    private float amount;
 
     @OneToOne(mappedBy = "wallet")
     private Customer customer;

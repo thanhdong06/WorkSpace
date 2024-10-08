@@ -7,6 +7,8 @@ import fpt.swp.WorkSpace.response.TopUpRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class WalletService {
     @Autowired
@@ -15,13 +17,24 @@ public class WalletService {
     @Autowired
     private UserRepo userRepository;
 
-    public Wallet topUpWallet(TopUpRequest request) {
-        Wallet wallet = walletRepository.findById(request.getWalletId())
-                .orElseThrow(() -> new RuntimeException("Wallet not found"));
+    public float getWalletBalance(String userId) {
+        Optional<Wallet> walletOptional = walletRepository.findByUserId(userId);
+        if (walletOptional.isPresent()) {
+            return walletOptional.get().getAmount();
+        } else {
+            return 0;
+        }
+    }
 
-        int newAmount = wallet.getAmount() + request.getAmount();
-        wallet.setAmount(newAmount);
-
-        return walletRepository.save(wallet);
+    public void updateWalletBalance(String userId, float amount) {
+        Optional<Wallet> walletOpt = walletRepository.findByUserId(userId);
+        if (walletOpt.isPresent()) {
+            Wallet wallet = walletOpt.get();
+            float currentBalance = wallet.getAmount();
+            wallet.setAmount(currentBalance + amount);
+            walletRepository.save(wallet);
+        } else {
+            throw new RuntimeException("Wallet not found for user: " + userId);
+        }
     }
 }
