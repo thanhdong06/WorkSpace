@@ -2,6 +2,9 @@ package fpt.swp.WorkSpace.util;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.UUID;
+
+
 
 public class Helper {
 
@@ -12,7 +15,8 @@ public class Helper {
         return creationTime;
     }
 
-    public static String converArray(){
-    return null;
+    public static String generateRandomString(int begin, int end){
+        String randomString =  UUID.randomUUID().toString().replace("-", "").substring(begin, end);
+        return randomString ;
     }
 }

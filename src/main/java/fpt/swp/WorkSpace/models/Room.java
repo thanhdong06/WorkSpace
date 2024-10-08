@@ -6,6 +6,8 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.aspectj.weaver.ast.Or;
+import org.hibernate.mapping.Join;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDateTime;
@@ -32,19 +34,23 @@ public class Room {
     @Column(name = "staff_at_room", nullable = false)
     private String staffAtRoom;
 
+    private String description;
+
     private String status;
 
     @ManyToOne
     @JoinColumn(name = "buildingId")
-    @JsonBackReference // Ngăn ngừa vòng lặp
+    @JsonManagedReference// Ngăn ngừa vòng lặp
     private Building building;
 
     @ManyToOne
     @JoinColumn(name = "roomTypeID")
-    @JsonManagedReference // Ngăn ngừa vòng lặp
+    @JsonManagedReference// Ngăn ngừa vòng lặp
     private RoomType roomType;
 
-    private String description;
+    @OneToMany(mappedBy = "room")
+    @JsonIgnore
+    private List<OrderBooking> bookingList; ;
 
 
 

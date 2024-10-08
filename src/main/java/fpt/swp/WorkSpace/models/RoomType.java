@@ -23,7 +23,7 @@ public class RoomType {
     private int quantity;
 
     @OneToMany(mappedBy = "roomType")
-    @JsonBackReference
+    @JsonIgnore
     private List<Room> rooms;
 
 
