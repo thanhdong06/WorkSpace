@@ -40,16 +40,16 @@ public class Room {
 
     @ManyToOne
     @JoinColumn(name = "buildingId")
-    @JsonBackReference // Ngăn ngừa vòng lặp
+    @JsonManagedReference// Ngăn ngừa vòng lặp
     private Building building;
 
     @ManyToOne
     @JoinColumn(name = "roomTypeID")
-    @JsonManagedReference // Ngăn ngừa vòng lặp
+    @JsonManagedReference// Ngăn ngừa vòng lặp
     private RoomType roomType;
 
     @OneToMany(mappedBy = "room")
-    @JsonBackReference
+    @JsonIgnore
     private List<OrderBooking> bookingList; ;
 
 

@@ -25,7 +25,7 @@ public class Customer  {
     @OneToOne
     @MapsId // This ensures the `userId` is shared as the primary key
     @JoinColumn(name = "user_id", referencedColumnName = "user_Id")
-    @JsonIgnore
+    @JsonBackReference
     private User user;
 
     @Column(nullable = false)
@@ -52,7 +52,7 @@ public class Customer  {
     }
 
     @OneToMany(mappedBy = "customer")
-    @JsonBackReference
+    @JsonIgnore
     private List<OrderBooking> bookingsList;
 
 }

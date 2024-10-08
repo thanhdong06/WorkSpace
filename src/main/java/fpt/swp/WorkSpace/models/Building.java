@@ -1,6 +1,7 @@
 package fpt.swp.WorkSpace.models;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -25,6 +26,7 @@ public class Building {
     private String phoneContact;
 
     @OneToMany(mappedBy = "building")
+    @JsonBackReference
     private List<Room> rooms;
 
 

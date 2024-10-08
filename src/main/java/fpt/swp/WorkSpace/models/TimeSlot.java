@@ -1,6 +1,7 @@
 package fpt.swp.WorkSpace.models;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -26,6 +27,6 @@ public class TimeSlot {
     public TimeSlotStatus status = TimeSlotStatus.AVAILABLE;
 
     @ManyToMany(mappedBy = "slot")
-    @JsonBackReference
+    @JsonIgnore
     private List<OrderBooking> orderBookings ;
 }

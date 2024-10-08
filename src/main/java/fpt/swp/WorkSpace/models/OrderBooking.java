@@ -49,5 +49,6 @@ public class OrderBooking {
         private BookingStatus status = BookingStatus.UPCOMING;
 
         @OneToMany(mappedBy = "booking")
+        @JsonIgnore
         private List<OrderBookingDetail> orderBookingDetails;
 }

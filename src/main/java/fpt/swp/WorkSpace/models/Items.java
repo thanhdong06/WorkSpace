@@ -1,5 +1,7 @@
 package fpt.swp.WorkSpace.models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -10,7 +12,8 @@ import java.util.List;
 @Data
 public class Items {
     @Id
-    private String serviceId;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int serviceId;
 
     private String serviceName;
     private Float price;
