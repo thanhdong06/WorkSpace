@@ -1,16 +1,14 @@
 package fpt.swp.WorkSpace.models;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 
 import java.util.List;
 
 @Entity
-@Table(name = "Items")
+@Table(name = "serviceitems")
 @Data
-public class Items {
+public class ServiceItems {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int serviceId;

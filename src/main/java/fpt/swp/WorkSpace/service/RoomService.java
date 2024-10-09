@@ -1,6 +1,7 @@
 package fpt.swp.WorkSpace.service;
 
 import com.amazonaws.services.kms.model.NotFoundException;
+import fpt.swp.WorkSpace.DTO.RoomDTO;
 import fpt.swp.WorkSpace.models.Building;
 import fpt.swp.WorkSpace.models.Room;
 import fpt.swp.WorkSpace.models.RoomType;
@@ -72,6 +73,8 @@ public class RoomService implements IRoomService{
         return roomList;
     }
 
+
+
     @Override
     public Room getRoomById(int id) {
         Room room = roomRepository.findById(id).orElseThrow();
@@ -82,12 +85,42 @@ public class RoomService implements IRoomService{
     }
 
     @Override
+    public RoomDTO viewRoomById(int id) {
+        Room room = roomRepository.findById(id).orElseThrow();
+            RoomDTO roomDTO = new RoomDTO();
+            roomDTO.setRoomId(room.getRoomId());
+            roomDTO.setRoomName(room.getRoomName());
+            roomDTO.setPrice(room.getPrice());
+            roomDTO.setRoomImg(room.getRoomImg());
+            roomDTO.setDescription(room.getDescription());
+
+        return roomDTO;
+    }
+
+    @Override
     public List<Room> getRoomsByBuildingId(String buildingId) {
         List<Room> roomList = roomRepository.getRoomByBuilding(buildingId);
         if (roomList.isEmpty()) {
             throw new NotFoundException("Co so nay chua co phong");
         }
         return roomList;
+
+    }
+
+    @Override
+    public List<RoomDTO> viewRoomsByBuildingId(String buildingId) {
+        List<Room> roomList = roomRepository.getRoomByBuilding(buildingId);
+        List<RoomDTO> roomDTOList = new ArrayList<>();
+        for (Room room : roomList) {
+            RoomDTO roomDTO = new RoomDTO();
+            roomDTO.setRoomId(room.getRoomId());
+            roomDTO.setRoomName(room.getRoomName());
+            roomDTO.setPrice(room.getPrice());
+            roomDTO.setRoomImg(room.getRoomImg());
+            roomDTO.setDescription(room.getDescription());
+            roomDTOList.add(roomDTO);
+        }
+        return roomDTOList;
     }
 
     @Override

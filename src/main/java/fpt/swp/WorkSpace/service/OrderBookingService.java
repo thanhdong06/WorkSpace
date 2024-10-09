@@ -6,10 +6,8 @@ import fpt.swp.WorkSpace.response.OrderBookingResponse;
 import fpt.swp.WorkSpace.util.Helper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
-import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -26,7 +24,7 @@ public class OrderBookingService  implements IOrderBookingService {
     private CustomerRepository customerRepository;
 
     @Autowired
-    private ItemsRepository itemsRepository;
+    private ServiceItemsRepository itemsRepository;
 
     @Autowired
     private JWTService jwtService;
@@ -171,7 +169,7 @@ public class OrderBookingService  implements IOrderBookingService {
             List<Integer> quantities = entry.getValue();  // Danh sách số lượng cho cùng một service ID
 
             // Tìm service tương ứng từ database
-            Items item = itemsRepository.findById(serviceId).orElseThrow(() -> new RuntimeException("Service not found"));
+            ServiceItems item = itemsRepository.findById(serviceId).orElseThrow(() -> new RuntimeException("Service not found"));
 
             // Lưu thông tin chi tiết đơn hàng cho từng số lượng
             for (Integer quantity : quantities) {

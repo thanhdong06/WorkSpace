@@ -1,6 +1,7 @@
 package fpt.swp.WorkSpace.controller;
 
 import com.amazonaws.services.kms.model.NotFoundException;
+import fpt.swp.WorkSpace.DTO.RoomDTO;
 import fpt.swp.WorkSpace.models.Room;
 import fpt.swp.WorkSpace.models.RoomType;
 import fpt.swp.WorkSpace.response.ResponseHandler;
@@ -62,8 +63,28 @@ public class RoomController {
         }
     }
 
+    @GetMapping("customer/room-detail/{roomId}")
+    public ResponseEntity<Object> getRoomDetail(@PathVariable("roomId") int roomId){
+        try {
+            RoomDTO findRoom = roomService.viewRoomById(roomId);
+            return ResponseHandler.responseBuilder("Success", HttpStatus.OK, findRoom);
+        }catch (Exception e){
+            return ResponseHandler.responseBuilder(e.getMessage(), HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @GetMapping("customer/get-room-by-building")
+    public ResponseEntity<Object> viewRoomByBuildingId(@RequestParam(value = "buildingId", required = false) String buildingId){
+        try{
+            List<RoomDTO> listRoom = roomService.viewRoomsByBuildingId(buildingId);
+            return ResponseHandler.responseBuilder("Success", HttpStatus.OK, listRoom);
+        }catch (NotFoundException e){
+            return ResponseHandler.responseBuilder(e.getMessage(), HttpStatus.NOT_FOUND);
+        }
+    }
+
     @GetMapping("/get-room-by-building")
-    public ResponseEntity<Object> getRoomByBuildingId(@RequestParam(value = "buildingId", required = false) String buildingId){
+        public ResponseEntity<Object> getRoomByBuildingId(@RequestParam(value = "buildingId", required = false) String buildingId){
         try{
             List<Room> listRoom = roomService.getRoomsByBuildingId(buildingId);
             return ResponseHandler.responseBuilder("Success", HttpStatus.OK, listRoom);

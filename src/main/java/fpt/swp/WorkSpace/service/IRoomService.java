@@ -1,5 +1,6 @@
 package fpt.swp.WorkSpace.service;
 
+import fpt.swp.WorkSpace.DTO.RoomDTO;
 import fpt.swp.WorkSpace.models.Room;
 import fpt.swp.WorkSpace.models.RoomType;
 
@@ -13,7 +14,11 @@ public interface IRoomService {
 
     Room getRoomById(int id);
 
+    RoomDTO viewRoomById(int id);
+
     List<Room> getRoomsByBuildingId(String buildingId);
+
+    List<RoomDTO> viewRoomsByBuildingId(String buildingId);
 
     List<Room> getRoomsByRoomType(String roomTypeId);
 
