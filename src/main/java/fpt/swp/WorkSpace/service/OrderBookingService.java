@@ -37,8 +37,8 @@ public class OrderBookingService  implements IOrderBookingService {
 
     @Autowired
     private OrderBookingDetailRepository orderBookingDetailRepository;
-
-
+    @Autowired
+    private ServiceItemsRepository serviceItemsRepository;
 
 
     @Override
@@ -206,36 +206,45 @@ public class OrderBookingService  implements IOrderBookingService {
 
 
     @Override
-    public OrderBookingDetailDTO updateServiceBooking(String orderBookingId, MultiValueMap<Integer, Integer> items) {
+    public void updateServiceBooking(String orderBookingId, MultiValueMap<Integer, Integer> items) {
         // get booking
-//        OrderBooking orderBooking = orderBookingRepository.findById(orderBookingId).orElseThrow();
-//
-//        if (!items.isEmpty()){
-//            // Xử lý items (service id và số lượng)
-//            for (Map.Entry<Integer, List<Integer>> entry : items.entrySet()) {
-//                Integer serviceId = entry.getKey();
-//                List<Integer> quantities = entry.getValue();  // Danh sách số lượng cho cùng một service ID
-//
-//                // Tìm service tương ứng từ database
-//                ServiceItems item = itemsRepository.findById(serviceId).orElseThrow(() -> new RuntimeException("Service not found"));
-//
-//                // Lưu thông tin chi tiết đơn hàng cho từng số lượng
-//                for (Integer quantity : quantities) {
-//                    float servicePrice = item.getPrice() * quantity;
-//                    OrderBookingDetail orderBookingDetail = new OrderBookingDetail();
-//                    orderBookingDetail.setBooking(orderBooking);
-//                    orderBookingDetail.setService(item);
-//                    orderBookingDetail.setBookingServiceQuantity(quantity);
-//                    orderBookingDetail.setBookingServicePrice(servicePrice);
-//                    totalPrice += servicePrice;
-//                    orderBookingDetailRepository.save(orderBookingDetail);
-//                }
-//            }
-//            orderBooking.setTotalPrice(totalPrice);
-//            orderBookingRepository.save(orderBooking);
-//        }
+        OrderBooking orderBooking = orderBookingRepository.findById(orderBookingId).orElseThrow();
+        int countSlot = orderBooking.getSlot().size();
+        float totalPrice = orderBooking.getRoom().getPrice() * countSlot;
 
-        return null;
+
+        if (!items.isEmpty()) {
+            // Xử lý items (service id và số lượng)
+            for (Map.Entry<Integer, List<Integer>> entry : items.entrySet()) {
+                Integer serviceId = entry.getKey();
+                Integer quantities = entry.getValue().get(0);
+
+                OrderBookingDetail orderBookingDetail = orderBookingDetailRepository.findDetailByBookingIdAndServiceId(orderBooking.getBookingId(), serviceId);
+
+                    // If orderBookingDetail already exist
+                if (orderBookingDetail != null) {
+                    // update quantity in table
+                    orderBookingDetail.setBookingServiceQuantity(quantities);
+                    float servicePrice = orderBookingDetail.getService().getPrice() * quantities;
+                    orderBookingDetail.setBookingServicePrice(servicePrice);
+                    totalPrice += servicePrice;
+                    orderBookingDetailRepository.save(orderBookingDetail);
+                } else {
+                    // Add new service
+                    OrderBookingDetail neworderBookingDetail = new OrderBookingDetail();
+                    ServiceItems item = serviceItemsRepository.findById(serviceId).orElseThrow(() -> new RuntimeException("Service not found"));
+                    neworderBookingDetail.setBooking(orderBooking);
+                    neworderBookingDetail.setService(item);
+                    neworderBookingDetail.setBookingServiceQuantity(quantities);
+                    float servicePrice = item.getPrice() * quantities;
+                    neworderBookingDetail.setBookingServicePrice(servicePrice);
+                    totalPrice += servicePrice;
+                    orderBookingDetailRepository.save(neworderBookingDetail);
+                }
+            }
+        }
+        orderBooking.setTotalPrice(totalPrice);
+        orderBookingRepository.save(orderBooking);
     }
 
     @Override

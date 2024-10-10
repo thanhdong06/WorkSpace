@@ -20,7 +20,7 @@ public interface IOrderBookingService {
     OrderBooking createOrderBookingService(String jwttoken, String roomId, String date, List<Integer> slotBooking, MultiValueMap<Integer, Integer> items, String note);
 
 
-    OrderBookingDetailDTO updateServiceBooking(String orderBookingId, MultiValueMap<Integer, Integer> items);
+    void updateServiceBooking(String orderBookingId, MultiValueMap<Integer, Integer> items);
 
     CustomerServiceDTO getCustomerService(String orderBookingId);
 

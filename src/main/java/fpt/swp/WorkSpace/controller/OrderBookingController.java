@@ -27,7 +27,18 @@ public class OrderBookingController {
 
 
 
-    @GetMapping("check-booked-slot")
+    @GetMapping("/check-booked-slot/{roomId}/{checkin-date}")
+    public ResponseEntity<Object> checkBookedSlot(@PathVariable("roomId") String roomId,
+                                                @PathVariable("checkin-date") String checkinDate) {
+        try{
+            List<OrderBookingResponse> bookedList = orderBookingService.getBookedSlotByRoomAndDate(checkinDate, roomId);
+            return ResponseHandler.responseBuilder("ok", HttpStatus.OK, bookedList);
+        } catch (RuntimeException e) {
+            return ResponseHandler.responseBuilder(e.getMessage(), HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @GetMapping("/check-booked-slot")
     public ResponseEntity<Object> getBookedSlot(@RequestParam("roomId") String roomId,
                                                 @RequestParam("checkin-date") String checkinDate) {
         try{
@@ -37,6 +48,7 @@ public class OrderBookingController {
             return ResponseHandler.responseBuilder(e.getMessage(), HttpStatus.NOT_FOUND);
         }
     }
+
 
     @PostMapping("/customer/create-booking")
     public ResponseEntity<Object> createBooking(@RequestHeader("Authorization") String token,
@@ -103,13 +115,29 @@ public class OrderBookingController {
     }
 
 
-    @GetMapping("/customer/get-customer-booking-service")
-    public ResponseEntity<Object> getCustomerBookingService(@RequestParam("bookingId") String bookingId) {
+    @PutMapping("/customer/update-service")
+    public ResponseEntity<Object> updateBookingService(@RequestParam("bookingId") String bookingId,
+                                                       @RequestParam(required = false) MultiValueMap<String, String> items){
+        MultiValueMap<Integer, Integer> convertedItems = new LinkedMultiValueMap<>();
+
+        // Chuyển đổi từ MultiValueMap<String, String> sang MultiValueMap<Integer, Integer>
+        for (Map.Entry<String, List<String>> entry : items.entrySet()) {
+            if (entry.getKey().startsWith("items[")) {
+                // Tách lấy số từ khóa items[1], items[2], v.v.
+                String keyString = entry.getKey().replace("items[", "").replace("]", "");
+                Integer key = Integer.valueOf(keyString);
+                // Chuyển đổi giá trị từ String sang Integer và thêm vào MultiValueMap
+                for (String value : entry.getValue()) {
+                    Integer quantity = Integer.valueOf(value);
+                    convertedItems.add(key, quantity);  // Thêm vào MultiValueMap
+                }
+            }
+        }
         try{
-            CustomerServiceDTO serviceList = orderBookingService.getCustomerService(bookingId);
-            return ResponseHandler.responseBuilder("ok", HttpStatus.OK, serviceList);
-        } catch (RuntimeException e) {
-            return ResponseHandler.responseBuilder(e.getMessage(), HttpStatus.NOT_FOUND);
+             orderBookingService.updateServiceBooking(bookingId, convertedItems);
+            return ResponseHandler.responseBuilder("Update success", HttpStatus.OK );
+        }catch (Exception e){
+            return ResponseHandler.responseBuilder(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
 
