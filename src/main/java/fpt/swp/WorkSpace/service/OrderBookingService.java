@@ -124,12 +124,12 @@ public class OrderBookingService  implements IOrderBookingService {
             dto.setStatus("FINISHED");
 
             // Get all timeslot in Booking
-            List<Integer> timeSlotIdBooked = new ArrayList<>();
+            List<TimeSlot> timeSlotIdBooked = new ArrayList<>();
             int countSlot = orderBooking.getSlot().size();
             for (int i = 0; i < countSlot; i++){
-                timeSlotIdBooked.add(orderBooking.getSlot().get(i).getTimeSlotId());
+                timeSlotIdBooked.add(orderBooking.getSlot().get(i));
             }
-            dto.setSlotId(timeSlotIdBooked);
+            dto.setSlots(timeSlotIdBooked);
 
             // get service items
            List<OrderBookingDetail> bookingDetails = orderBookingDetailRepository.findDetailByBookingId(orderBooking.getBookingId());

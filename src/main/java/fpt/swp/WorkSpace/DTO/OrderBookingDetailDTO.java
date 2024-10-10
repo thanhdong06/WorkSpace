@@ -16,7 +16,7 @@ public class OrderBookingDetailDTO {
 
         private String bookingId;
         private String roomId;
-        private List<Integer> slotId;
+        private List<TimeSlot> slots;
         private String customerId;
         private String createAt;
         private String checkinDate;
