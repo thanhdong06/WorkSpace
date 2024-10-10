@@ -39,7 +39,7 @@ public class OrderBookingService  implements IOrderBookingService {
 
 
     @Override
-    public List<OrderBookingResponse> getBookedSlotByRoomAndDate(String date, int roomId) {
+    public List<OrderBookingResponse> getBookedSlotByRoomAndDate(String date, String roomId) {
         // get booking list checkin day and room avaiable
         List<OrderBooking> bookings = orderBookingRepository.getTimeSlotBookedByRoomAndDate( date, roomId);
 
@@ -69,7 +69,7 @@ public class OrderBookingService  implements IOrderBookingService {
     }
 
     @Override
-    public OrderBooking createOrderBooking(String jwttoken, int roomId, String checkinDate, List<Integer> slotBooking, String note) {
+    public OrderBooking createOrderBooking(String jwttoken, String roomId, String checkinDate, List<Integer> slotBooking, String note) {
 
         String username = jwtService.extractUsername(jwttoken);
         Customer customer =  customerRepository.findCustomerByUsername(username);
@@ -134,10 +134,9 @@ public class OrderBookingService  implements IOrderBookingService {
     }
 
     @Override
-    public OrderBooking createOrderBookingService(String jwttoken, int roomId, String checkinDate, List<Integer> slotBooking, MultiValueMap<Integer, Integer> items, String note) {
+    public OrderBooking createOrderBookingService(String jwttoken, String roomId, String checkinDate, List<Integer> slotBooking, MultiValueMap<Integer, Integer> items, String note) {
         String username = jwtService.extractUsername(jwttoken);
         Customer customer =  customerRepository.findCustomerByUsername(username);
-
         Room room = roomRepository.findById(roomId).orElseThrow(() -> new RuntimeException("Room not found"));
 
         int countSlot = slotBooking.size();
@@ -150,6 +149,7 @@ public class OrderBookingService  implements IOrderBookingService {
             timeSlots.add(timeSlot);
         }
 
+
         OrderBooking orderBooking = new OrderBooking();
         orderBooking.setBookingId(Helper.generateRandomString(0,5));
         orderBooking.setCustomer(customer);
@@ -159,29 +159,35 @@ public class OrderBookingService  implements IOrderBookingService {
         orderBooking.setSlot(timeSlots);
         orderBooking.setCreateAt(Helper.convertLocalDateTime());
         orderBooking.setNote(note);
-        OrderBooking result = orderBookingRepository.save(orderBooking);   // save to table order booking
+        orderBookingRepository.save(orderBooking);   // save to table order booking
 
 
+        if (!items.isEmpty()){
+            // Xử lý items (service id và số lượng)
+            for (Map.Entry<Integer, List<Integer>> entry : items.entrySet()) {
+                Integer serviceId = entry.getKey();
+                List<Integer> quantities = entry.getValue();  // Danh sách số lượng cho cùng một service ID
 
-        // Xử lý items (service id và số lượng)
-        for (Map.Entry<Integer, List<Integer>> entry : items.entrySet()) {
-            Integer serviceId = entry.getKey();
-            List<Integer> quantities = entry.getValue();  // Danh sách số lượng cho cùng một service ID
+                // Tìm service tương ứng từ database
+                ServiceItems item = itemsRepository.findById(serviceId).orElseThrow(() -> new RuntimeException("Service not found"));
 
-            // Tìm service tương ứng từ database
-            ServiceItems item = itemsRepository.findById(serviceId).orElseThrow(() -> new RuntimeException("Service not found"));
-
-            // Lưu thông tin chi tiết đơn hàng cho từng số lượng
-            for (Integer quantity : quantities) {
-                OrderBookingDetail orderBookingDetail = new OrderBookingDetail();
-                orderBookingDetail.setBooking(result);
-                orderBookingDetail.setService(item);
-                orderBookingDetail.setBookingServiceQuantity(quantity);
-                orderBookingDetail.setBookingServicePrice(item.getPrice() * quantity);
-                orderBookingDetailRepository.save(orderBookingDetail);
+                // Lưu thông tin chi tiết đơn hàng cho từng số lượng
+                for (Integer quantity : quantities) {
+                    float servicePrice = item.getPrice() * quantity;
+                    OrderBookingDetail orderBookingDetail = new OrderBookingDetail();
+                    orderBookingDetail.setBooking(orderBooking);
+                    orderBookingDetail.setService(item);
+                    orderBookingDetail.setBookingServiceQuantity(quantity);
+                    orderBookingDetail.setBookingServicePrice(servicePrice);
+                    totalPrice += servicePrice;
+                    orderBookingDetailRepository.save(orderBookingDetail);
+                }
             }
+            orderBooking.setTotalPrice(totalPrice);
+            orderBookingRepository.save(orderBooking);
         }
-        return result;
+
+        return orderBooking;
     }
 
 

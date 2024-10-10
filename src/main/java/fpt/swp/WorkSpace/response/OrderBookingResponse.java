@@ -19,7 +19,7 @@ public class OrderBookingResponse {
 
     private String bookingId;
 
-    private int roomId;
+    private String roomId;
 
     private List<Integer> slotId;
 

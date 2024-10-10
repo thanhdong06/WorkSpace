@@ -53,7 +53,7 @@ public class RoomController {
     }
 
     @GetMapping("/get-room-by-id/{roomId}")
-    public ResponseEntity<Object> getRoomById(@PathVariable("roomId") int roomId){
+    public ResponseEntity<Object> getRoomById(@PathVariable("roomId") String roomId){
 
         try {
             Room findRoom = roomService.getRoomById(roomId);
@@ -63,8 +63,18 @@ public class RoomController {
         }
     }
 
+    @GetMapping("customer/get-room-by-building-status")
+    public ResponseEntity<Object> getRoomByBuildingIdAndStatus(@RequestParam(value = "buildingId", required = false) String buildingId){
+        try{
+            List<RoomDTO> listRoom = roomService.getRoomsByBuildingAndStatus(buildingId, "AVAILABLE");
+            return ResponseHandler.responseBuilder("Success", HttpStatus.OK, listRoom);
+        }catch (NotFoundException e){
+            return ResponseHandler.responseBuilder(e.getMessage(), HttpStatus.NOT_FOUND);
+        }
+    }
+
     @GetMapping("customer/room-detail/{roomId}")
-    public ResponseEntity<Object> getRoomDetail(@PathVariable("roomId") int roomId){
+    public ResponseEntity<Object> getRoomDetail(@PathVariable("roomId") String roomId){
         try {
             RoomDTO findRoom = roomService.viewRoomById(roomId);
             return ResponseHandler.responseBuilder("Success", HttpStatus.OK, findRoom);
@@ -104,7 +114,7 @@ public class RoomController {
     }
 
     @PutMapping("/manager/update-room/{roomId}")
-    public ResponseEntity<Object> updateRoom(@PathVariable int roomId,
+    public ResponseEntity<Object> updateRoom(@PathVariable String roomId,
                                              @RequestParam(value = "roomName", required = false) String roomName,
                                              @RequestParam(value = "price", required = false) String price,
 //                                             @RequestParam(value = "image", required = false) MultipartFile image,
@@ -123,7 +133,7 @@ public class RoomController {
 
 
     @DeleteMapping("/manager/delete-room/{roomId}")
-    public ResponseEntity<Object> deleteRoom(@PathVariable int roomId){
+    public ResponseEntity<Object> deleteRoom(@PathVariable String roomId){
         try {
             roomService.deleteRoom(roomId);
             return ResponseHandler.responseBuilder("Da xoa thanh cong", HttpStatus.OK);

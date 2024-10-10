@@ -9,11 +9,11 @@ import java.util.List;
 import java.util.Map;
 
 public interface IOrderBookingService {
-    List<OrderBookingResponse> getBookedSlotByRoomAndDate(String date, int roomId);
+    List<OrderBookingResponse> getBookedSlotByRoomAndDate(String date, String roomId);
 
-    OrderBooking createOrderBooking(String jwttoken, int roomId, String date, List<Integer> slotBooking, String note);
+    OrderBooking createOrderBooking(String jwttoken, String roomId, String date, List<Integer> slotBooking, String note);
 
     List<OrderBooking> getCustomerHistoryBooking(String jwttoken);
 
-    OrderBooking createOrderBookingService(String jwttoken, int roomId, String date, List<Integer> slotBooking, MultiValueMap<Integer, Integer> items, String note);
+    OrderBooking createOrderBookingService(String jwttoken, String roomId, String date, List<Integer> slotBooking, MultiValueMap<Integer, Integer> items, String note);
 }

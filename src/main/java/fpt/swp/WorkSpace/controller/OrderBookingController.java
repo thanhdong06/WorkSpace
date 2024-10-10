@@ -26,7 +26,7 @@ public class OrderBookingController {
 
 
     @GetMapping("check-booked-slot")
-    public ResponseEntity<Object> getBookedSlot(@RequestParam("roomId") int roomId,
+    public ResponseEntity<Object> getBookedSlot(@RequestParam("roomId") String roomId,
                                                 @RequestParam("checkin-date") String checkinDate) {
         try{
             List<OrderBookingResponse> bookedList = orderBookingService.getBookedSlotByRoomAndDate(checkinDate, roomId);
@@ -38,7 +38,7 @@ public class OrderBookingController {
 
     @PostMapping("/customer/create-booking")
     public ResponseEntity<Object> createBooking(@RequestHeader("Authorization") String token,
-                                                @RequestParam("roomId") int roomId,
+                                                @RequestParam("roomId") String roomId,
                                                 @RequestParam(value = "checkin-date", required = false) String checkInDay,
                                                 @RequestParam("slots") List<Integer> slots,
                                                 @RequestParam(value = "note", required = false) String note) {
@@ -61,11 +61,10 @@ public class OrderBookingController {
 
     @PostMapping("/customer/create-booking-service")
     public ResponseEntity<Object> createBookingService(@RequestHeader("Authorization") String token,
-
-                                                       @RequestParam("roomId") int roomId,
+                                                       @RequestParam("roomId") String roomId,
                                                        @RequestParam(value = "checkin-date", required = false) String checkInDay,
                                                        @RequestParam("slots") List<Integer> slots,
-                                                       @RequestParam MultiValueMap<String, String> items,
+                                                       @RequestParam(required = false) MultiValueMap<String, String> items,
                                                        @RequestParam(value = "note", required = false) String note) {
         String jwtToken = token.substring(7);
         System.out.println(jwtToken);
