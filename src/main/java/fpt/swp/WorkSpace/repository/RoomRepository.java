@@ -9,10 +9,14 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 @Repository
-public interface RoomRepository extends JpaRepository<Room, Integer> {
+public interface RoomRepository extends JpaRepository<Room, String> {
 
     @Query("SELECT r FROM Room r WHERE r.building.buildingId = ?1")
     List<Room> getRoomByBuilding( String buildingId);
+
+    @Query("SELECT r FROM Room r WHERE r.building.buildingId = ?1 AND r.status = ?2")
+    List<Room> getRoomByBuildingAndStatus( String buildingId, String status);
+
 
     @Query("SELECT r FROM Room r WHERE r.building.buildingId = ?1 AND r.roomType.id = ?2")
     List<Room> getRoomsByBuildingAndRoomType(String building, String roomType);

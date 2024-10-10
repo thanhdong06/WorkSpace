@@ -1,5 +1,6 @@
 package fpt.swp.WorkSpace.service;
 
+import fpt.swp.WorkSpace.DTO.RoomDTO;
 import fpt.swp.WorkSpace.models.Room;
 import fpt.swp.WorkSpace.models.RoomType;
 
@@ -11,9 +12,15 @@ public interface IRoomService {
 
     List<Room> getAllRooms();
 
-    Room getRoomById(int id);
+    Room getRoomById(String id);
+
+    RoomDTO viewRoomById(String id);
 
     List<Room> getRoomsByBuildingId(String buildingId);
+
+    List<RoomDTO> viewRoomsByBuildingId(String buildingId);
+
+    List<RoomDTO> getRoomsByBuildingAndStatus(String buildingId, String status);
 
     List<Room> getRoomsByRoomType(String roomTypeId);
 
@@ -21,8 +28,8 @@ public interface IRoomService {
 
     List<RoomType> getAllRoomType();
 
-    Room updateRoom(int roomId, String roomName, String price, String status, String[] staffId, String description);
+    Room updateRoom(String roomId, String roomName, String price, String status, String[] staffId, String description);
 
-    void deleteRoom(int id);
+    void deleteRoom(String id);
 
 }
