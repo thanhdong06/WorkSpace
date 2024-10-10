@@ -1,8 +1,6 @@
 package fpt.swp.WorkSpace.models;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -22,7 +20,7 @@ public class OrderBookingDetail {
     @ManyToOne
     @JoinColumn(name = "service_id")
     @JsonBackReference
-    private Items service;
+    private ServiceItems service;
 
     private int bookingServiceQuantity;
     private float bookingServicePrice;

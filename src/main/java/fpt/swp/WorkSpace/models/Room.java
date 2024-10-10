@@ -20,18 +20,18 @@ import java.util.List;
 public class Room {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int roomId;
+    private String roomId;
 
     private String roomName;
 
     private float price;
 
+    @Column(nullable = false)
     private String creationTime;
 
     private String roomImg;
 
-    @Column(name = "staff_at_room", nullable = false)
+    @Column(name = "staff_at_room", nullable = true)
     private String staffAtRoom;
 
     private String description;
