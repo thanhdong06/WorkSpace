@@ -1,5 +1,6 @@
 package fpt.swp.WorkSpace.service;
 
+import fpt.swp.WorkSpace.DTO.CustomerServiceDTO;
 import fpt.swp.WorkSpace.DTO.OrderBookingDetailDTO;
 import fpt.swp.WorkSpace.models.OrderBooking;
 import fpt.swp.WorkSpace.response.OrderBookingResponse;
@@ -19,6 +20,9 @@ public interface IOrderBookingService {
     OrderBooking createOrderBookingService(String jwttoken, String roomId, String date, List<Integer> slotBooking, MultiValueMap<Integer, Integer> items, String note);
 
 
+    OrderBookingDetailDTO updateServiceBooking(String orderBookingId, MultiValueMap<Integer, Integer> items);
+
+    CustomerServiceDTO getCustomerService(String orderBookingId);
 
 
 }

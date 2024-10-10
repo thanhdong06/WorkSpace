@@ -24,6 +24,7 @@ public class ServiceItemService implements IServiceItemService {
             serviceItemsDTO.setServiceId(serviceItems.getServiceId());
             serviceItemsDTO.setServiceName(serviceItems.getServiceName());
             serviceItemsDTO.setPrice(serviceItems.getPrice());
+            serviceItemsDTO.setQuantity(serviceItems.getQuantity());
             serviceItemsDTO.setServiceType(serviceItems.getServiceType());
             serviceItemsDTOList.add(serviceItemsDTO);
         }

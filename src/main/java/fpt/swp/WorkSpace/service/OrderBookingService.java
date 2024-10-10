@@ -1,5 +1,6 @@
 package fpt.swp.WorkSpace.service;
 
+import fpt.swp.WorkSpace.DTO.CustomerServiceDTO;
 import fpt.swp.WorkSpace.DTO.OrderBookingDetailDTO;
 import fpt.swp.WorkSpace.models.*;
 import fpt.swp.WorkSpace.repository.*;
@@ -124,12 +125,13 @@ public class OrderBookingService  implements IOrderBookingService {
             dto.setStatus("FINISHED");
 
             // Get all timeslot in Booking
-            List<Integer> timeSlotIdBooked = new ArrayList<>();
+            List<TimeSlot> timeSlotIdBooked = new ArrayList<>();
             int countSlot = orderBooking.getSlot().size();
             for (int i = 0; i < countSlot; i++){
-                timeSlotIdBooked.add(orderBooking.getSlot().get(i).getTimeSlotId());
+                timeSlotIdBooked.add(orderBooking.getSlot().get(i));
             }
-            dto.setSlotId(timeSlotIdBooked);
+            dto.setSlots(timeSlotIdBooked);
+
 
             // get service items
            List<OrderBookingDetail> bookingDetails = orderBookingDetailRepository.findDetailByBookingId(orderBooking.getBookingId());
@@ -203,6 +205,59 @@ public class OrderBookingService  implements IOrderBookingService {
     }
 
 
+    @Override
+    public OrderBookingDetailDTO updateServiceBooking(String orderBookingId, MultiValueMap<Integer, Integer> items) {
+        // get booking
+//        OrderBooking orderBooking = orderBookingRepository.findById(orderBookingId).orElseThrow();
+//
+//        if (!items.isEmpty()){
+//            // Xử lý items (service id và số lượng)
+//            for (Map.Entry<Integer, List<Integer>> entry : items.entrySet()) {
+//                Integer serviceId = entry.getKey();
+//                List<Integer> quantities = entry.getValue();  // Danh sách số lượng cho cùng một service ID
+//
+//                // Tìm service tương ứng từ database
+//                ServiceItems item = itemsRepository.findById(serviceId).orElseThrow(() -> new RuntimeException("Service not found"));
+//
+//                // Lưu thông tin chi tiết đơn hàng cho từng số lượng
+//                for (Integer quantity : quantities) {
+//                    float servicePrice = item.getPrice() * quantity;
+//                    OrderBookingDetail orderBookingDetail = new OrderBookingDetail();
+//                    orderBookingDetail.setBooking(orderBooking);
+//                    orderBookingDetail.setService(item);
+//                    orderBookingDetail.setBookingServiceQuantity(quantity);
+//                    orderBookingDetail.setBookingServicePrice(servicePrice);
+//                    totalPrice += servicePrice;
+//                    orderBookingDetailRepository.save(orderBookingDetail);
+//                }
+//            }
+//            orderBooking.setTotalPrice(totalPrice);
+//            orderBookingRepository.save(orderBooking);
+//        }
+
+        return null;
+    }
+
+    @Override
+    public CustomerServiceDTO getCustomerService(String orderBookingId) {
+        CustomerServiceDTO dto = new CustomerServiceDTO();
+
+        // get detail by booking id
+        List<OrderBookingDetail> bookingDetails = orderBookingDetailRepository.findDetailByBookingId(orderBookingId);
+
+        Map<String, Integer> serviceList = new HashMap<>();
+        for (OrderBookingDetail bookingDetail : bookingDetails){
+            String serviceName = bookingDetail.getService().getServiceName();
+            int quantity = bookingDetail.getBookingServiceQuantity();
+
+            // add key - value to map
+            serviceList.put(serviceName, quantity);
+            // o cam: 1
+            // may chieu: 2
+        }
+        dto.setServiceItems(serviceList);
+        return dto;
+    }
 
 
 }

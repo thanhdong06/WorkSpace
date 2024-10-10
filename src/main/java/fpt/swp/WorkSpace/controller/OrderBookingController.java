@@ -1,5 +1,6 @@
 package fpt.swp.WorkSpace.controller;
 
+import fpt.swp.WorkSpace.DTO.CustomerServiceDTO;
 import fpt.swp.WorkSpace.DTO.OrderBookingDetailDTO;
 import fpt.swp.WorkSpace.models.OrderBooking;
 import fpt.swp.WorkSpace.response.OrderBookingResponse;
@@ -102,8 +103,21 @@ public class OrderBookingController {
     }
 
 
-
-
-
+    @GetMapping("/customer/get-customer-booking-service")
+    public ResponseEntity<Object> getCustomerBookingService(@RequestParam("bookingId") String bookingId) {
+        try{
+            CustomerServiceDTO serviceList = orderBookingService.getCustomerService(bookingId);
+            return ResponseHandler.responseBuilder("ok", HttpStatus.OK, serviceList);
+        } catch (RuntimeException e) {
+            return ResponseHandler.responseBuilder(e.getMessage(), HttpStatus.NOT_FOUND);
+        }
+    }
 
 }
+
+
+
+
+
+
+
