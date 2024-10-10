@@ -1,5 +1,6 @@
 package fpt.swp.WorkSpace.service;
 
+import fpt.swp.WorkSpace.DTO.OrderBookingDetailDTO;
 import fpt.swp.WorkSpace.models.OrderBooking;
 import fpt.swp.WorkSpace.response.OrderBookingResponse;
 import org.springframework.util.MultiValueMap;
@@ -13,7 +14,11 @@ public interface IOrderBookingService {
 
     OrderBooking createOrderBooking(String jwttoken, String roomId, String date, List<Integer> slotBooking, String note);
 
-    List<OrderBooking> getCustomerHistoryBooking(String jwttoken);
+    List<OrderBookingDetailDTO> getCustomerHistoryBooking(String jwttoken);
 
     OrderBooking createOrderBookingService(String jwttoken, String roomId, String date, List<Integer> slotBooking, MultiValueMap<Integer, Integer> items, String note);
+
+
+
+
 }

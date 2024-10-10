@@ -1,5 +1,6 @@
 package fpt.swp.WorkSpace.service;
 
+import fpt.swp.WorkSpace.DTO.OrderBookingDetailDTO;
 import fpt.swp.WorkSpace.models.*;
 import fpt.swp.WorkSpace.repository.*;
 import fpt.swp.WorkSpace.response.OrderBookingResponse;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.MultiValueMap;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -109,28 +111,38 @@ public class OrderBookingService  implements IOrderBookingService {
     }
 
     @Override
-    public List<OrderBooking> getCustomerHistoryBooking(String jwttoken) {
+    public List<OrderBookingDetailDTO> getCustomerHistoryBooking(String jwttoken) {
         String userName = jwtService.extractUsername(jwttoken);
         List<OrderBooking> historyBookingList = orderBookingRepository.getCustomerHistoryBooking(userName);
-//        List<OrderBookingResponse> bookingResponsesList = new ArrayList<>();
-//        for (OrderBooking orderBooking : historyBookingList){
-//            OrderBookingResponse orderBookingResponse = new OrderBookingResponse();
-//            orderBookingResponse.setBookingId(orderBooking.getBookingId());
-//            orderBookingResponse.setRoomId(orderBooking.getRoom().getRoomId());
-//            orderBookingResponse.setCheckinDate(orderBooking.getCheckinDate());
-//            orderBookingResponse.setTotalPrice(orderBooking.getTotalPrice());
-//            orderBookingResponse.setStatus("FINISHED");
-//
-//            // Get all timeslot in Booking
-//            List<Integer> timeSlotIdBooked = new ArrayList<>();
-//            int countSlot = orderBooking.getSlot().size();
-//            for (int i = 0; i < countSlot; i++){
-//                timeSlotIdBooked.add(orderBooking.getSlot().get(i).getTimeSlotId());
-//            }
-//            orderBookingResponse.setSlotId(timeSlotIdBooked);
-//            bookingResponsesList.add(orderBookingResponse);
+        List<OrderBookingDetailDTO> orderDetail = new ArrayList<>();
+        for (OrderBooking orderBooking : historyBookingList){
+            OrderBookingDetailDTO dto = new OrderBookingDetailDTO();
+            dto.setBookingId(orderBooking.getBookingId());
+            dto.setRoomId(orderBooking.getRoom().getRoomId());
+            dto.setCheckinDate(orderBooking.getCheckinDate());
+            dto.setTotalPrice(orderBooking.getTotalPrice());
+            dto.setStatus("FINISHED");
 
-        return historyBookingList;
+            // Get all timeslot in Booking
+            List<Integer> timeSlotIdBooked = new ArrayList<>();
+            int countSlot = orderBooking.getSlot().size();
+            for (int i = 0; i < countSlot; i++){
+                timeSlotIdBooked.add(orderBooking.getSlot().get(i).getTimeSlotId());
+            }
+            dto.setSlotId(timeSlotIdBooked);
+
+            // get service items
+           List<OrderBookingDetail> bookingDetails = orderBookingDetailRepository.findDetailByBookingId(orderBooking.getBookingId());
+           Map<String, Integer> serviceList = new HashMap<>();
+           for (OrderBookingDetail bookingDetail : bookingDetails){
+               String serviceName = bookingDetail.getService().getServiceName();
+               int quantity = bookingDetail.getBookingServiceQuantity();
+               serviceList.put(serviceName, quantity);
+           }
+            dto.setServiceItems(serviceList);
+            orderDetail.add(dto);
+    }
+        return orderDetail;
     }
 
     @Override

@@ -1,5 +1,6 @@
 package fpt.swp.WorkSpace.controller;
 
+import fpt.swp.WorkSpace.DTO.OrderBookingDetailDTO;
 import fpt.swp.WorkSpace.models.OrderBooking;
 import fpt.swp.WorkSpace.response.OrderBookingResponse;
 import fpt.swp.WorkSpace.response.ResponseHandler;
@@ -52,7 +53,7 @@ public class OrderBookingController {
     public ResponseEntity<Object> getCustomerHistoryBooking(@RequestHeader("Authorization") String token) {
         String jwtToken = token.substring(7);
         try{
-            List<OrderBooking> bookedList = orderBookingService.getCustomerHistoryBooking(jwtToken);
+            List<OrderBookingDetailDTO> bookedList = orderBookingService.getCustomerHistoryBooking(jwtToken);
             return ResponseHandler.responseBuilder("ok", HttpStatus.OK, bookedList);
         } catch (RuntimeException e) {
             return ResponseHandler.responseBuilder(e.getMessage(), HttpStatus.NOT_FOUND);
