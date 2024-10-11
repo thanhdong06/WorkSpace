@@ -1,21 +1,26 @@
 package fpt.swp.WorkSpace.service;
 
+import fpt.swp.WorkSpace.auth.AuthenticationResponse;
 import fpt.swp.WorkSpace.models.Staff;
-import fpt.swp.WorkSpace.repository.BuildingRepository;
-import fpt.swp.WorkSpace.repository.StaffRepository;
-import fpt.swp.WorkSpace.repository.UserRepo;
+import fpt.swp.WorkSpace.models.User;
+import fpt.swp.WorkSpace.repository.*;
 import fpt.swp.WorkSpace.response.StaffRequest;
 import fpt.swp.WorkSpace.response.StaffResponse;
+import fpt.swp.WorkSpace.response.UpdateStaffRequest;
+import jakarta.persistence.EntityNotFoundException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
+import java.util.Optional;
 
 @Service
 public class StaffService {
@@ -27,33 +32,53 @@ public class StaffService {
     private BuildingRepository buildingRepository;
 
     @Autowired
-    private UserRepo userRepository;
+    private UserRepository repository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @Autowired
     private ModelMapper modelMapper;
 
-    public Staff createStaff(StaffRequest request) {
-        boolean buildingExists = buildingRepository.existsById(request.getBuildingId());
-        if (!buildingExists) {
-            throw new RuntimeException("Building not found");
-        }
+    public AuthenticationResponse createStaff(StaffRequest request) {
+        AuthenticationResponse response = new AuthenticationResponse();
+        User newUser = new User();
+        try {
+            User findUser = repository.findByuserName(request.getUserName());
+            if (findUser != null){
+                throw new RuntimeException("user already exists");
+            }
+            newUser.setUserId(generateStaffId()); // Generate the User ID
+            newUser.setUserName(request.getUserName());
+            newUser.setPassword(passwordEncoder.encode(request.getPassword()));
+            newUser.setCreationTime(LocalDateTime.now());
+            newUser.setRoleName(request.getRole());
 
-        boolean userExists = userRepository.existsById(request.getUserId());
-        if (!userExists) {
-            throw new RuntimeException("User not found");
+            // Save the User entity
+            User savedUser = repository.save(newUser);
+
+            // Create the new Staff entity
+            Staff newStaff = new Staff();
+            newStaff.setUser(savedUser);
+            System.out.println(newStaff.getUser());
+
+            newStaff.setCreateAt(LocalDateTime.now());
+            newStaff.setBuildingId(request.getBuildingId());
+
+            // Save the Staff entity
+            staffRepository.save(newStaff);
+            if (savedUser.getUserId() != null ) {
+                response.setStatus("Success");
+                response.setStatusCode(200);
+                response.setMessage("User and Staff Saved Successfully");
+                response.setData(savedUser);
+            }
         }
-        Staff staff = new Staff();
-        staff.setStaffId(request.getStaffId());
-        staff.setFullName(request.getFullName());
-        staff.setPhoneNumber(request.getPhoneNumber());
-        staff.setDateOfBirth(request.getDateOfBirth());
-        staff.setCreateAt(LocalDateTime.now());
-        staff.setEmail(request.getEmail());
-        staff.setWorkShift(request.getWorkShift());
-        staff.setWorkDays(request.getWorkDays());
-        staff.setUserId(request.getUserId());
-        staff.setBuildingId(request.getBuildingId());
-        return staffRepository.save(staff);
+       catch (Exception e ){
+           response.setStatus("Error");
+           response.setStatusCode(400);
+           response.setMessage(e.getMessage());       }
+        return response;
     }
 
     public Page<StaffResponse> getAllStaffs(int page, int size) {
@@ -62,7 +87,7 @@ public class StaffService {
 
         return staffs.map(staff -> {
             StaffResponse response = new StaffResponse();
-            response.setStaffId(staff.getStaffId());
+            response.setUserId(staff.getUserId());
             response.setFullName(staff.getFullName());
             response.setPhoneNumber(staff.getPhoneNumber());
             response.setEmail(staff.getEmail());
@@ -78,7 +103,6 @@ public class StaffService {
             response.setWorkShift(staff.getWorkShift());
             response.setWorkDays(staff.getWorkDays());
             response.setBuildingId(staff.getBuildingId());
-            response.setUserId(staff.getUserId());
             response.setStatus(staff.getStatus());
             return response;
         });
@@ -91,18 +115,15 @@ public class StaffService {
         return modelMapper.map(staff, StaffResponse.class);
     }
 
-    public Staff updateStaff(String staffId, StaffRequest request) {
+    public Staff updateStaff(String staffId, UpdateStaffRequest request) {
         Staff existedStaff = staffRepository.findById(staffId)
                 .orElseThrow(() -> new RuntimeException("Staff not found"));
 
         if(request.getFullName() != null){
             existedStaff.setFullName(request.getFullName());
         }
-        if(request.getPhoneNumber() != null){
+        if(request.getPhoneNumber() != null ){
             existedStaff.setPhoneNumber(request.getPhoneNumber());
-        }
-        if (request.getDateOfBirth() != null) {
-            existedStaff.setDateOfBirth(request.getDateOfBirth());
         }
         if(request.getEmail() != null){
             existedStaff.setEmail(request.getEmail());
@@ -113,9 +134,6 @@ public class StaffService {
         if(request.getWorkDays() != null){
             existedStaff.setWorkDays(request.getWorkDays());
         }
-        if(request.getUserId() != null){
-            existedStaff.setUserId(request.getUserId());
-        }
         if(request.getBuildingId() != null){
             existedStaff.setBuildingId(request.getBuildingId());
         }
@@ -125,10 +143,24 @@ public class StaffService {
         return staffRepository.save(existedStaff);
     }
 
-    public void deleteStaff(String staffId) {
-        if (!staffRepository.existsById(staffId)) {
-            throw new RuntimeException("Staff not found");
+    public void deleteStaff(String userId) {
+        Optional<Staff> staffOptional = staffRepository.findById(userId);
+        if (staffOptional.isPresent()) {
+            staffRepository.deleteById(userId);
+        } else {
+            throw new EntityNotFoundException("Staff with ID " + userId + " not found.");
+        }    }
+
+
+    public String generateStaffId() {
+        // Query the latest customer and extract their ID to increment
+        long latestCustomerId = staffRepository.count();
+        if (latestCustomerId != 0) {
+
+            long newId = latestCustomerId + 1;
+            return "STAFF" + String.format("%04d", newId); // Format to 4 digits
+        } else {
+            return "STAFF0001"; // Start from CUS0001 if no customers exist
         }
-        staffRepository.deleteById(staffId);
     }
 }

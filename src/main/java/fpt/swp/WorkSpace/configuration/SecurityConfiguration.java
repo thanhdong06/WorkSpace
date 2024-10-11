@@ -38,10 +38,10 @@ public class SecurityConfiguration {
         http.csrf(AbstractHttpConfigurer::disable)
 
                         .authorizeHttpRequests(configure -> configure
-                        .requestMatchers("/api/auth/**", "/api/customer/**", "/api/manager/**", "/api/staff/**", "/api/**").permitAll()
+                        .requestMatchers("/api/auth/**", "/api/customer/**", "api/manager/**", "/api/staff/**", "/vnpay/**").permitAll()
 //                                .requestMatchers("/api/customer/**").hasAuthority("CUSTOMER")
 //                                .requestMatchers("/api/staff/**").hasAnyAuthority("STAFF")
-//                                .requestMatchers("api/manager/**").hasAnyAuthority("MANAGER")
+                                .requestMatchers("api/manager/**").hasAnyAuthority("MANAGER")
                         .anyRequest().authenticated())
                         .sessionManagement(manager -> manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                         .authenticationProvider(applicationConfiguration.authenticationProvider())

@@ -1,10 +1,14 @@
 package fpt.swp.WorkSpace.controller;
 
+import fpt.swp.WorkSpace.auth.AuthenticationResponse;
+import fpt.swp.WorkSpace.auth.RegisterRequest;
 import fpt.swp.WorkSpace.models.Staff;
 import fpt.swp.WorkSpace.response.APIResponse;
 import fpt.swp.WorkSpace.response.StaffRequest;
 import fpt.swp.WorkSpace.response.StaffResponse;
+import fpt.swp.WorkSpace.response.UpdateStaffRequest;
 import fpt.swp.WorkSpace.service.StaffService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -19,15 +23,12 @@ StaffController {
     private StaffService staffService;
 
     @PostMapping()
-    public ResponseEntity<APIResponse<Staff>> createStaff(@RequestBody StaffRequest request) {
-        try {
-            Staff createStaff = staffService.createStaff(request);
-            APIResponse<Staff> response = new APIResponse<>("Staff create successfully", createStaff);
-            return ResponseEntity.status(HttpStatus.OK).body(response);
-        } catch (RuntimeException e) {
-            APIResponse<Staff> response = new APIResponse<>(e.getMessage(), null);
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+    public ResponseEntity<AuthenticationResponse> createStaff(@Valid @RequestBody StaffRequest request) {
+        AuthenticationResponse response = staffService.createStaff(request);
+        if (response.getStatusCode() == 400) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         }
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping
@@ -41,7 +42,7 @@ StaffController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<APIResponse<Staff>> updateManager(@PathVariable String id,@RequestBody StaffRequest request) {
+    public ResponseEntity<APIResponse<Staff>> updateManager(@PathVariable String id,@RequestBody UpdateStaffRequest request) {
         try {
             Staff updateStaff = staffService.updateStaff(id, request);
             APIResponse<Staff> response = new APIResponse<>("Staff updated successfully", updateStaff);
