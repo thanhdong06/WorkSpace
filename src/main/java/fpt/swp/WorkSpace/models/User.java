@@ -40,6 +40,10 @@ public class User implements UserDetails  {
     @JsonIgnore
     private Staff staff;
 
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private Customer customer;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return Collections.singleton(new SimpleGrantedAuthority(roleName));
