@@ -119,7 +119,7 @@ public class OrderBookingController {
     public ResponseEntity<Object> updateBookingService(@RequestParam("bookingId") String bookingId,
                                                        @RequestParam(required = false) MultiValueMap<String, String> items){
         MultiValueMap<Integer, Integer> convertedItems = new LinkedMultiValueMap<>();
-
+        System.out.println(items);
         // Chuyển đổi từ MultiValueMap<String, String> sang MultiValueMap<Integer, Integer>
         for (Map.Entry<String, List<String>> entry : items.entrySet()) {
             if (entry.getKey().startsWith("items[")) {

@@ -12,9 +12,11 @@ public interface IRoomService {
 
     List<Room> getAllRooms();
 
-    Room getRoomById(String id);
+    List<RoomDTO> getAllRoomsDTO();
 
-    RoomDTO viewRoomById(String id);
+    RoomDTO getRoomsDTO(String id);
+
+    Room getRoomById(String id);
 
     List<Room> getRoomsByBuildingId(String buildingId);
 
