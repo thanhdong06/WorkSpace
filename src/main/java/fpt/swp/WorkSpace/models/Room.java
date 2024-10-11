@@ -6,11 +6,8 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.aspectj.weaver.ast.Or;
-import org.hibernate.mapping.Join;
-import org.springframework.beans.factory.annotation.Autowired;
 
-import java.time.LocalDateTime;
+
 import java.util.List;
 
 @Entity
@@ -31,7 +28,9 @@ public class Room {
 
     private String roomImg;
 
-    @Column(name = "staff_at_room", nullable = true)
+
+
+    @Column(name = "staff_at_room")
     private String staffAtRoom;
 
     private String description;
@@ -50,7 +49,7 @@ public class Room {
 
     @OneToMany(mappedBy = "room")
     @JsonIgnore
-    private List<OrderBooking> bookingList; ;
+    private List<OrderBooking> bookingList;
 
 
 

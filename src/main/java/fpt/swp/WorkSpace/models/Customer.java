@@ -55,4 +55,6 @@ public class Customer  {
     @JsonIgnore
     private List<OrderBooking> bookingsList;
 
+
+
 }

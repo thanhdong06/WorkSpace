@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -27,7 +28,7 @@ public class RoomController {
                                              @RequestParam(value = "roomTypeId", required = false) String roomTypeId,
                                              @RequestParam(value = "roomName", required = false) String roomName,
                                              @RequestParam(value = "price", required = false) String price,
-                                             @RequestParam(value = "image", required = false) MultipartFile image,
+                                            @RequestParam(value = "image", required = false) MultipartFile image,
                                              @RequestParam(value = "status", required = false) String status,
                                              @RequestParam(value = "description", required = false) String description,
                                              @RequestParam(value = "listStaffID", required = false) String[] listStaffID){
@@ -44,6 +45,42 @@ public class RoomController {
         }
     }
 
+    @PostMapping("/manager/add-new-room-img")
+    public ResponseEntity<Object> addNewRoomImg(@RequestParam(value = "buildingId", required = false) String buildingId,
+                                             @RequestParam(value = "roomTypeId", required = false) String roomTypeId,
+                                             @RequestParam(value = "roomName", required = false) String roomName,
+                                             @RequestParam(value = "price", required = false) String price,
+                                             @RequestParam(value = "image", required = false) MultipartFile[] image,
+                                             @RequestParam(value = "status", required = false) String status,
+                                             @RequestParam(value = "description", required = false) String description,
+                                             @RequestParam(value = "listStaffID", required = false) String[] listStaffID){
+        // Use parameter instead of body because image is a file
+        // file should be multipart/form-data
+        // JSON cann't handle this file
+
+        try{
+            System.out.println(listStaffID.length);
+            Room newRoom = roomService.addNewRoomImg(buildingId, roomTypeId, roomName, price, listStaffID, image ,description, status);
+            return ResponseHandler.responseBuilder("Them phong thanh cong", HttpStatus.OK, newRoom);
+        } catch (NullPointerException e) {
+            return ResponseHandler.responseBuilder(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+//    @GetMapping("/room/{roomId}/img")
+//    public ResponseEntity<Object> getRoomImg(@PathVariable String roomId){
+//        try{
+//
+//            RoomDTO roomDTO = roomService.getRoomImg(roomId);
+//            return ResponseHandler.responseBuilder("Success", HttpStatus.OK, roomDTO);
+//        } catch (NullPointerException e) {
+//            return ResponseHandler.responseBuilder(e.getMessage(), HttpStatus.BAD_REQUEST);
+//        }
+//
+//    }
+
+
+
     @GetMapping("/get-all-room")
     public ResponseEntity<Object> getAllRoom(){
         List<Room> roomList = roomService.getAllRooms();
@@ -52,7 +89,6 @@ public class RoomController {
         }
         return ResponseHandler.responseBuilder("Success", HttpStatus.OK, roomList);
     }
-
 
 
     @GetMapping("/get-room-by-id/{roomId}")

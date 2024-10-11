@@ -14,7 +14,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.function.support.RouterFunctionMapping;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 @Service
 public class RoomService implements IRoomService{
@@ -66,6 +68,49 @@ public class RoomService implements IRoomService{
         Room savedRoom = roomRepository.save(room);
         return savedRoom;
     }
+
+    @Override
+    public Room addNewRoomImg(String buildingId, String romeTypeId, String roomName, String price, String[] staffID, MultipartFile[] img, String description, String status) {
+        String imgUrl = awsS3Service.saveMultiImgToS3(img);
+        Building findBuilding = buildingRepository.findById(buildingId).orElseThrow();
+        RoomType roomType = roomTypeRepository.findById(romeTypeId).orElseThrow();
+        if (findBuilding == null) {
+            throw new NotFoundException("Khong tim thay co so");
+        }
+        if (roomType == null) {
+            throw new NotFoundException("Loai phong khong hop le");
+        }
+        Room room = new Room();
+        room.setRoomId(Helper.generateRoomId());
+        room.setRoomName(roomName);
+        room.setPrice(Float.parseFloat(price));
+        room.setRoomImg(imgUrl);
+
+        // set local day time
+        String creationTime = Helper.convertLocalDateTime();
+        room.setCreationTime(creationTime);
+
+        // conver array to string
+        String staffIDList = String.join(", ", staffID);
+        room.setStaffAtRoom(staffIDList);
+
+        room.setStatus(status);
+        room.setBuilding(findBuilding);
+        room.setRoomType(roomType);
+        room.setDescription(description);
+        roomType.setQuantity(roomType.getQuantity() + 1);    // update quantity in roomtype
+        roomTypeRepository.save(roomType);
+        Room savedRoom = roomRepository.save(room);
+        return savedRoom;
+    }
+
+//    @Override
+//    public RoomDTO getRoomImg(String roomID) {
+//        Room room = roomRepository.findById(roomID).orElseThrow();
+//        return Helper.mapRoomToDTO(room);
+//
+//    }
+
 
     @Override
     public List<Room> getAllRooms() {
@@ -129,7 +174,7 @@ public class RoomService implements IRoomService{
             roomDTO.setRoomId(room.getRoomId());
             roomDTO.setRoomName(room.getRoomName());
             roomDTO.setPrice(room.getPrice());
-            roomDTO.setRoomImg(room.getRoomImg());
+            roomDTO.setRoomImg(room.getRoomImg().split(","));
             roomDTO.setDescription(room.getDescription());
             roomDTOList.add(roomDTO);
         }
@@ -145,7 +190,7 @@ public class RoomService implements IRoomService{
             roomDTO.setRoomId(room.getRoomId());
             roomDTO.setRoomName(room.getRoomName());
             roomDTO.setPrice(room.getPrice());
-            roomDTO.setRoomImg(room.getRoomImg());
+            roomDTO.setRoomImg(room.getRoomImg().split(","));
             roomDTO.setDescription(room.getDescription());
             roomDTOList.add(roomDTO);
         }
