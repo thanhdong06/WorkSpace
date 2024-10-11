@@ -23,6 +23,12 @@ public class Helper {
         return randomString ;
     }
 
+    public static String generateRoomId(){
+        String randomString =  UUID.randomUUID().toString().replace("-", "").substring(0, 3);
+        return randomString ;
+
+    }
+
     public static RoomDTO mapRoomToDTO(Room room){
         RoomDTO roomDTO = new RoomDTO();
         roomDTO.setRoomId(room.getRoomId());

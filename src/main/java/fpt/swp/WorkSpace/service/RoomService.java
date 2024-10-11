@@ -11,6 +11,7 @@ import fpt.swp.WorkSpace.repository.RoomTypeRepository;
 import fpt.swp.WorkSpace.util.Helper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.function.support.RouterFunctionMapping;
 
 import java.util.ArrayList;
@@ -32,8 +33,8 @@ public class RoomService implements IRoomService{
 
 
     @Override
-    public Room addNewRoom(String buildingId, String romeTypeId, String roomName, String price, String[] staffID, String description, String status) {
-//        String img = awsS3Service.saveImgToS3(file);
+    public Room addNewRoom(String buildingId, String romeTypeId, String roomName, String price, String[] staffID, MultipartFile file, String description, String status) {
+        String img = awsS3Service.saveImgToS3(file);
         Building findBuilding = buildingRepository.findById(buildingId).orElseThrow();
         RoomType roomType = roomTypeRepository.findById(romeTypeId).orElseThrow();
         if (findBuilding == null) {
@@ -43,9 +44,10 @@ public class RoomService implements IRoomService{
             throw new NotFoundException("Loai phong khong hop le");
         }
         Room room = new Room();
+        room.setRoomId(Helper.generateRoomId());
         room.setRoomName(roomName);
         room.setPrice(Float.parseFloat(price));
-//        room.setRoomImg(img);
+        room.setRoomImg(img);
 
         // set local day time
         String creationTime = Helper.convertLocalDateTime();
@@ -61,7 +63,8 @@ public class RoomService implements IRoomService{
         room.setDescription(description);
         roomType.setQuantity(roomType.getQuantity() + 1);    // update quantity in roomtype
         roomTypeRepository.save(roomType);
-        return roomRepository.save(room);
+        Room savedRoom = roomRepository.save(room);
+        return savedRoom;
     }
 
     @Override

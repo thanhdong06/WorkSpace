@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -26,7 +27,7 @@ public class RoomController {
                                              @RequestParam(value = "roomTypeId", required = false) String roomTypeId,
                                              @RequestParam(value = "roomName", required = false) String roomName,
                                              @RequestParam(value = "price", required = false) String price,
-//                                             @RequestParam(value = "image", required = false) MultipartFile image,
+                                             @RequestParam(value = "image", required = false) MultipartFile image,
                                              @RequestParam(value = "status", required = false) String status,
                                              @RequestParam(value = "description", required = false) String description,
                                              @RequestParam(value = "listStaffID", required = false) String[] listStaffID){
@@ -36,7 +37,7 @@ public class RoomController {
 
         try{
             System.out.println(listStaffID.length);
-            Room newRoom = roomService.addNewRoom(buildingId, roomTypeId, roomName, price, listStaffID, description, status);
+            Room newRoom = roomService.addNewRoom(buildingId, roomTypeId, roomName, price, listStaffID, image ,description, status);
             return ResponseHandler.responseBuilder("Them phong thanh cong", HttpStatus.OK, newRoom);
         } catch (NullPointerException e) {
             return ResponseHandler.responseBuilder(e.getMessage(), HttpStatus.BAD_REQUEST);

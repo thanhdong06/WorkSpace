@@ -3,12 +3,13 @@ package fpt.swp.WorkSpace.service;
 import fpt.swp.WorkSpace.DTO.RoomDTO;
 import fpt.swp.WorkSpace.models.Room;
 import fpt.swp.WorkSpace.models.RoomType;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
 public interface IRoomService {
 
-    Room addNewRoom(String buildingId, String roomTypeId, String roomName, String price, String[] staffId , String description, String status);
+    Room addNewRoom(String buildingId, String romeTypeId, String roomName, String price, String[] staffID, MultipartFile file, String description, String status);
 
     List<Room> getAllRooms();
 
