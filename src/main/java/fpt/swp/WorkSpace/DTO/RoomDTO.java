@@ -1,6 +1,7 @@
 package fpt.swp.WorkSpace.DTO;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import fpt.swp.WorkSpace.models.Building;
@@ -15,17 +16,15 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-@JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonInclude(JsonInclude.Include.ALWAYS)
+
 public class RoomDTO {
     private String roomId;
     private String roomName;
     private float price;
-    private String creationTime;
     private String roomImg;
     private String description;
-    private String status;
+    private String building;
+    private String roomType;
 
-    private Building building;
-    private RoomType roomType;
-    private List<OrderBooking> bookingList; ;
 }

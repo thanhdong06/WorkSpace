@@ -52,6 +52,8 @@ public class RoomController {
         return ResponseHandler.responseBuilder("Success", HttpStatus.OK, roomList);
     }
 
+
+
     @GetMapping("/get-room-by-id/{roomId}")
     public ResponseEntity<Object> getRoomById(@PathVariable("roomId") String roomId){
 
@@ -61,6 +63,15 @@ public class RoomController {
         }catch (Exception e){
             return ResponseHandler.responseBuilder(e.getMessage(), HttpStatus.NOT_FOUND);
         }
+    }
+
+    @GetMapping("customer/get-all-room-dto")
+    public ResponseEntity<Object> getAllRoomDTO(){
+        List<RoomDTO> roomList = roomService.getAllRoomsDTO();
+        if (roomList.isEmpty()){
+            return ResponseHandler.responseBuilder("Khong co phong . Vui long them phong", HttpStatus.NOT_FOUND);
+        }
+        return ResponseHandler.responseBuilder("Success", HttpStatus.OK, roomList);
     }
 
     @GetMapping("customer/get-room-by-building-status")
@@ -76,7 +87,7 @@ public class RoomController {
     @GetMapping("customer/room-detail/{roomId}")
     public ResponseEntity<Object> getRoomDetail(@PathVariable("roomId") String roomId){
         try {
-            RoomDTO findRoom = roomService.viewRoomById(roomId);
+            RoomDTO findRoom = roomService.getRoomsDTO(roomId);
             return ResponseHandler.responseBuilder("Success", HttpStatus.OK, findRoom);
         }catch (Exception e){
             return ResponseHandler.responseBuilder(e.getMessage(), HttpStatus.NOT_FOUND);

@@ -73,6 +73,27 @@ public class RoomService implements IRoomService{
         return roomList;
     }
 
+    @Override
+    public List<RoomDTO> getAllRoomsDTO() {
+        List<Room> roomList = roomRepository.findAll();
+        List<RoomDTO> roomDTOList = new ArrayList<>();
+        for (Room room : roomList) {
+//             roomDTO = new RoomDTO();
+            RoomDTO roomDTO = Helper.mapRoomToDTO(room);
+            roomDTOList.add(roomDTO);
+        }
+        return roomDTOList;
+    }
+
+    @Override
+    public RoomDTO getRoomsDTO(String id) {
+        Room room = roomRepository.findById(id).orElseThrow();
+        RoomDTO roomDTO = new RoomDTO();
+        if (room != null) {
+             roomDTO = Helper.mapRoomToDTO(room);
+        }
+        return roomDTO;
+    }
 
 
     @Override
@@ -84,18 +105,7 @@ public class RoomService implements IRoomService{
         return room;
     }
 
-    @Override
-    public RoomDTO viewRoomById(String id) {
-        Room room = roomRepository.findById(id).orElseThrow();
-            RoomDTO roomDTO = new RoomDTO();
-            roomDTO.setRoomId(room.getRoomId());
-            roomDTO.setRoomName(room.getRoomName());
-            roomDTO.setPrice(room.getPrice());
-            roomDTO.setRoomImg(room.getRoomImg());
-            roomDTO.setDescription(room.getDescription());
 
-        return roomDTO;
-    }
 
     @Override
     public List<Room> getRoomsByBuildingId(String buildingId) {
