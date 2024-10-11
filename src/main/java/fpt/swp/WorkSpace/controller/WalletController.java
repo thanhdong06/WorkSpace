@@ -17,10 +17,10 @@ public class WalletController {
     @Autowired
     private WalletService walletService;
 
-    @PostMapping("/top-up")
-    public ResponseEntity<APIResponse<Wallet>> topUpWallet(@RequestBody TopUpRequest request) {
-        Wallet updatedWallet = walletService.topUpWallet(request);
-        APIResponse<Wallet> response = new APIResponse<>("Wallet topped up successfully", updatedWallet);
-        return ResponseEntity.ok(response);
-    }
+//    @PostMapping("/top-up")
+//    public ResponseEntity<APIResponse<Wallet>> topUpWallet(@RequestBody TopUpRequest request) {
+//        Wallet updatedWallet = walletService.topUpWallet(request);
+//        APIResponse<Wallet> response = new APIResponse<>("Wallet topped up successfully", updatedWallet);
+//        return ResponseEntity.ok(response);
+//    }
 }

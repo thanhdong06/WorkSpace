@@ -1,6 +1,5 @@
 package fpt.swp.WorkSpace.models;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
@@ -23,6 +22,7 @@ import java.util.Collections;
 @Getter @Setter
 public class User implements UserDetails  {
     @Id
+    @Column(name = "user_id", updatable = false, nullable = false)
     private String userId;
 
     @Column(name = "username", nullable = false, unique = true)
@@ -37,9 +37,12 @@ public class User implements UserDetails  {
     private String roleName;
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
-    @JsonBackReference
-    private Customer customer;
+    @JsonIgnore
+    private Staff staff;
 
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private Customer customer;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
