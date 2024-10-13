@@ -152,9 +152,9 @@ public class RoomController {
     }
 
     @GetMapping("/get-room-by-type")
-    public ResponseEntity<Object> getRoomByType(@RequestParam(value = "roomTypeId", required = false) String roomTypeId){
+    public ResponseEntity<Object> getRoomByType(@RequestParam(value = "roomTypeName", required = false) String roomTypeName){
         try{
-            List<Room> listRoom = roomService.getRoomsByRoomType(roomTypeId);
+            List<Room> listRoom = roomService.getRoomsByRoomType(roomTypeName);
             return ResponseHandler.responseBuilder("Success", HttpStatus.OK, listRoom);
         }catch (NotFoundException e){
             return ResponseHandler.responseBuilder(e.getMessage(), HttpStatus.NOT_FOUND);

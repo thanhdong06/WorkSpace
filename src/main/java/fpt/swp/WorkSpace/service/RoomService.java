@@ -197,14 +197,15 @@ public class RoomService implements IRoomService{
         return roomDTOList;
     }
 
-    @Override
-    public List<Room> getRoomsByRoomType(String roomTypeId) {
-        List<Room> roomList = roomRepository.getRoomByRoomType(roomTypeId);
+    public List<Room> getRoomsByRoomType(String roomType) {
+        List<Room> roomList = roomRepository.getRoomsByRoomType(roomType);
         if (roomList.isEmpty()) {
             throw new NotFoundException("Khong co phong hop le");
         }
         return roomList;
     }
+
+
 
     @Override
     public List<Room> getRoomsByBuildingAndRoomType(String buildingId, String roomTypeId) {
