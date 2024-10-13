@@ -30,8 +30,11 @@ public class Room {
 
 
 
-    @Column(name = "staff_at_room")
-    private String staffAtRoom;
+    @ManyToMany
+    @JoinTable(name = "Room_Staff",
+            joinColumns = @JoinColumn(name = "roomId"),
+            inverseJoinColumns = @JoinColumn(name = "userId"))
+    private List<Staff> staff;
 
     private String description;
 

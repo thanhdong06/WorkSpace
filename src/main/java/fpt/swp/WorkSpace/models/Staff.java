@@ -10,6 +10,7 @@ import org.hibernate.annotations.UuidGenerator;
 
 import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(name = "staff")
@@ -54,4 +55,8 @@ public class Staff {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private StaffStatus status = StaffStatus.active;
+
+    @ManyToMany(mappedBy = "staff")
+    @JsonIgnore
+    private List<Room> rooms;
 }

@@ -18,6 +18,8 @@ public class ServiceItems {
     private Integer quantity;
     private String serviceType;
 
+    private String serviceImg;
+
      @Enumerated(EnumType.STRING)
     private TimeSlotStatus status = TimeSlotStatus.AVAILABLE;
 
