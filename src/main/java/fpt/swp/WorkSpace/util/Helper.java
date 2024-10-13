@@ -7,7 +7,9 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import fpt.swp.WorkSpace.DTO.RoomDTO;
+import fpt.swp.WorkSpace.DTO.ServiceItemsDTO;
 import fpt.swp.WorkSpace.models.Room;
+import fpt.swp.WorkSpace.models.ServiceItems;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -56,6 +58,20 @@ public class Helper {
         return roomDTO;
     }
 
+    public static ServiceItemsDTO mapServiceItemsToDTO(ServiceItems serviceItems){
+        ServiceItemsDTO serviceItemsDTO = new ServiceItemsDTO();
+        serviceItemsDTO.setServiceId(serviceItems.getServiceId());
+        serviceItemsDTO.setServiceName(serviceItems.getServiceName());
+        serviceItemsDTO.setPrice(serviceItems.getPrice());
+        if (serviceItems.getServiceImg() != null && !serviceItems.getServiceImg().isEmpty()) {
+            serviceItemsDTO.setServiceImg(serviceItems.getServiceImg().split(", "));
+        } else {
+            serviceItemsDTO.setServiceImg(new String[]{""});
+        }
+        serviceItemsDTO.setQuantity(serviceItems.getQuantity());
+        serviceItemsDTO.setServiceType(serviceItems.getServiceType());
+        return serviceItemsDTO;
+    }
 
 
 }

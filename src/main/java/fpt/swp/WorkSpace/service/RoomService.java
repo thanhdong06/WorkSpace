@@ -5,9 +5,11 @@ import fpt.swp.WorkSpace.DTO.RoomDTO;
 import fpt.swp.WorkSpace.models.Building;
 import fpt.swp.WorkSpace.models.Room;
 import fpt.swp.WorkSpace.models.RoomType;
+import fpt.swp.WorkSpace.models.Staff;
 import fpt.swp.WorkSpace.repository.BuildingRepository;
 import fpt.swp.WorkSpace.repository.RoomRepository;
 import fpt.swp.WorkSpace.repository.RoomTypeRepository;
+import fpt.swp.WorkSpace.repository.StaffRepository;
 import fpt.swp.WorkSpace.util.Helper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,6 +22,9 @@ import java.util.Arrays;
 import java.util.List;
 @Service
 public class RoomService implements IRoomService{
+
+    @Autowired
+    private StaffRepository staffRepository;
 
     @Autowired
     private RoomRepository roomRepository;
@@ -35,7 +40,7 @@ public class RoomService implements IRoomService{
 
 
     @Override
-    public Room addNewRoom(String buildingId, String romeTypeId, String roomName, String price, String[] staffID, MultipartFile file, String description, String status) {
+    public Room addNewRoom(String buildingId, String romeTypeId, String roomName, String price, String[] staffIdList, MultipartFile file, String description, String status) {
         String img = awsS3Service.saveImgToS3(file);
         Building findBuilding = buildingRepository.findById(buildingId).orElseThrow();
         RoomType roomType = roomTypeRepository.findById(romeTypeId).orElseThrow();
@@ -56,8 +61,13 @@ public class RoomService implements IRoomService{
         room.setCreationTime(creationTime);
 
         // conver array to string
-        String staffIDList = String.join(", ", staffID);
-        room.setStaffAtRoom(staffIDList);
+        List<String> listStaffId = Arrays.asList(staffIdList);
+        List<Staff> staffList = new ArrayList<>();
+        for(String staffID : listStaffId) {
+            Staff staff = staffRepository.findById(staffID).get();
+            staffList.add(staff);
+        }
+        room.setStaff(staffList);
 
         room.setStatus(status);
         room.setBuilding(findBuilding);
@@ -70,10 +80,11 @@ public class RoomService implements IRoomService{
     }
 
     @Override
-    public Room addNewRoomImg(String buildingId, String romeTypeId, String roomName, String price, String[] staffID, MultipartFile[] img, String description, String status) {
+    public Room addNewRoomImg(String buildingId, String romeTypeId, String roomName, String price, String[] staffIdList, MultipartFile[] img, String description, String status) {
         String imgUrl = awsS3Service.saveMultiImgToS3(img);
         Building findBuilding = buildingRepository.findById(buildingId).orElseThrow();
         RoomType roomType = roomTypeRepository.findById(romeTypeId).orElseThrow();
+
         if (findBuilding == null) {
             throw new NotFoundException("Khong tim thay co so");
         }
@@ -91,8 +102,13 @@ public class RoomService implements IRoomService{
         room.setCreationTime(creationTime);
 
         // conver array to string
-        String staffIDList = String.join(", ", staffID);
-        room.setStaffAtRoom(staffIDList);
+        List<String> listStaffId = Arrays.asList(staffIdList);
+        List<Staff> staffList = new ArrayList<>();
+        for(String staffID : listStaffId) {
+            Staff staff = staffRepository.findById(staffID).get();
+            staffList.add(staff);
+        }
+        room.setStaff(staffList);
 
         room.setStatus(status);
         room.setBuilding(findBuilding);
@@ -219,7 +235,7 @@ public class RoomService implements IRoomService{
 
 
     @Override
-    public Room updateRoom(String roomId, String roomName, String price, String status, String[] staffID, String description) {
+    public Room updateRoom(String roomId, String roomName, String price, String status, String[] staffIdList, String description) {
 //        String imageUrl = null;
 //        if (file != null && !file.isEmpty()) {
 //            imageUrl = awsS3Service.saveImgToS3(file);
@@ -237,9 +253,14 @@ public class RoomService implements IRoomService{
         if (status != null) {
             room.setStatus(status);
         }
-        if (staffID != null) {
-            String staffIDList = String.join(", ", staffID);
-            room.setStaffAtRoom(staffIDList);
+        if (staffIdList != null) {
+            List<String> listStaffId = Arrays.asList(staffIdList);
+            List<Staff> staffList = new ArrayList<>();
+            for(String staffID : listStaffId) {
+                Staff staff = staffRepository.findById(staffID).get();
+                staffList.add(staff);
+            }
+            room.setStaff(staffList);
         }
         if (description != null) {
             room.setDescription(description);
