@@ -76,11 +76,11 @@ public class OrderBookingController {
     public ResponseEntity<Object> createBooking(@RequestHeader("Authorization") String token,
                                                 @RequestParam("roomId") String roomId,
                                                 @RequestParam(value = "checkin-date", required = false) String checkInDay,
-                                                @RequestParam("slots") List<Integer> slots,
+                                                @RequestParam("slots") List<Integer> slot,
                                                 @RequestParam(value = "note", required = false) String note) {
         String jwtToken = token.substring(7);
         System.out.println(jwtToken);
-        OrderBooking bookingResponse = orderBookingService.createOrderBooking(jwtToken, roomId, checkInDay, slots, note);
+        OrderBooking bookingResponse = orderBookingService.createOrderBooking(jwtToken, roomId, checkInDay, slot, note);
         return ResponseHandler.responseBuilder("ok", HttpStatus.CREATED, bookingResponse);
     }
 
