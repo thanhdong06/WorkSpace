@@ -46,7 +46,11 @@ public class Helper {
         roomDTO.setRoomName(room.getRoomName());
         roomDTO.setPrice(room.getPrice());
         roomDTO.setDescription(room.getDescription());
-        roomDTO.setRoomImg(room.getRoomImg().split(","));
+        if (room.getRoomImg() != null && !room.getRoomImg().isEmpty()) {
+            roomDTO.setRoomImg(room.getRoomImg().split(", "));
+        } else {
+            roomDTO.setRoomImg(new String[]{""});
+        }
         roomDTO.setBuilding(room.getBuilding().getBuildingName());
         roomDTO.setRoomType(room.getRoomType().getRoomTypeName());
         return roomDTO;

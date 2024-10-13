@@ -126,7 +126,6 @@ public class RoomService implements IRoomService{
         List<Room> roomList = roomRepository.findAll();
         List<RoomDTO> roomDTOList = new ArrayList<>();
         for (Room room : roomList) {
-//             roomDTO = new RoomDTO();
             RoomDTO roomDTO = Helper.mapRoomToDTO(room);
             roomDTOList.add(roomDTO);
         }
@@ -197,14 +196,17 @@ public class RoomService implements IRoomService{
         return roomDTOList;
     }
 
-    @Override
-    public List<Room> getRoomsByRoomType(String roomTypeId) {
-        List<Room> roomList = roomRepository.getRoomByRoomType(roomTypeId);
-        if (roomList.isEmpty()) {
-            throw new NotFoundException("Khong co phong hop le");
+    public List<RoomDTO> getRoomsByRoomType(String roomType) {
+        List<Room> roomList = roomRepository.getRoomsByRoomType(roomType);
+        List<RoomDTO> roomDTOList = new ArrayList<>();
+        for (Room room : roomList) {
+            RoomDTO roomDTO = Helper.mapRoomToDTO(room);
+            roomDTOList.add(roomDTO);
         }
-        return roomList;
+        return roomDTOList;
     }
+
+
 
     @Override
     public List<Room> getRoomsByBuildingAndRoomType(String buildingId, String roomTypeId) {

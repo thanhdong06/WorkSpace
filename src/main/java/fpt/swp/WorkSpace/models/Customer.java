@@ -36,6 +36,8 @@ public class Customer  {
     private Date dateOfBirth;
     private String roleName;
 
+    private String imgUrl;
+
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "wallet_id", referencedColumnName = "wallet_id")
     @JsonManagedReference

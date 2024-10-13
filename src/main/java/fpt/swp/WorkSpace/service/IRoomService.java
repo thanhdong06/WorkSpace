@@ -30,7 +30,8 @@ public interface IRoomService {
 
     List<RoomDTO> getRoomsByBuildingAndStatus(String buildingId, String status);
 
-    List<Room> getRoomsByRoomType(String roomTypeId);
+    List<RoomDTO> getRoomsByRoomType(String roomTypeName);
+
 
     List<Room> getRoomsByBuildingAndRoomType(String buildingId, String roomTypeId);
 
