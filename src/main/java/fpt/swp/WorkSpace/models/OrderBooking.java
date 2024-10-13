@@ -41,6 +41,9 @@ public class OrderBooking {
         private String checkinDate;
 
         @Column(nullable = false)
+        private String checkoutDate;
+
+        @Column(nullable = false)
         private float totalPrice;
 
         private String note;

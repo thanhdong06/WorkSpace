@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -59,13 +60,25 @@ public class CustomerController {
     public ResponseEntity<Object> editProfile(@PathVariable String username, @RequestBody Customer customer){
 //        String newPhonenumber = request.getParameter("newPhonenumber");
 //        String newEmail = request.getParameter("newEmail");
-
         try {
             customerService.customerEditProfile(username, customer);
             return  ResponseHandler.responseBuilder("successfully", HttpStatus.OK);
         }catch (RuntimeException e){
             return ResponseHandler.responseBuilder(e.getMessage(),HttpStatus.BAD_REQUEST);
         }
+    }
+
+    @PutMapping("/customer/manage-profile/update-img")
+    public ResponseEntity<Object> updateProfile(@RequestHeader("Authorization") String token,
+                                                MultipartFile file){
+        String jwtToken = token.substring(7);
+        try{
+            customerService.updateCustomerImg(jwtToken, file);
+            return ResponseHandler.responseBuilder("Update imgage successfully", HttpStatus.OK);
+        }catch (RuntimeException e){
+            return ResponseHandler.responseBuilder(e.getMessage(),HttpStatus.BAD_REQUEST);
+        }
+
     }
 
 

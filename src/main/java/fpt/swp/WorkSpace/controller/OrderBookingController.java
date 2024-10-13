@@ -49,6 +49,28 @@ public class OrderBookingController {
         }
     }
 
+    @GetMapping("/check-booked-slot-date/{checkin-date}")
+    public ResponseEntity<Object> checkBookedSlotByDate(@PathVariable("checkin-date") String checkinDate) {
+        try{
+            List<OrderBookingResponse> bookedList = orderBookingService.getBookedSlotByDate(checkinDate);
+            return ResponseHandler.responseBuilder("ok", HttpStatus.OK, bookedList);
+        } catch (RuntimeException e) {
+            return ResponseHandler.responseBuilder(e.getMessage(), HttpStatus.NOT_FOUND);
+        }
+    }
+
+
+    @GetMapping("/check-booked-slot-date")
+    public ResponseEntity<Object> getBookedSlotByDate(@RequestParam("checkin-date") String checkinDate) {
+        try{
+            List<OrderBookingResponse> bookedList = orderBookingService.getBookedSlotByDate(checkinDate);
+            return ResponseHandler.responseBuilder("ok", HttpStatus.OK, bookedList);
+        } catch (RuntimeException e) {
+            return ResponseHandler.responseBuilder(e.getMessage(), HttpStatus.NOT_FOUND);
+        }
+    }
+
+
 
     @PostMapping("/customer/create-booking")
     public ResponseEntity<Object> createBooking(@RequestHeader("Authorization") String token,
@@ -59,6 +81,19 @@ public class OrderBookingController {
         String jwtToken = token.substring(7);
         System.out.println(jwtToken);
         OrderBooking bookingResponse = orderBookingService.createOrderBooking(jwtToken, roomId, checkInDay, slots, note);
+        return ResponseHandler.responseBuilder("ok", HttpStatus.CREATED, bookingResponse);
+    }
+
+    @PostMapping("/customer/create-multi-booking")
+    public ResponseEntity<Object> createMultiBooking(@RequestHeader("Authorization") String token,
+                                                @RequestParam("roomId") String roomId,
+                                                @RequestParam("checkin-date") String checkInDate,
+                                                @RequestParam("checkout_date") String checkoutDate,
+                                                @RequestParam("slot") int slots,
+                                                @RequestParam(value = "note", required = false) String note) {
+        String jwtToken = token.substring(7);
+        System.out.println(jwtToken);
+        OrderBooking bookingResponse = orderBookingService.createMultiOrderBooking(jwtToken, roomId, checkInDate, checkoutDate, slots, note);
         return ResponseHandler.responseBuilder("ok", HttpStatus.CREATED, bookingResponse);
     }
 
@@ -76,7 +111,7 @@ public class OrderBookingController {
     @PostMapping("/customer/create-booking-service")
     public ResponseEntity<Object> createBookingService(@RequestHeader("Authorization") String token,
                                                        @RequestParam("roomId") String roomId,
-                                                       @RequestParam(value = "checkin-date", required = false) String checkInDay,
+                                                       @RequestParam(value = "checkin-date", required = false) String checkInDate,
                                                        @RequestParam("slots") List<Integer> slots,
                                                        @RequestParam(required = false) MultiValueMap<String, String> items,
                                                        @RequestParam(value = "note", required = false) String note) {
@@ -84,7 +119,7 @@ public class OrderBookingController {
         System.out.println(jwtToken);
         System.out.println(roomId);
         System.out.println(slots);
-        System.out.println(checkInDay);
+        System.out.println(checkInDate);
         System.out.println("itemms:"+items);
         // Tạo một MultiValueMap<Integer, Integer> để chứa dữ liệu đã chuyển đổi
         MultiValueMap<Integer, Integer> convertedItems = new LinkedMultiValueMap<>();
@@ -106,7 +141,7 @@ public class OrderBookingController {
         // In kết quả để kiểm tra
         System.out.println("Converted Items: " + convertedItems);
         try{
-            OrderBooking bookingResponse = orderBookingService.createOrderBookingService(jwtToken, roomId, checkInDay, slots, convertedItems, note);
+            OrderBooking bookingResponse = orderBookingService.createOrderBookingService(jwtToken, roomId, checkInDate, slots, convertedItems, note);
             return ResponseHandler.responseBuilder("ok", HttpStatus.CREATED, bookingResponse );
         }catch (Exception e){
             return ResponseHandler.responseBuilder(e.getMessage(), HttpStatus.BAD_REQUEST);

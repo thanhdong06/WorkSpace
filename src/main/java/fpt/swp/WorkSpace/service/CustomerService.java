@@ -7,6 +7,7 @@ import fpt.swp.WorkSpace.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.regex.Pattern;
 
@@ -22,6 +23,8 @@ public class CustomerService implements ICustomerService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Autowired
+    private AwsS3Service awsS3Service;
 
     @Override
     public Customer getCustomerProfile(String token) {
@@ -67,5 +70,16 @@ public class CustomerService implements ICustomerService {
 
             }
         return customerRepository.save(customer);
+    }
+
+    @Override
+    public void updateCustomerImg(String token, MultipartFile file) {
+        String username = jwtService.extractUsername(token);
+        Customer customer =  customerRepository.findCustomerByUsername(username);
+        if (customer == null) {
+            throw new RuntimeException("Not found");
+        }
+        customer.setImgUrl(awsS3Service.saveImgToS3(file));
+        customerRepository.save(customer);
     }
 }

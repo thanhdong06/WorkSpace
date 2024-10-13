@@ -13,7 +13,11 @@ import java.util.Map;
 public interface IOrderBookingService {
     List<OrderBookingResponse> getBookedSlotByRoomAndDate(String date, String roomId);
 
+    List<OrderBookingResponse> getBookedSlotByDate(String date);
+
     OrderBooking createOrderBooking(String jwttoken, String roomId, String date, List<Integer> slotBooking, String note);
+
+    OrderBooking createMultiOrderBooking(String jwttoken, String roomId, String checkin, String checkout, int slot, String note);
 
     List<OrderBookingDetailDTO> getCustomerHistoryBooking(String jwttoken);
 
