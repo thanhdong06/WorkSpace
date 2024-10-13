@@ -88,7 +88,7 @@ public class OrderBookingController {
     public ResponseEntity<Object> createMultiBooking(@RequestHeader("Authorization") String token,
                                                 @RequestParam("roomId") String roomId,
                                                 @RequestParam("checkin-date") String checkInDate,
-                                                @RequestParam("checkout_date") String checkoutDate,
+                                                @RequestParam("checkout-date") String checkoutDate,
                                                 @RequestParam("slot") int slots,
                                                 @RequestParam(value = "note", required = false) String note) {
         String jwtToken = token.substring(7);
