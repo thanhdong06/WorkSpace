@@ -29,9 +29,9 @@ public class OrderBookingController {
 
     @GetMapping("/check-booked-slot/{roomId}/{checkin-date}")
     public ResponseEntity<Object> checkBookedSlot(@PathVariable("roomId") String roomId,
-                                                @PathVariable("checkin-date") String checkinDate) {
+                                                @PathVariable("checkinDate") String checkinDate) {
         try{
-            List<OrderBookingResponse> bookedList = orderBookingService.getBookedSlotByRoomAndDate(checkinDate, roomId);
+            List<OrderBookingDetailDTO> bookedList = orderBookingService.getBookedSlotByRoomAndDate(checkinDate, roomId);
             return ResponseHandler.responseBuilder("ok", HttpStatus.OK, bookedList);
         } catch (RuntimeException e) {
             return ResponseHandler.responseBuilder(e.getMessage(), HttpStatus.NOT_FOUND);
@@ -40,19 +40,19 @@ public class OrderBookingController {
 
     @GetMapping("/check-booked-slot")
     public ResponseEntity<Object> getBookedSlot(@RequestParam("roomId") String roomId,
-                                                @RequestParam("checkin-date") String checkinDate) {
+                                                @RequestParam("checkinDate") String checkinDate) {
         try{
-            List<OrderBookingResponse> bookedList = orderBookingService.getBookedSlotByRoomAndDate(checkinDate, roomId);
+            List<OrderBookingDetailDTO> bookedList = orderBookingService.getBookedSlotByRoomAndDate(checkinDate, roomId);
             return ResponseHandler.responseBuilder("ok", HttpStatus.OK, bookedList);
         } catch (RuntimeException e) {
             return ResponseHandler.responseBuilder(e.getMessage(), HttpStatus.NOT_FOUND);
         }
     }
 
-    @GetMapping("/check-booked-slot-date/{checkin-date}")
-    public ResponseEntity<Object> checkBookedSlotByDate(@PathVariable("checkin-date") String checkinDate) {
+    @GetMapping("/check-booked-slot-date/{checkinDate}")
+    public ResponseEntity<Object> checkBookedSlotByDate(@PathVariable("checkinDate") String checkinDate) {
         try{
-            List<OrderBookingResponse> bookedList = orderBookingService.getBookedSlotByDate(checkinDate);
+            List<OrderBookingDetailDTO> bookedList = orderBookingService.getBookedSlotByDate(checkinDate);
             return ResponseHandler.responseBuilder("ok", HttpStatus.OK, bookedList);
         } catch (RuntimeException e) {
             return ResponseHandler.responseBuilder(e.getMessage(), HttpStatus.NOT_FOUND);
@@ -61,9 +61,9 @@ public class OrderBookingController {
 
 
     @GetMapping("/check-booked-slot-date")
-    public ResponseEntity<Object> getBookedSlotByDate(@RequestParam("checkin-date") String checkinDate) {
+    public ResponseEntity<Object> getBookedSlotByDate(@RequestParam("checkinDate") String checkinDate) {
         try{
-            List<OrderBookingResponse> bookedList = orderBookingService.getBookedSlotByDate(checkinDate);
+            List<OrderBookingDetailDTO> bookedList = orderBookingService.getBookedSlotByDate(checkinDate);
             return ResponseHandler.responseBuilder("ok", HttpStatus.OK, bookedList);
         } catch (RuntimeException e) {
             return ResponseHandler.responseBuilder(e.getMessage(), HttpStatus.NOT_FOUND);
@@ -75,7 +75,7 @@ public class OrderBookingController {
     @PostMapping("/customer/create-booking")
     public ResponseEntity<Object> createBooking(@RequestHeader("Authorization") String token,
                                                 @RequestParam("roomId") String roomId,
-                                                @RequestParam(value = "checkin-date", required = false) String checkInDay,
+                                                @RequestParam(value = "checkinDate", required = false) String checkInDay,
                                                 @RequestParam("slots") List<Integer> slot,
                                                 @RequestParam(value = "note", required = false) String note) {
         String jwtToken = token.substring(7);
@@ -86,14 +86,32 @@ public class OrderBookingController {
 
     @PostMapping("/customer/create-multi-booking")
     public ResponseEntity<Object> createMultiBooking(@RequestHeader("Authorization") String token,
-                                                @RequestParam("roomId") String roomId,
-                                                @RequestParam("checkin-date") String checkInDate,
-                                                @RequestParam("checkout-date") String checkoutDate,
-                                                @RequestParam("slot") int slots,
-                                                @RequestParam(value = "note", required = false) String note) {
+                                                     @RequestParam("buildingId") String buildingId,
+                                                    @RequestParam("roomId") String roomId,
+                                                    @RequestParam("checkinDate") String checkInDate,
+                                                    @RequestParam("checkoutDate") String checkoutDate,
+                                                    @RequestParam("slot") int slots,
+                                                     @RequestParam(required = false) MultiValueMap<String, String> items,
+                                                    @RequestParam(value = "note", required = false) String note) {
         String jwtToken = token.substring(7);
         System.out.println(jwtToken);
-        OrderBooking bookingResponse = orderBookingService.createMultiOrderBooking(jwtToken, roomId, checkInDate, checkoutDate, slots, note);
+        MultiValueMap<Integer, Integer> convertedItems = new LinkedMultiValueMap<>();
+
+        // Chuyển đổi từ MultiValueMap<String, String> sang MultiValueMap<Integer, Integer>
+        for (Map.Entry<String, List<String>> entry : items.entrySet()) {
+            if (entry.getKey().startsWith("items[")) {
+                // Tách lấy số từ khóa items[1], items[2], v.v.
+                String keyString = entry.getKey().replace("items[", "").replace("]", "");
+                Integer key = Integer.valueOf(keyString);
+                // Chuyển đổi giá trị từ String sang Integer và thêm vào MultiValueMap
+                for (String value : entry.getValue()) {
+                    Integer quantity = Integer.valueOf(value);
+                    convertedItems.add(key, quantity);  // Thêm vào MultiValueMap
+                }
+            }
+        }
+
+        OrderBooking bookingResponse = orderBookingService.createMultiOrderBooking(jwtToken, buildingId, roomId, checkInDate, checkoutDate, slots, convertedItems, note);
         return ResponseHandler.responseBuilder("ok", HttpStatus.CREATED, bookingResponse);
     }
 
@@ -138,8 +156,6 @@ public class OrderBookingController {
             }
         }
 
-        // In kết quả để kiểm tra
-        System.out.println("Converted Items: " + convertedItems);
         try{
             OrderBooking bookingResponse = orderBookingService.createOrderBookingService(jwtToken, roomId, checkInDate, slots, convertedItems, note);
             return ResponseHandler.responseBuilder("ok", HttpStatus.CREATED, bookingResponse );

@@ -14,7 +14,7 @@ public interface IRoomService {
 
     Room addNewRoomImg(String buildingId, String romeTypeId, String roomName, String price, String[] staffID, MultipartFile[] img, String description, String status);
 
-//    RoomDTO getRoomImg(String roomID);
+    RoomDTO getRoomImg(String roomID);
 
     List<Room> getAllRooms();
 
