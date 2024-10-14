@@ -114,6 +114,6 @@ fabric.properties
 # https://plugins.jetbrains.com/plugin/8053-azure-toolkit-for-intellij
 .idea/**/azureSettings.xml
 
-key.csv
+workspace-user_accessKeys.csv
 
 # End of https://www.toptal.com/developers/gitignore/api/intellij
