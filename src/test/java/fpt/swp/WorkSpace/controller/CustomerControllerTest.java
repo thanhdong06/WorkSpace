@@ -3,6 +3,7 @@ package fpt.swp.WorkSpace.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import fpt.swp.WorkSpace.auth.LoginRequest;
 import fpt.swp.WorkSpace.auth.RegisterRequest;
+import fpt.swp.WorkSpace.service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -24,13 +25,16 @@ public class CustomerControllerTest extends AbstractTestNGSpringContextTests {
     private MockMvc mockMvc;
 
     @Autowired
+    private AuthService authService;
+
+    @Autowired
     private ObjectMapper objectMapper;
 
     @Test
     public void register_ShouldReturnOK_WhenValidRequest() throws Exception {
         // Tạo một yêu cầu đăng ký hợp lệ
         RegisterRequest registerRequest = new RegisterRequest();
-        registerRequest.setUserName("bao03");
+        registerRequest.setUserName("bao02");
         registerRequest.setPassword("123456");
         registerRequest.setFullName("Quoc Bao");
         registerRequest.setPhoneNumber("091273485");
@@ -64,9 +68,11 @@ public class CustomerControllerTest extends AbstractTestNGSpringContextTests {
 
     @Test
     public void login_ShouldReturnOK_WhenValidLogin() throws Exception {
+
+
         // Tạo yêu cầu login hợp lệ
         LoginRequest loginRequest = new LoginRequest();
-        loginRequest.setUserName("bao2");
+        loginRequest.setUserName("bao1");
         loginRequest.setPassword("123456");
 
         String requestJson = objectMapper.writeValueAsString(loginRequest);
@@ -94,7 +100,7 @@ public class CustomerControllerTest extends AbstractTestNGSpringContextTests {
                 .andExpect(jsonPath("$.statusCode").value(404)); // Kiểm tra statusCode là 404
     }
 
-    @Test
+    @Test(expectedExceptions = NullPointerException.class)
     public void login_ShouldReturnNullPointerException_WhenUserNotFound() throws Exception {
         // Tạo yêu cầu login không tồn tại
         LoginRequest loginRequest = new LoginRequest();
@@ -103,11 +109,13 @@ public class CustomerControllerTest extends AbstractTestNGSpringContextTests {
 
         String requestJson = objectMapper.writeValueAsString(loginRequest);
 
-        mockMvc.perform(post("/api/auth/login")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(requestJson))
-                .andExpect(status().isInternalServerError()) // Kiểm tra mã trạng thái HTTP 500
-                .andExpect(result -> assertTrue(result.getResolvedException() instanceof NoSuchElementException)); // Kiểm tra nếu có NullPointerException
+        authService.login(loginRequest);
+
+//        mockMvc.perform(post("/api/auth/login")
+//                        .contentType(MediaType.APPLICATION_JSON)
+//                        .content(requestJson))
+//                .andExpect(status().isNotFound()) // Kiểm tra mã trạng thái HTTP 404
+//                .andExpect(result -> assertTrue(result.getResolvedException() instanceof NullPointerException)); // Kiểm tra nếu có NullPointerException
     }
 
 

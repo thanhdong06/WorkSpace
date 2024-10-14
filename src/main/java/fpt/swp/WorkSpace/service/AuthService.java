@@ -106,26 +106,30 @@ public class AuthService implements IAuthService {
     @Override
     public AuthenticationResponse login(LoginRequest request)  {
         AuthenticationResponse response = new AuthenticationResponse();
-        try {
+//        try{
+
             User user = repository.findByuserName(request.getUserName());
             if (user == null || !passwordEncoder.matches(request.getPassword(), user.getPassword())){
                 throw new NullPointerException("User not found or Password do not match");
-
+            }else{
+                authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getUserName(), request.getPassword()));
+                String jwt = jwtService.generateAccessToken(new HashMap<>(),user.getUsername());
+                String refreshToken = jwtService.generateRefreshToken(user.getUsername());
+                response.setStatusCode(200);
+                response.setMessage("Successfully Logged In");
+                response.setData(user);
+                response.setAccess_token(jwt);
+                response.setRefresh_token(refreshToken);
+                return response;
             }
-            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getUserName(), request.getPassword()));
-            String jwt = jwtService.generateAccessToken(new HashMap<>(),user.getUsername());
-            String refreshToken = jwtService.generateRefreshToken(user.getUsername());
-            response.setStatusCode(200);
-            response.setMessage("Successfully Logged In");
-            response.setData(user);
-            response.setAccess_token(jwt);
-            response.setRefresh_token(refreshToken);
-        }catch (NullPointerException e){
-            response.setStatusCode(404);
-            response.setMessage(e.getMessage());
-            response.setStatus("Error");
-        }
-        return response;
+//        }catch (NullPointerException e){
+//            response.setStatusCode(404);
+//            response.setMessage(e.getMessage());
+//            response.setStatus("Error");
+//            return response;
+//        }
+
+
     }
 
     @Override

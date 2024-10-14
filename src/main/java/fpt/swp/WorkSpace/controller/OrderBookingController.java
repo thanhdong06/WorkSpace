@@ -165,6 +165,22 @@ public class OrderBookingController {
 
     }
 
+    @PostMapping("/customer/create-multi-booking-without")
+    public ResponseEntity<Object> createMultiBookingWithout(@RequestHeader("Authorization") String token,
+                                                            @RequestParam("buildingId") String buildingId,
+                                                            @RequestParam("roomId") String roomId,
+                                                            @RequestParam("checkinDate") String checkInDate,
+                                                            @RequestParam("checkoutDate") String checkoutDate,
+                                                            @RequestParam("slots") Integer[] slots,
+                                                            @RequestParam(value = "note", required = false) String note) {
+        String jwtToken = token.substring(7);
+        System.out.println(jwtToken);
+
+
+        OrderBooking bookingResponse = orderBookingService.createOrderBookingWithout(jwtToken, buildingId, roomId, checkInDate, checkoutDate, slots, note);
+        return ResponseHandler.responseBuilder("ok", HttpStatus.CREATED, bookingResponse);
+    }
+
 
     @PutMapping("/customer/update-service")
     public ResponseEntity<Object> updateBookingService(@RequestParam("bookingId") String bookingId,

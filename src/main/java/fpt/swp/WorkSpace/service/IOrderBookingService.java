@@ -17,6 +17,8 @@ public interface IOrderBookingService {
 
     OrderBooking createOrderBooking(String jwttoken, String roomId, String date, List<Integer> slotBooking, String note);
 
+    OrderBooking createOrderBookingWithout(String jwttoken, String buildingId, String roomId, String checkin, String checkout, Integer[] slotBooking, String note);
+
     OrderBooking createMultiOrderBooking(String jwttoken, String buuildingId, String roomId, String checkin, String checkout, int slot, MultiValueMap<Integer, Integer> items, String note);
 
     List<OrderBookingDetailDTO> getCustomerHistoryBooking(String jwttoken);
