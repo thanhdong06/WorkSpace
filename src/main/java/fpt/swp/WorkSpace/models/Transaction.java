@@ -21,6 +21,9 @@ public class Transaction {
     @Column(nullable = false)
     private String status;  // completed, failed, pending
 
+    @Column(nullable = false)
+    private String type = "TopUp"; //TopUp, pay for Order
+
     @ManyToOne
     @JoinColumn(name = "payment_id", referencedColumnName = "payment_id")
     private Payment payment;

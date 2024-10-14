@@ -8,11 +8,11 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 @Entity
-
 @NoArgsConstructor
 @Table(name = "customer")
 @Getter
@@ -24,7 +24,7 @@ public class Customer  {
     private String userId;
     @OneToOne
     @MapsId // This ensures the `userId` is shared as the primary key
-    @JoinColumn(name = "user_id", referencedColumnName = "user_Id")
+    @JoinColumn(name = "user_id", referencedColumnName = "user_id")
     @JsonBackReference
     private User user;
 
@@ -57,6 +57,7 @@ public class Customer  {
     @JsonIgnore
     private List<OrderBooking> bookingsList;
 
-
-
+    @OneToMany(mappedBy = "customer")
+    @JsonIgnore
+    private List<Payment> payments = new ArrayList<>();
 }
