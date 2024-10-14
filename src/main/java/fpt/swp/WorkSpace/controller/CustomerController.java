@@ -4,6 +4,7 @@ import com.amazonaws.services.kms.model.NotFoundException;
 import fpt.swp.WorkSpace.models.Customer;
 import fpt.swp.WorkSpace.models.Room;
 import fpt.swp.WorkSpace.models.Transaction;
+import fpt.swp.WorkSpace.models.Wallet;
 import fpt.swp.WorkSpace.response.APIResponse;
 import fpt.swp.WorkSpace.response.ResponseHandler;
 import fpt.swp.WorkSpace.response.TransactionResponse;
@@ -94,6 +95,18 @@ public class CustomerController {
             return ResponseEntity.status(HttpStatus.OK).body(response);
         } catch (RuntimeException e) {
             APIResponse<List<TransactionResponse>> response = new APIResponse<>(e.getMessage(), null);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+        }
+    }
+
+    @GetMapping("/user/wallet/{userId}")
+    public ResponseEntity<APIResponse<Wallet>> getWalletByUserId(@PathVariable String userId) {
+        try {
+            Wallet wallet = customerService.getWalletByUserId(userId);
+            APIResponse<Wallet> response = new APIResponse<>("Successfully", wallet);
+            return ResponseEntity.status(HttpStatus.OK).body(response);
+        } catch (RuntimeException e) {
+            APIResponse<Wallet> response = new APIResponse<>(e.getMessage(), null);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
         }
     }
