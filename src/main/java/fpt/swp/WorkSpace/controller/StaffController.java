@@ -71,4 +71,28 @@ StaffController {
         Page<OrderBookingStaffTracking> bookings = staffService.getOrderBookingsByCustomerId(userId, page, size);
         return ResponseEntity.ok(bookings);
     }
+
+    @GetMapping("status/{roomId}")
+    public ResponseEntity<APIResponse<RoomStatusResponse>> getRoomStatus(@PathVariable String roomId) {
+        try {
+            RoomStatusResponse roomStatus = staffService.getRoomStatus(roomId);
+            APIResponse<RoomStatusResponse> response = new APIResponse<>("successfully", roomStatus);
+            return ResponseEntity.status(HttpStatus.OK).body(response);
+        } catch (RuntimeException e) {
+            APIResponse<RoomStatusResponse> response = new APIResponse<>(e.getMessage(), null);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+        }
+    }
+
+    @PutMapping("status/{roomId}")
+    public ResponseEntity<APIResponse<RoomStatusResponse>> updateRoomStatus(@PathVariable String roomId, @RequestBody RoomStatusRequest request) {
+        try {
+            RoomStatusResponse updatedRoomStatus = staffService.updateRoomStatus(roomId, request);
+            APIResponse<RoomStatusResponse> response = new APIResponse<>("Room status updated successfully", updatedRoomStatus);
+            return ResponseEntity.status(HttpStatus.OK).body(response);
+        } catch (RuntimeException e) {
+            APIResponse<RoomStatusResponse> response = new APIResponse<>(e.getMessage(), null);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+        }
+    }
 }

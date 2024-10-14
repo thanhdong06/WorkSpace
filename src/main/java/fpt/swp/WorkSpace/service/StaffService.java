@@ -1,15 +1,9 @@
 package fpt.swp.WorkSpace.service;
 
 import fpt.swp.WorkSpace.auth.AuthenticationResponse;
-import fpt.swp.WorkSpace.models.OrderBooking;
-import fpt.swp.WorkSpace.models.Staff;
-import fpt.swp.WorkSpace.models.TimeSlot;
-import fpt.swp.WorkSpace.models.User;
+import fpt.swp.WorkSpace.models.*;
 import fpt.swp.WorkSpace.repository.*;
-import fpt.swp.WorkSpace.response.OrderBookingStaffTracking;
-import fpt.swp.WorkSpace.response.StaffRequest;
-import fpt.swp.WorkSpace.response.StaffResponse;
-import fpt.swp.WorkSpace.response.UpdateStaffRequest;
+import fpt.swp.WorkSpace.response.*;
 import jakarta.persistence.EntityNotFoundException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,6 +38,9 @@ public class StaffService {
     @Autowired
     private ModelMapper modelMapper;
 
+    @Autowired
+    private RoomRepository roomRepository;
+
     public AuthenticationResponse createStaff(StaffRequest request) {
         AuthenticationResponse response = new AuthenticationResponse();
         User newUser = new User();
@@ -58,10 +55,8 @@ public class StaffService {
             newUser.setCreationTime(LocalDateTime.now());
             newUser.setRoleName(request.getRole());
 
-            // Save the User entity
             User savedUser = repository.save(newUser);
 
-            // Create the new Staff entity
             Staff newStaff = new Staff();
             newStaff.setUser(savedUser);
             System.out.println(newStaff.getUser());
@@ -197,4 +192,17 @@ public class StaffService {
         });
     }
 
+    public RoomStatusResponse getRoomStatus(String roomId) {
+        Room room = roomRepository.findById(roomId)
+                .orElseThrow(() -> new RuntimeException("Room not found: " + roomId));
+        return new RoomStatusResponse(room.getRoomId(), room.getStatus());
+    }
+
+    public RoomStatusResponse updateRoomStatus(String roomId, RoomStatusRequest request) {
+        Room room = roomRepository.findById(roomId)
+                .orElseThrow(() -> new RuntimeException("Room not found: " + roomId));
+        room.setStatus(request.getRoomStatus());
+        roomRepository.save(room);
+        return new RoomStatusResponse(room.getRoomId(), room.getStatus());
+    }
 }
