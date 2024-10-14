@@ -24,7 +24,7 @@ public class TimeSlot {
 
     @Column(name = "status", nullable = false)
     @Enumerated(EnumType.STRING)
-    public TimeSlotStatus status = TimeSlotStatus.AVAILABLE;
+        public TimeSlotStatus status = TimeSlotStatus.AVAILABLE;
 
     @ManyToMany(mappedBy = "slot")
     @JsonIgnore

@@ -3,10 +3,8 @@ package fpt.swp.WorkSpace.controller;
 import fpt.swp.WorkSpace.auth.AuthenticationResponse;
 import fpt.swp.WorkSpace.auth.RegisterRequest;
 import fpt.swp.WorkSpace.models.Staff;
-import fpt.swp.WorkSpace.response.APIResponse;
-import fpt.swp.WorkSpace.response.StaffRequest;
-import fpt.swp.WorkSpace.response.StaffResponse;
-import fpt.swp.WorkSpace.response.UpdateStaffRequest;
+import fpt.swp.WorkSpace.response.*;
+import fpt.swp.WorkSpace.service.OrderBookingService;
 import fpt.swp.WorkSpace.service.StaffService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,5 +61,14 @@ StaffController {
             APIResponse<Void> response = new APIResponse<>(e.getMessage(), null);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
         }
+    }
+
+    @GetMapping("/tracking/order/{userId}")
+    public ResponseEntity<Page<OrderBookingStaffTracking>> getOrderBookingsByCustomerId(
+            @PathVariable String userId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        Page<OrderBookingStaffTracking> bookings = staffService.getOrderBookingsByCustomerId(userId, page, size);
+        return ResponseEntity.ok(bookings);
     }
 }

@@ -1,9 +1,12 @@
 package fpt.swp.WorkSpace.service;
 
 import fpt.swp.WorkSpace.auth.AuthenticationResponse;
+import fpt.swp.WorkSpace.models.OrderBooking;
 import fpt.swp.WorkSpace.models.Staff;
+import fpt.swp.WorkSpace.models.TimeSlot;
 import fpt.swp.WorkSpace.models.User;
 import fpt.swp.WorkSpace.repository.*;
+import fpt.swp.WorkSpace.response.OrderBookingStaffTracking;
 import fpt.swp.WorkSpace.response.StaffRequest;
 import fpt.swp.WorkSpace.response.StaffResponse;
 import fpt.swp.WorkSpace.response.UpdateStaffRequest;
@@ -19,8 +22,9 @@ import org.springframework.stereotype.Service;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class StaffService {
@@ -29,7 +33,7 @@ public class StaffService {
     private StaffRepository staffRepository;
 
     @Autowired
-    private BuildingRepository buildingRepository;
+    private OrderBookingRepository orderBookingRepository;
 
     @Autowired
     private UserRepository repository;
@@ -163,4 +167,34 @@ public class StaffService {
             return "STAFF0001"; // Start from CUS0001 if no customers exist
         }
     }
+
+    public Page<OrderBookingStaffTracking> getOrderBookingsByCustomerId(String userId, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<OrderBooking> bookings = orderBookingRepository.findByCustomerCustomerId(userId, pageable);
+
+        return bookings.map(booking -> {
+            OrderBookingStaffTracking response = new OrderBookingStaffTracking();
+            response.setCustomerId(booking.getCustomer().getUserId());
+            response.setCustomerName(booking.getCustomer().getFullName());
+            response.setBookingId(booking.getBookingId());
+            response.setRoomId(booking.getRoom().getRoomId());
+
+            List<Integer> serviceIds = booking.getOrderBookingDetails()
+                    .stream()
+                    .map(detail -> detail.getService().getServiceId())
+                    .collect(Collectors.toList());
+            response.setServiceIds(serviceIds);
+
+            List<Integer> slotIds = booking.getSlot()
+                    .stream()
+                    .map(TimeSlot::getTimeSlotId)
+                    .collect(Collectors.toList());
+
+            response.setSlotIds(slotIds);
+            response.setStatus(booking.getStatus());
+
+            return response;
+        });
+    }
+
 }

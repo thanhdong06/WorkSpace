@@ -1,6 +1,9 @@
 package fpt.swp.WorkSpace.repository;
 
 import fpt.swp.WorkSpace.models.OrderBooking;
+import fpt.swp.WorkSpace.response.OrderBookingStaffTracking;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -16,5 +19,8 @@ public interface OrderBookingRepository extends JpaRepository<OrderBooking, Stri
 
     @Query("SELECT b FROM OrderBooking b where (b.customer.user.userName = ?1) ")
     List<OrderBooking> getCustomerHistoryBooking(String username );
+
+    @Query("SELECT b FROM OrderBooking b WHERE b.customer.userId = ?1")
+    Page<OrderBooking> findByCustomerCustomerId(String userId, Pageable pageable);
 
 }
