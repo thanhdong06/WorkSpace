@@ -87,12 +87,12 @@ public class OrderBookingController {
     @PostMapping("/customer/create-multi-booking")
     public ResponseEntity<Object> createMultiBooking(@RequestHeader("Authorization") String token,
                                                      @RequestParam("buildingId") String buildingId,
-                                                    @RequestParam("roomId") String roomId,
-                                                    @RequestParam("checkinDate") String checkInDate,
-                                                    @RequestParam("checkoutDate") String checkoutDate,
-                                                    @RequestParam("slot") int slots,
+                                                     @RequestParam("roomId") String roomId,
+                                                     @RequestParam("checkinDate") String checkInDate,
+                                                     @RequestParam("checkoutDate") String checkoutDate,
+                                                     @RequestParam("slots") List<Integer> slots,
                                                      @RequestParam(required = false) MultiValueMap<String, String> items,
-                                                    @RequestParam(value = "note", required = false) String note) {
+                                                     @RequestParam(value = "note", required = false) String note) {
         String jwtToken = token.substring(7);
         System.out.println(jwtToken);
         MultiValueMap<Integer, Integer> convertedItems = new LinkedMultiValueMap<>();
@@ -163,6 +163,22 @@ public class OrderBookingController {
             return ResponseHandler.responseBuilder(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
 
+    }
+
+    @PostMapping("/customer/create-multi-booking-without")
+    public ResponseEntity<Object> createMultiBookingWithout(@RequestHeader("Authorization") String token,
+                                                            @RequestParam("buildingId") String buildingId,
+                                                            @RequestParam("roomId") String roomId,
+                                                            @RequestParam("checkinDate") String checkInDate,
+                                                            @RequestParam("checkoutDate") String checkoutDate,
+                                                            @RequestParam("slots") Integer[] slots,
+                                                            @RequestParam(value = "note", required = false) String note) {
+        String jwtToken = token.substring(7);
+        System.out.println(jwtToken);
+
+
+        OrderBooking bookingResponse = orderBookingService.createOrderBookingWithout(jwtToken, buildingId, roomId, checkInDate, checkoutDate, slots, note);
+        return ResponseHandler.responseBuilder("ok", HttpStatus.CREATED, bookingResponse);
     }
 
 

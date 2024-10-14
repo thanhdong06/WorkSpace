@@ -152,7 +152,7 @@ public class OrderBookingService  implements IOrderBookingService {
     }
 
     @Override
-    public OrderBooking createMultiOrderBooking(String jwttoken, String buildingId, String roomId, String checkin, String checkout, int slot, MultiValueMap<Integer, Integer> items, String note) {
+    public OrderBooking createMultiOrderBooking(String jwttoken, String buildingId, String roomId, String checkin, String checkout, List<Integer> slotBooking, MultiValueMap<Integer, Integer> items, String note) {
         String username = jwtService.extractUsername(jwttoken);
         Customer customer = customerRepository.findCustomerByUsername(username);
 
@@ -162,9 +162,12 @@ public class OrderBookingService  implements IOrderBookingService {
 
 
         // get time slot booked by customer
+        int countSlot = slotBooking.size();
         List<TimeSlot> timeSlots = new ArrayList<>();
-        TimeSlot timeSlot = timeSlotRepository.findById(slot).get();
-        timeSlots.add(timeSlot);
+        for (int i = 0; i < countSlot; i++){
+            TimeSlot timeSlot = timeSlotRepository.findById(slotBooking.get(i)).get();
+            timeSlots.add(timeSlot);
+        }
 
         // process total price
         LocalDate checkinDate = LocalDate.parse(checkin);
@@ -172,7 +175,7 @@ public class OrderBookingService  implements IOrderBookingService {
         //days between checkin - checkout
         long numberDays = ChronoUnit.DAYS.between(checkinDate, checkoutDate) + 1;
         System.out.println(numberDays);
-        float totalPrice = room.getPrice() * (int) numberDays;
+        float totalPrice = room.getPrice() * countSlot * (int) numberDays;
 
         OrderBooking orderBooking = new OrderBooking();
         orderBooking.setBookingId(Helper.generateRandomString(0, 5));
@@ -213,6 +216,48 @@ public class OrderBookingService  implements IOrderBookingService {
             }
 
         }
+        return result;
+    }
+
+    @Override
+    public OrderBooking createOrderBookingWithout(String jwttoken, String buildingId, String roomId, String checkin, String checkout, Integer[] slotBooking, String note) {
+        String username = jwtService.extractUsername(jwttoken);
+        Customer customer = customerRepository.findCustomerByUsername(username);
+
+        Building building = buildingRepository.findById(buildingId).get();
+
+        Room room = roomRepository.findById(roomId).get();
+
+
+        // get time slot booked by customer
+        int countSlot = slotBooking.length;
+        List<TimeSlot> timeSlots = new ArrayList<>();
+        for (int i = 0; i < countSlot; i++){
+            TimeSlot timeSlot = timeSlotRepository.findById(slotBooking[i]).get();
+            timeSlots.add(timeSlot);
+        }
+
+        // process total price
+        LocalDate checkinDate = LocalDate.parse(checkin);
+        LocalDate checkoutDate = LocalDate.parse(checkout);
+        //days between checkin - checkout
+        long numberDays = ChronoUnit.DAYS.between(checkinDate, checkoutDate) + 1;
+        System.out.println(numberDays);
+        float totalPrice = room.getPrice() * countSlot * (int) numberDays;
+
+        OrderBooking orderBooking = new OrderBooking();
+        orderBooking.setBookingId(Helper.generateRandomString(0, 5));
+        orderBooking.setCustomer(customer);
+        orderBooking.setRoom(room);
+        orderBooking.setBuilding(building);
+        orderBooking.setCheckinDate(checkin);
+        orderBooking.setCheckoutDate(checkout);
+        orderBooking.setTotalPrice(totalPrice);
+        orderBooking.setSlot(timeSlots);
+        orderBooking.setCreateAt(Helper.convertLocalDateTime());
+        orderBooking.setNote(note);
+        OrderBooking result = orderBookingRepository.save(orderBooking);
+
         return result;
     }
 
