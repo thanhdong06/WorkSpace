@@ -1,7 +1,6 @@
 package fpt.swp.WorkSpace.repository;
 
 import fpt.swp.WorkSpace.models.OrderBooking;
-import fpt.swp.WorkSpace.response.OrderBookingStaffTracking;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
