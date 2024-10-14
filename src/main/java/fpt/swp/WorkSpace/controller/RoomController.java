@@ -14,6 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @RestController
 @RequestMapping("/api")
@@ -79,13 +80,22 @@ public class RoomController {
 //
 //    }
 
+    @GetMapping("/room/img/{roomId}")
+    public ResponseEntity<Object> getRoomImg(@PathVariable("roomId") String roomId){
+        try{
+            return ResponseHandler.responseBuilder("Ok", HttpStatus.OK, roomService.getRoomImg(roomId));
+        }catch (NoSuchElementException e){
+            return ResponseHandler.responseBuilder(e.getMessage(), HttpStatus.NOT_FOUND);
+        }
+    }
+
 
 
     @GetMapping("/get-all-room")
     public ResponseEntity<Object> getAllRoom(){
         List<Room> roomList = roomService.getAllRooms();
         if (roomList.isEmpty()){
-            return ResponseHandler.responseBuilder("Khong co phong . Vui long them phong", HttpStatus.NOT_FOUND);
+            return ResponseHandler.responseBuilder("Khong co phong . Vui long them phong", HttpStatus.NO_CONTENT);
         }
         return ResponseHandler.responseBuilder("Success", HttpStatus.OK, roomList);
     }

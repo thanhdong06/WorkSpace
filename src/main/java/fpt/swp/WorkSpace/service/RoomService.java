@@ -20,6 +20,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.NoSuchElementException;
+
 @Service
 public class RoomService implements IRoomService{
 
@@ -120,6 +122,22 @@ public class RoomService implements IRoomService{
         return savedRoom;
     }
 
+    @Override
+    public RoomDTO getRoomImg(String roomID) throws NoSuchElementException {
+        Room room = roomRepository.findById(roomID).orElseThrow(() -> new NoSuchElementException("Phong khong ton tai"));
+//        if (room == null) {
+//            throw new  NoSuchElementException("Phong khong ton tai");
+//        }else {
+            RoomDTO roomDTO = new RoomDTO();
+            if (room.getRoomImg() != null && !room.getRoomImg().isEmpty()) {
+                roomDTO.setRoomImg(room.getRoomImg().split(", "));
+            } else {
+                roomDTO.setRoomImg(new String[]{""});
+            }
+            return roomDTO;
+        //}
+    }
+
 //    @Override
 //    public RoomDTO getRoomImg(String roomID) {
 //        Room room = roomRepository.findById(roomID).orElseThrow();
@@ -131,8 +149,12 @@ public class RoomService implements IRoomService{
     @Override
     public List<Room> getAllRooms() {
         List<Room> roomList = roomRepository.findAll();
-        if (roomList.isEmpty()) {
-            throw new NotFoundException("Chua co phong nao!!!");
+        try {
+            if (roomList.isEmpty()) {
+                throw new NotFoundException("Chua co phong nao!!!");
+            }
+        } catch(NotFoundException e) {
+
         }
         return roomList;
     }

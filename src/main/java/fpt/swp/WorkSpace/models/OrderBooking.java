@@ -23,6 +23,11 @@ public class OrderBooking {
         @JsonManagedReference
         private Room room;
 
+        @ManyToOne
+        @JoinColumn(name = "building_id")
+        @JsonIgnore
+        private Building building;
+
         @ManyToMany
         @JoinTable(name = "OrderBooking_TimeSlot",
                 joinColumns = @JoinColumn(name = "booking_id"),

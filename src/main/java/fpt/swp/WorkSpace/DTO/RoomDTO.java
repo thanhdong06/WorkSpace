@@ -1,9 +1,6 @@
 package fpt.swp.WorkSpace.DTO;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.*;
 import fpt.swp.WorkSpace.models.Building;
 import fpt.swp.WorkSpace.models.OrderBooking;
 import fpt.swp.WorkSpace.models.RoomType;
@@ -16,7 +13,7 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-@JsonInclude(JsonInclude.Include.ALWAYS)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 
 public class RoomDTO {
     private String roomId;
@@ -26,5 +23,10 @@ public class RoomDTO {
     private String description;
     private String building;
     private String roomType;
+
+    @JsonProperty("price")
+    public Float getPrice() {
+        return price != 0 ? price : null;
+    }
 
 }

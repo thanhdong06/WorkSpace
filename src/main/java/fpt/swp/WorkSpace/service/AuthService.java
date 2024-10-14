@@ -10,6 +10,7 @@ import fpt.swp.WorkSpace.models.Wallet;
 import fpt.swp.WorkSpace.repository.CustomerRepository;
 import fpt.swp.WorkSpace.repository.UserRepository;
 import fpt.swp.WorkSpace.repository.WalletRepository;
+import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -20,6 +21,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.NoSuchElementException;
 import java.util.UUID;
 
 @Service
@@ -102,12 +104,13 @@ public class AuthService implements IAuthService {
     }
 
     @Override
-    public AuthenticationResponse login(LoginRequest request) {
+    public AuthenticationResponse login(LoginRequest request)  {
         AuthenticationResponse response = new AuthenticationResponse();
         try {
             User user = repository.findByuserName(request.getUserName());
             if (user == null || !passwordEncoder.matches(request.getPassword(), user.getPassword())){
-                throw new IllegalAccessException("User not found or Password do not match");
+                throw new NullPointerException("User not found or Password do not match");
+
             }
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getUserName(), request.getPassword()));
             String jwt = jwtService.generateAccessToken(new HashMap<>(),user.getUsername());
@@ -115,10 +118,9 @@ public class AuthService implements IAuthService {
             response.setStatusCode(200);
             response.setMessage("Successfully Logged In");
             response.setData(user);
-
             response.setAccess_token(jwt);
             response.setRefresh_token(refreshToken);
-        }catch (IllegalAccessException e){
+        }catch (NullPointerException e){
             response.setStatusCode(404);
             response.setMessage(e.getMessage());
             response.setStatus("Error");

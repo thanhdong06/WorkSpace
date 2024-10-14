@@ -29,5 +29,9 @@ public class Building {
     @JsonBackReference
     private List<Room> rooms;
 
+    @OneToMany(mappedBy = "building")
+    @JsonBackReference
+    private List<OrderBooking> orderBookings;
+
 
 }

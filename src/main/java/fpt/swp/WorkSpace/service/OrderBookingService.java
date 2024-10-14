@@ -27,6 +27,9 @@ public class OrderBookingService  implements IOrderBookingService {
     private RoomRepository roomRepository;
 
     @Autowired
+    private BuildingRepository buildingRepository;
+
+    @Autowired
     private CustomerRepository customerRepository;
 
     @Autowired
@@ -40,68 +43,71 @@ public class OrderBookingService  implements IOrderBookingService {
 
     @Autowired
     private OrderBookingDetailRepository orderBookingDetailRepository;
+
     @Autowired
     private ServiceItemsRepository serviceItemsRepository;
 
 
     @Override
-    public List<OrderBookingResponse> getBookedSlotByRoomAndDate(String date, String roomId) {
+    public List<OrderBookingDetailDTO> getBookedSlotByRoomAndDate(String date, String roomId) {
         // get booking list checkin day and room avaiable
-        List<OrderBooking> bookings = orderBookingRepository.getTimeSlotBookedByRoomAndDate( date, roomId);
+        List<OrderBooking> bookings = orderBookingRepository.findTimeSlotBookedByRoomAndDate( date, roomId);
 
 
-        List<OrderBookingResponse> bookingResponsesList = new ArrayList<>();
-
-        if ( bookings.isEmpty()){
-            throw new RuntimeException("Ngay " + date + " phong " + roomId + " chua co booking nao.");
-        }
-        for (OrderBooking orderBooking : bookings){
-            OrderBookingResponse orderBookingResponse = new OrderBookingResponse();
-            orderBookingResponse.setBookingId(orderBooking.getBookingId());
-            orderBookingResponse.setRoomId(orderBooking.getRoom().getRoomId());
-            orderBookingResponse.setCheckinDate(orderBooking.getCheckinDate());
-            orderBookingResponse.setTotalPrice(orderBooking.getTotalPrice());
-
-            // Get all timeslot in Booking
-            List<Integer> timeSlotIdBooked = new ArrayList<>();
-            int countSlot = orderBooking.getSlot().size();
-            for (int i = 0; i < countSlot; i++){
-                timeSlotIdBooked.add(orderBooking.getSlot().get(i).getTimeSlotId());
-            }
-            orderBookingResponse.setSlotId(timeSlotIdBooked);
-            bookingResponsesList.add(orderBookingResponse);
-        }
-        return bookingResponsesList;
-    }
-
-    @Override
-    public List<OrderBookingResponse> getBookedSlotByDate(String date) {
-        // get booking list checkin day and room avaiable
-        List<OrderBooking> bookings = orderBookingRepository.getTimeSlotBookedByDate(date);
-
-
-        List<OrderBookingResponse> bookingResponsesList = new ArrayList<>();
+        List<OrderBookingDetailDTO> bookingList = new ArrayList<>();
 
         if ( bookings.isEmpty()){
             throw new RuntimeException("Ngay " + date + " chua co booking nao.");
         }
         for (OrderBooking orderBooking : bookings){
-            OrderBookingResponse orderBookingResponse = new OrderBookingResponse();
-            orderBookingResponse.setBookingId(orderBooking.getBookingId());
-            orderBookingResponse.setRoomId(orderBooking.getRoom().getRoomId());
-            orderBookingResponse.setCheckinDate(orderBooking.getCheckinDate());
-            orderBookingResponse.setTotalPrice(orderBooking.getTotalPrice());
+            OrderBookingDetailDTO dto = new OrderBookingDetailDTO();
+            dto.setBookingId(orderBooking.getBookingId());
+            dto.setRoomId(orderBooking.getRoom().getRoomId());
+            dto.setCheckinDate(orderBooking.getCheckinDate());
+            dto.setCheckoutDate(orderBooking.getCheckoutDate());
+            dto.setTotalPrice(orderBooking.getTotalPrice());
 
             // Get all timeslot in Booking
-            List<Integer> timeSlotIdBooked = new ArrayList<>();
+            List<TimeSlot> timeSlotIdBooked = new ArrayList<>();
             int countSlot = orderBooking.getSlot().size();
             for (int i = 0; i < countSlot; i++){
-                timeSlotIdBooked.add(orderBooking.getSlot().get(i).getTimeSlotId());
+                timeSlotIdBooked.add(orderBooking.getSlot().get(i));
             }
-            orderBookingResponse.setSlotId(timeSlotIdBooked);
-            bookingResponsesList.add(orderBookingResponse);
+            dto.setSlots(timeSlotIdBooked);
+            bookingList.add(dto);
         }
-        return bookingResponsesList;
+        return bookingList ;
+    }
+
+    @Override
+    public List<OrderBookingDetailDTO> getBookedSlotByDate(String date) {
+        // get booking list checkin day and room avaiable
+        List<OrderBooking> bookings = orderBookingRepository.findBookingsByDate(date);
+
+
+        List<OrderBookingDetailDTO> bookingList = new ArrayList<>();
+
+        if ( bookings.isEmpty()){
+            throw new RuntimeException("Ngay " + date + " chua co booking nao.");
+        }
+        for (OrderBooking orderBooking : bookings){
+            OrderBookingDetailDTO dto = new OrderBookingDetailDTO();
+            dto.setBookingId(orderBooking.getBookingId());
+            dto.setRoomId(orderBooking.getRoom().getRoomId());
+            dto.setCheckinDate(orderBooking.getCheckinDate());
+            dto.setCheckoutDate(orderBooking.getCheckoutDate());
+            dto.setTotalPrice(orderBooking.getTotalPrice());
+
+            // Get all timeslot in Booking
+            List<TimeSlot> timeSlotIdBooked = new ArrayList<>();
+            int countSlot = orderBooking.getSlot().size();
+            for (int i = 0; i < countSlot; i++){
+                timeSlotIdBooked.add(orderBooking.getSlot().get(i));
+            }
+            dto.setSlots(timeSlotIdBooked);
+            bookingList.add(dto);
+        }
+        return bookingList ;
     }
 
 
@@ -146,9 +152,11 @@ public class OrderBookingService  implements IOrderBookingService {
     }
 
     @Override
-    public OrderBooking createMultiOrderBooking(String jwttoken, String roomId, String checkin, String checkout, int slot, String note) {
+    public OrderBooking createMultiOrderBooking(String jwttoken, String buildingId, String roomId, String checkin, String checkout, int slot, MultiValueMap<Integer, Integer> items, String note) {
         String username = jwtService.extractUsername(jwttoken);
-        Customer customer =  customerRepository.findCustomerByUsername(username);
+        Customer customer = customerRepository.findCustomerByUsername(username);
+
+        Building building = buildingRepository.findById(buildingId).get();
 
         Room room = roomRepository.findById(roomId).get();
 
@@ -159,20 +167,18 @@ public class OrderBookingService  implements IOrderBookingService {
         timeSlots.add(timeSlot);
 
         // process total price
-
         LocalDate checkinDate = LocalDate.parse(checkin);
         LocalDate checkoutDate = LocalDate.parse(checkout);
         //days between checkin - checkout
         long numberDays = ChronoUnit.DAYS.between(checkinDate, checkoutDate) + 1;
         System.out.println(numberDays);
-        float totalPrice = room.getPrice() * (int)numberDays;
-
-
+        float totalPrice = room.getPrice() * (int) numberDays;
 
         OrderBooking orderBooking = new OrderBooking();
-        orderBooking.setBookingId(Helper.generateRandomString(0,5));
+        orderBooking.setBookingId(Helper.generateRandomString(0, 5));
         orderBooking.setCustomer(customer);
         orderBooking.setRoom(room);
+        orderBooking.setBuilding(building);
         orderBooking.setCheckinDate(checkin);
         orderBooking.setCheckoutDate(checkout);
         orderBooking.setTotalPrice(totalPrice);
@@ -180,6 +186,33 @@ public class OrderBookingService  implements IOrderBookingService {
         orderBooking.setCreateAt(Helper.convertLocalDateTime());
         orderBooking.setNote(note);
         OrderBooking result = orderBookingRepository.save(orderBooking);
+
+        if (!items.isEmpty()) {
+            // Xử lý items (service id và số lượng)
+            for (Map.Entry<Integer, List<Integer>> entry : items.entrySet()) {
+                Integer serviceId = entry.getKey();
+                List<Integer> quantities = entry.getValue();  // Danh sách số lượng cho cùng một service ID
+
+                // Tìm service tương ứng từ database
+                ServiceItems item = itemsRepository.findById(serviceId).orElseThrow(() -> new RuntimeException("Service not found"));
+
+                // Lưu thông tin chi tiết đơn hàng cho từng số lượng
+                for (Integer quantity : quantities) {
+                    float servicePrice = item.getPrice() * quantity * (int) numberDays;
+                    OrderBookingDetail orderBookingDetail = new OrderBookingDetail();
+                    orderBookingDetail.setBooking(orderBooking);
+                    orderBookingDetail.setService(item);
+                    orderBookingDetail.setBookingServiceQuantity(quantity);
+                    orderBookingDetail.setBookingServicePrice(servicePrice);
+                    totalPrice += servicePrice  ;
+                    orderBookingDetailRepository.save(orderBookingDetail);
+                }
+
+                orderBooking.setTotalPrice(totalPrice);
+                orderBookingRepository.save(orderBooking);
+            }
+
+        }
         return result;
     }
 
