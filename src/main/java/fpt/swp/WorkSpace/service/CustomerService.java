@@ -2,6 +2,7 @@ package fpt.swp.WorkSpace.service;
 
 import fpt.swp.WorkSpace.models.Customer;
 import fpt.swp.WorkSpace.models.User;
+import fpt.swp.WorkSpace.models.Wallet;
 import fpt.swp.WorkSpace.repository.CustomerRepository;
 import fpt.swp.WorkSpace.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -81,5 +82,10 @@ public class CustomerService implements ICustomerService {
         }
         customer.setImgUrl(awsS3Service.saveImgToS3(file));
         customerRepository.save(customer);
+    }
+
+    @Override
+    public Wallet getWalletByUserId(String userId) {
+        return customerRepository.findWalletByUserId(userId);
     }
 }

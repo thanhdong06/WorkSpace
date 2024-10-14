@@ -1,9 +1,11 @@
 package fpt.swp.WorkSpace.service;
 
 import fpt.swp.WorkSpace.configuration.VNPAYConfig;
+import fpt.swp.WorkSpace.models.Customer;
 import fpt.swp.WorkSpace.models.Payment;
 import fpt.swp.WorkSpace.models.Transaction;
 import fpt.swp.WorkSpace.models.Wallet;
+import fpt.swp.WorkSpace.repository.CustomerRepository;
 import fpt.swp.WorkSpace.repository.PaymentRepository;
 import fpt.swp.WorkSpace.repository.TransactionRepository;
 import fpt.swp.WorkSpace.repository.WalletRepository;
@@ -27,13 +29,20 @@ public class VNPAYService {
     private PaymentRepository paymentRepository;
     @Autowired
     private TransactionRepository transactionRepository;
+    @Autowired
+    private CustomerRepository customerRepository;
 
     public String createOrderTopUp(HttpServletRequest request, int amount, String userId, String urlReturn){
+        Customer customer = customerRepository.findCustomerByCustomerId(userId);
+        if (customer == null) {
+            throw new RuntimeException("User not found: " + userId);
+        }
         Payment payment = new Payment();
         payment.setPaymentId(UUID.randomUUID().toString());
         payment.setAmount(amount);
         payment.setStatus("pending");
         payment.setPaymentMethod("VNPay");
+        payment.setCustomer(customer);
         paymentRepository.save(payment);
 
         //Các bạn có thể tham khảo tài liệu hướng dẫn và điều chỉnh các tham số
@@ -146,18 +155,24 @@ public class VNPAYService {
                 walletService.updateWalletBalance(userId, amount);
                 currentWalletBalance = walletService.getWalletBalance(userId);
 
+                Customer customer = customerRepository.findCustomerByCustomerId(userId);
+                if (customer == null) {
+                    throw new RuntimeException("User not found: " + userId);
+                }
                 Payment payment = new Payment();
                 payment.setPaymentId(UUID.randomUUID().toString());
                 payment.setAmount((int) amount);
                 payment.setStatus("completed");
                 payment.setPaymentMethod("VNPay");
                 payment.setTransactionId(transactionId);
+                payment.setCustomer(customer);
                 paymentRepository.save(payment);
 
                 Transaction transaction = new Transaction();
                 transaction.setTransactionId(transactionId);
                 transaction.setAmount(amount);
                 transaction.setStatus("completed");
+                transaction.setType("TopUp");
                 transaction.setPayment(payment);
 
                 transactionRepository.save(transaction);
