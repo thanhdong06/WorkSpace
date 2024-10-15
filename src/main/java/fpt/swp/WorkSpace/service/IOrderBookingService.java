@@ -1,5 +1,6 @@
 package fpt.swp.WorkSpace.service;
 
+import fpt.swp.WorkSpace.DTO.BookedSlotDTO;
 import fpt.swp.WorkSpace.DTO.CustomerServiceDTO;
 import fpt.swp.WorkSpace.DTO.OrderBookingDetailDTO;
 import fpt.swp.WorkSpace.models.OrderBooking;
@@ -16,6 +17,8 @@ public interface IOrderBookingService {
     List<OrderBookingDetailDTO> getBookedSlotByDate(String date);
 
     List<OrderBookingDetailDTO> getBookedSlotByCheckinAndCheckout(String checkin, String checkout, String roomId);
+
+    BookedSlotDTO getBookedSlotByEachDay(String checkin, String checkout, String roomId);
 
     OrderBooking createOrderBooking(String jwttoken, String roomId, String date, List<Integer> slotBooking, String note);
 

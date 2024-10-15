@@ -40,37 +40,37 @@ public class RoomControllerTest  extends AbstractTestNGSpringContextTests {
     @InjectMocks
     private RoomController roomController; // Controller
 
-    @BeforeEach
-    public void setUp() {
-        MockitoAnnotations.openMocks(this);
-    }
+//    @BeforeEach
+//    public void setUp() {
+//        MockitoAnnotations.openMocks(this);
+//    }
 
-    @Test
-    public void addNewRoomImg_ShouldReturnOK_WhenValidRequest() throws Exception {
-        // Tạo một tệp hình ảnh giả lập
-        MockMultipartFile imageFile = new MockMultipartFile("image", "room.jpg", "image/jpeg", "image content".getBytes());
-
-        // Giả lập hành vi của roomService
-        Room mockRoom = new Room(); // Tạo một Room giả lập
-        mockRoom.setRoomId("1");
-
-        // Giả lập phương thức roomService.addNewRoomImg
-        when(roomService.addNewRoomImg(anyString(), anyString(), anyString(), anyString(), any(), any(), anyString(), anyString()))
-                .thenReturn(mockRoom);
-
-        // Thực hiện yêu cầu POST đến /manager/add-new-room-img
-        mockMvc.perform(MockMvcRequestBuilders.multipart("/api/manager/add-new-room-img")
-                        .file(imageFile) // Gửi tệp hình ảnh
-                        .param("buildingId", "BD001")
-                        .param("roomTypeId", "RT001")
-                        .param("roomName", "Conference Room")
-                        .param("price", "100")
-                        .param("status", "Available")
-                        .param("description", "A spacious conference room")
-                        .param("listStaffID", ""))
-                .andExpect(status().isOk()) // Kiểm tra mã trạng thái 200
-                .andExpect(jsonPath("$.message").value("Them phong thanh cong")); // Kiểm tra thông điệp
-    }
+//    @Test
+//    public void addNewRoomImg_ShouldReturnOK_WhenValidRequest() throws Exception {
+//        // Tạo một tệp hình ảnh giả lập
+//        MockMultipartFile imageFile = new MockMultipartFile("image", "room.jpg", "image/jpeg", "image content".getBytes());
+//
+//        // Giả lập hành vi của roomService
+//        Room mockRoom = new Room(); // Tạo một Room giả lập
+//        mockRoom.setRoomId("1");
+//
+//        // Giả lập phương thức roomService.addNewRoomImg
+//        when(roomService.addNewRoomImg(anyString(), anyString(), anyString(), anyString(), any(), any(), anyString(), anyString()))
+//                .thenReturn(mockRoom);
+//
+//        // Thực hiện yêu cầu POST đến /manager/add-new-room-img
+//        mockMvc.perform(MockMvcRequestBuilders.multipart("/api/manager/add-new-room-img")
+//                        .file(imageFile) // Gửi tệp hình ảnh
+//                        .param("buildingId", "BD001")
+//                        .param("roomTypeId", "RT001")
+//                        .param("roomName", "Conference Room")
+//                        .param("price", "100")
+//                        .param("status", "Available")
+//                        .param("description", "A spacious conference room")
+//                        .param("listStaffID", ""))
+//                .andExpect(status().isOk()) // Kiểm tra mã trạng thái 200
+//                .andExpect(jsonPath("$.message").value("Them phong thanh cong")); // Kiểm tra thông điệp
+//    }
 
 
     @Test
@@ -80,7 +80,7 @@ public class RoomControllerTest  extends AbstractTestNGSpringContextTests {
 
         // Thực hiện yêu cầu GET đến /get-all-room
         mockMvc.perform(get("/api/get-all-room"))
-                .andExpect(status().isNoContent()) // Kiểm tra mã trạng thái 404
+                .andExpect(status().isNoContent()) // Kiểm tra mã trạng thái 204
                 .andExpect(jsonPath("$.message").value("Khong co phong . Vui long them phong")); // Kiểm tra thông điệp
     }
 

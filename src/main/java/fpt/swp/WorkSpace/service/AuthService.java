@@ -111,7 +111,7 @@ public class AuthService implements IAuthService {
             User user = repository.findByuserName(request.getUserName());
             if (user == null || !passwordEncoder.matches(request.getPassword(), user.getPassword())){
                 throw new NullPointerException("User not found or Password do not match");
-            }else{
+            }
                 authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getUserName(), request.getPassword()));
                 String jwt = jwtService.generateAccessToken(new HashMap<>(),user.getUsername());
                 String refreshToken = jwtService.generateRefreshToken(user.getUsername());
@@ -121,7 +121,7 @@ public class AuthService implements IAuthService {
                 response.setAccess_token(jwt);
                 response.setRefresh_token(refreshToken);
                 return response;
-            }
+
 //        }catch (NullPointerException e){
 //            response.setStatusCode(404);
 //            response.setMessage(e.getMessage());
