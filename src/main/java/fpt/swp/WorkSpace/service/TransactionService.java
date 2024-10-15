@@ -17,7 +17,7 @@ public class TransactionService {
     public List<TransactionResponse> getAllTransactionsByUserId(String userId) {
         List<Transaction> transactions = transactionRepository.findAllByUserId(userId);
         return transactions.stream()
-                .map(tx -> new TransactionResponse(tx.getTransactionId(), tx.getAmount(), tx.getStatus(), tx.getType(), tx.getPayment().getPaymentId()))
+                .map(tx -> new TransactionResponse(tx.getTransactionId(), tx.getAmount(), tx.getStatus(), tx.getType(), tx.getPayment().getPaymentId(), tx.getTransaction_time()))
                 .collect(Collectors.toList());
     }
 }
