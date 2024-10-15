@@ -170,11 +170,14 @@ public class OrderBookingService  implements IOrderBookingService {
                     for (TimeSlot timeSlot : timeSlotBooked){
                         int slotId = timeSlot.getTimeSlotId();
                         timeSlotIdBooked.add(slotId);
+                        System.out.println(timeSlotIdBooked);
                     }
+
                 }
+                // put avaiable date and slot id to map
+                mapBookedSlots.put(bookingDateStr, timeSlotIdBooked);
             }
-            // put date and slot id to map
-            mapBookedSlots.put(bookingDateStr, timeSlotIdBooked);
+
 
         });
         bookedSlotDTO.setBookedSlots(mapBookedSlots);
