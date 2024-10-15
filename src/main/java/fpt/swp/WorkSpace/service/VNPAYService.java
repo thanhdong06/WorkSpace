@@ -19,6 +19,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
@@ -173,6 +174,7 @@ public class VNPAYService {
                 transaction.setAmount(amount);
                 transaction.setStatus("completed");
                 transaction.setType("TopUp");
+                transaction.setTransaction_time(LocalDateTime.now());
                 transaction.setPayment(payment);
 
                 transactionRepository.save(transaction);

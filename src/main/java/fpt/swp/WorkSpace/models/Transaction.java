@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Table(name = "transaction")
 @Getter
@@ -24,7 +26,11 @@ public class Transaction {
     @Column(nullable = false)
     private String type = "TopUp"; //TopUp, pay for Order
 
+    @Column(name = "transaction_time", nullable = false)
+    private LocalDateTime transaction_time;
+
     @ManyToOne
     @JoinColumn(name = "payment_id", referencedColumnName = "payment_id")
     private Payment payment;
+
 }
