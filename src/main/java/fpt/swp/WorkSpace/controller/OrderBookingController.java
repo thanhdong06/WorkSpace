@@ -69,6 +69,17 @@ public class OrderBookingController {
             return ResponseHandler.responseBuilder(e.getMessage(), HttpStatus.NOT_FOUND);
         }
     }
+    @GetMapping("/check-booked-slot-in-out")
+    public ResponseEntity<Object> getBookedSlotByInOut(@RequestParam("checkinDate") String checkinDate,
+                                                       @RequestParam("checkoutDate") String checkoutDate,
+                                                       @RequestParam("roomId") String roomId) {
+        try{
+            List<OrderBookingDetailDTO> bookedList = orderBookingService.getBookedSlotByCheckinAndCheckout(checkinDate, checkoutDate, roomId);
+            return ResponseHandler.responseBuilder("ok", HttpStatus.OK, bookedList);
+        } catch (RuntimeException e) {
+            return ResponseHandler.responseBuilder(e.getMessage(), HttpStatus.NOT_FOUND);
+        }
+    }
 
 
 

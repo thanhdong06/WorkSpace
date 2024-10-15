@@ -33,26 +33,28 @@ public class CustomerControllerTest extends AbstractTestNGSpringContextTests {
     @Autowired
     private ObjectMapper objectMapper;
 
-//    @Test
-//    public void register_ShouldReturnOK_WhenValidRequest() throws Exception {
-//        // Tạo một yêu cầu đăng ký hợp lệ
-//        RegisterRequest registerRequest = new RegisterRequest();
-//        registerRequest.setUserName("bao02");
-//        registerRequest.setPassword("123456");
-//        registerRequest.setFullName("Quoc Bao");
-//        registerRequest.setPhoneNumber("091273485");
-//        registerRequest.setRole("CUSTOMER");
-//
-//        // Chuyển request thành JSON
-//        String requestJson = objectMapper.writeValueAsString(registerRequest);
-//
-//        // Thực hiện POST request và kiểm tra phản hồi
-//        mockMvc.perform(post("/api/auth/register")
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .content(requestJson))
-//                .andExpect(status().isOk()) // Kiểm tra mã trạng thái HTTP là 200
-//                .andExpect(jsonPath("$.statusCode").value(200));
-//    }
+
+
+    @Test
+    public void register_ShouldReturnOK_WhenValidRequest() throws Exception {
+        // Tạo một yêu cầu đăng ký hợp lệ
+        RegisterRequest registerRequest = new RegisterRequest();
+        registerRequest.setUserName("bao02");
+        registerRequest.setPassword("123456");
+        registerRequest.setFullName("Quoc Bao");
+        registerRequest.setPhoneNumber("091273485");
+        registerRequest.setRole("CUSTOMER");
+
+        // Chuyển request thành JSON
+        String requestJson = objectMapper.writeValueAsString(registerRequest);
+
+        // Thực hiện POST request và kiểm tra phản hồi
+        mockMvc.perform(post("/api/auth/register")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestJson))
+                .andExpect(status().isOk()) // Kiểm tra mã trạng thái HTTP là 200
+                .andExpect(jsonPath("$.statusCode").value(200));
+    }
 
     @Test
     public void register_ShouldReturnBadRequest_WhenInvalidRequest() throws Exception {

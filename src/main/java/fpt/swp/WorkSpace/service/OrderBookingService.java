@@ -65,7 +65,7 @@ public class OrderBookingService  implements IOrderBookingService {
             dto.setRoomId(orderBooking.getRoom().getRoomId());
             dto.setCheckinDate(orderBooking.getCheckinDate());
             dto.setCheckoutDate(orderBooking.getCheckoutDate());
-            dto.setTotalPrice(orderBooking.getTotalPrice());
+
 
             // Get all timeslot in Booking
             List<TimeSlot> timeSlotIdBooked = new ArrayList<>();
@@ -89,6 +89,36 @@ public class OrderBookingService  implements IOrderBookingService {
 
         if ( bookings.isEmpty()){
             throw new RuntimeException("Ngay " + date + " chua co booking nao.");
+        }
+        for (OrderBooking orderBooking : bookings){
+            OrderBookingDetailDTO dto = new OrderBookingDetailDTO();
+            dto.setBookingId(orderBooking.getBookingId());
+            dto.setRoomId(orderBooking.getRoom().getRoomId());
+            dto.setCheckinDate(orderBooking.getCheckinDate());
+            dto.setCheckoutDate(orderBooking.getCheckoutDate());
+
+            // Get all timeslot in Booking
+            List<TimeSlot> timeSlotIdBooked = new ArrayList<>();
+            int countSlot = orderBooking.getSlot().size();
+            for (int i = 0; i < countSlot; i++){
+                timeSlotIdBooked.add(orderBooking.getSlot().get(i));
+            }
+            dto.setSlots(timeSlotIdBooked);
+            bookingList.add(dto);
+        }
+        return bookingList ;
+    }
+
+    @Override
+    public List<OrderBookingDetailDTO> getBookedSlotByCheckinAndCheckout(String checkin, String checkout, String roomId) {
+        // get booking list checkin day and room avaiable
+        List<OrderBooking> bookings = orderBookingRepository.findBookingsByInOutDate(checkin, checkout);
+
+
+        List<OrderBookingDetailDTO> bookingList = new ArrayList<>();
+
+        if ( bookings.isEmpty()){
+            throw new RuntimeException("Tu ngay " + checkin +" toi ngay " + checkout  + " chua co booking nao.");
         }
         for (OrderBooking orderBooking : bookings){
             OrderBookingDetailDTO dto = new OrderBookingDetailDTO();
