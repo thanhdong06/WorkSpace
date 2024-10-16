@@ -1,21 +1,19 @@
 package fpt.swp.WorkSpace.service;
 
+import fpt.swp.WorkSpace.DTO.BookedSlotDTO;
 import fpt.swp.WorkSpace.DTO.CustomerServiceDTO;
 import fpt.swp.WorkSpace.DTO.OrderBookingDetailDTO;
 import fpt.swp.WorkSpace.models.*;
 import fpt.swp.WorkSpace.repository.*;
-import fpt.swp.WorkSpace.response.OrderBookingResponse;
 import fpt.swp.WorkSpace.util.Helper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.MultiValueMap;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.IntStream;
 
 @Service
@@ -65,7 +63,7 @@ public class OrderBookingService  implements IOrderBookingService {
             dto.setRoomId(orderBooking.getRoom().getRoomId());
             dto.setCheckinDate(orderBooking.getCheckinDate());
             dto.setCheckoutDate(orderBooking.getCheckoutDate());
-            dto.setTotalPrice(orderBooking.getTotalPrice());
+
 
             // Get all timeslot in Booking
             List<TimeSlot> timeSlotIdBooked = new ArrayList<>();
@@ -96,6 +94,36 @@ public class OrderBookingService  implements IOrderBookingService {
             dto.setRoomId(orderBooking.getRoom().getRoomId());
             dto.setCheckinDate(orderBooking.getCheckinDate());
             dto.setCheckoutDate(orderBooking.getCheckoutDate());
+
+            // Get all timeslot in Booking
+            List<TimeSlot> timeSlotIdBooked = new ArrayList<>();
+            int countSlot = orderBooking.getSlot().size();
+            for (int i = 0; i < countSlot; i++){
+                timeSlotIdBooked.add(orderBooking.getSlot().get(i));
+            }
+            dto.setSlots(timeSlotIdBooked);
+            bookingList.add(dto);
+        }
+        return bookingList ;
+    }
+
+    @Override
+    public List<OrderBookingDetailDTO> getBookedSlotByCheckinAndCheckout(String checkin, String checkout, String roomId) {
+        // get booking list checkin day and room avaiable
+        List<OrderBooking> bookings = orderBookingRepository.findBookingsByInOutDate(checkin, checkout);
+
+
+        List<OrderBookingDetailDTO> bookingList = new ArrayList<>();
+
+        if ( bookings.isEmpty()){
+            throw new RuntimeException("Tu ngay " + checkin +" toi ngay " + checkout  + " chua co booking nao.");
+        }
+        for (OrderBooking orderBooking : bookings){
+            OrderBookingDetailDTO dto = new OrderBookingDetailDTO();
+            dto.setBookingId(orderBooking.getBookingId());
+            dto.setRoomId(orderBooking.getRoom().getRoomId());
+            dto.setCheckinDate(orderBooking.getCheckinDate());
+            dto.setCheckoutDate(orderBooking.getCheckoutDate());
             dto.setTotalPrice(orderBooking.getTotalPrice());
 
             // Get all timeslot in Booking
@@ -108,6 +136,54 @@ public class OrderBookingService  implements IOrderBookingService {
             bookingList.add(dto);
         }
         return bookingList ;
+    }
+
+    @Override
+    public BookedSlotDTO getBookedSlotByEachDay(String checkin, String checkout, String roomId) {
+            BookedSlotDTO bookedSlotDTO = new BookedSlotDTO();
+            Map<String, ArrayList<Integer>> mapBookedSlots = new LinkedHashMap<>();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+        LocalDate checkinDate = LocalDate.parse(checkin);
+        LocalDate checkoutDate = LocalDate.parse(checkout);
+
+        long numberOfDays = ChronoUnit.DAYS.between(checkinDate, checkoutDate) + 1 ;
+
+        IntStream.range(0, (int) numberOfDays).forEach(i -> {
+            // increase date
+            LocalDate bookingDate = checkinDate.plusDays(i);
+            String bookingDateStr = bookingDate.format(formatter);
+            ArrayList<Integer> timeSlotIdBooked = new ArrayList<>();
+
+            // get all booked in a day
+            List<OrderBooking> bookings = orderBookingRepository.findBookingsByDate(bookingDateStr);
+            if (!bookings.isEmpty()){
+
+                // loop each booking in day
+                for (OrderBooking orderBooking : bookings){
+                    // get all timeslot booked in each booking
+                    List<TimeSlot> timeSlotBooked = orderBooking.getSlot();
+
+                    // create a list to save timeslotId
+
+                    // loop each slot, get slot id
+                    for (TimeSlot timeSlot : timeSlotBooked){
+                        int slotId = timeSlot.getTimeSlotId();
+                        timeSlotIdBooked.add(slotId);
+                        System.out.println(timeSlotIdBooked);
+                    }
+
+                }
+                // put avaiable date and slot id to map
+                mapBookedSlots.put(bookingDateStr, timeSlotIdBooked);
+            }
+
+
+        });
+        bookedSlotDTO.setBookedSlots(mapBookedSlots);
+
+
+        return bookedSlotDTO ;
     }
 
 
@@ -139,14 +215,7 @@ public class OrderBookingService  implements IOrderBookingService {
         orderBooking.setNote(note);
         OrderBooking result = orderBookingRepository.save(orderBooking);      // saved
 
-//        OrderBookingResponse orderBookingResponse = new OrderBookingResponse();
-//        orderBookingResponse.setBookingId(orderBooking.getBookingId());
-//        orderBookingResponse.setCustomerId(customer.getUserId());
-//        orderBookingResponse.setRoomId(room.getRoomId());
-//        orderBookingResponse.setSlotId(slotBooking);
-//        orderBookingResponse.setCheckinDate(orderBooking.getCheckinDate());
-//        orderBookingResponse.setTotalPrice(orderBooking.getTotalPrice());
-//        orderBookingResponse.setNote(orderBooking.getNote());
+
 
         return result;
     }
@@ -187,6 +256,7 @@ public class OrderBookingService  implements IOrderBookingService {
         orderBooking.setTotalPrice(totalPrice);
         orderBooking.setSlot(timeSlots);
         orderBooking.setCreateAt(Helper.convertLocalDateTime());
+        orderBooking.setStatus(BookingStatus.UPCOMING);
         orderBooking.setNote(note);
         OrderBooking result = orderBookingRepository.save(orderBooking);
 

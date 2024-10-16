@@ -40,10 +40,10 @@ public class RoomControllerTest  extends AbstractTestNGSpringContextTests {
     @InjectMocks
     private RoomController roomController; // Controller
 
-    @BeforeEach
-    public void setUp() {
-        MockitoAnnotations.openMocks(this);
-    }
+//    @BeforeEach
+//    public void setUp() {
+//        MockitoAnnotations.openMocks(this);
+//    }
 
 //    @Test
 //    public void addNewRoomImg_ShouldReturnOK_WhenValidRequest() throws Exception {
@@ -80,7 +80,7 @@ public class RoomControllerTest  extends AbstractTestNGSpringContextTests {
 
         // Thực hiện yêu cầu GET đến /get-all-room
         mockMvc.perform(get("/api/get-all-room"))
-                .andExpect(status().isNoContent()) // Kiểm tra mã trạng thái 404
+                .andExpect(status().isNoContent()) // Kiểm tra mã trạng thái 204
                 .andExpect(jsonPath("$.message").value("Khong co phong . Vui long them phong")); // Kiểm tra thông điệp
     }
 

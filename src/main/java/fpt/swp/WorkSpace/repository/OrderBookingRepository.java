@@ -25,6 +25,11 @@ public interface OrderBookingRepository extends JpaRepository<OrderBooking, Stri
     @Query("SELECT b FROM OrderBooking b WHERE  b.checkinDate <= ?1 AND b.checkoutDate >= ?1 ")
     List<OrderBooking> findBookingsByDate(String booking);
 
+
+    @Query("SELECT b FROM OrderBooking b WHERE  b.checkinDate <= :checkout AND b.checkoutDate >= :checkin ")
+    List<OrderBooking> findBookingsByInOutDate(@Param("checkin") String checkinDate,
+                                               @Param("checkout") String checkoutDate);
+
     @Query("SELECT b FROM OrderBooking b where (b.customer.user.userName = ?1) ")
     List<OrderBooking> getCustomerHistoryBooking(String username );
 

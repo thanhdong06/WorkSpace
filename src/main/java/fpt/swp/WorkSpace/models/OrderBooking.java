@@ -54,7 +54,7 @@ public class OrderBooking {
         private String note;
 
         @Enumerated(EnumType.STRING)
-        private BookingStatus status = BookingStatus.UPCOMING;
+        private BookingStatus status ;
 
         @OneToMany(mappedBy = "booking")
         @JsonIgnore

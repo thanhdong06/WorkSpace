@@ -1,5 +1,6 @@
 package fpt.swp.WorkSpace.controller;
 
+import fpt.swp.WorkSpace.DTO.BookedSlotDTO;
 import fpt.swp.WorkSpace.DTO.CustomerServiceDTO;
 import fpt.swp.WorkSpace.DTO.OrderBookingDetailDTO;
 import fpt.swp.WorkSpace.models.OrderBooking;
@@ -64,6 +65,30 @@ public class OrderBookingController {
     public ResponseEntity<Object> getBookedSlotByDate(@RequestParam("checkinDate") String checkinDate) {
         try{
             List<OrderBookingDetailDTO> bookedList = orderBookingService.getBookedSlotByDate(checkinDate);
+            return ResponseHandler.responseBuilder("ok", HttpStatus.OK, bookedList);
+        } catch (RuntimeException e) {
+            return ResponseHandler.responseBuilder(e.getMessage(), HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @GetMapping("/check-booked-slot-in-out")
+    public ResponseEntity<Object> getBookedSlotByInOut(@RequestParam("checkinDate") String checkinDate,
+                                                       @RequestParam("checkoutDate") String checkoutDate,
+                                                       @RequestParam("roomId") String roomId) {
+        try{
+            List<OrderBookingDetailDTO> bookedList = orderBookingService.getBookedSlotByCheckinAndCheckout(checkinDate, checkoutDate, roomId);
+            return ResponseHandler.responseBuilder("ok", HttpStatus.OK, bookedList);
+        } catch (RuntimeException e) {
+            return ResponseHandler.responseBuilder(e.getMessage(), HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @GetMapping("/check-booked-slot-each-date")
+    public ResponseEntity<Object> getBookedSlotEachDate(@RequestParam("checkinDate") String checkinDate,
+                                                       @RequestParam("checkoutDate") String checkoutDate,
+                                                       @RequestParam("roomId") String roomId) {
+        try{
+            BookedSlotDTO bookedList = orderBookingService.getBookedSlotByEachDay(checkinDate, checkoutDate, roomId);
             return ResponseHandler.responseBuilder("ok", HttpStatus.OK, bookedList);
         } catch (RuntimeException e) {
             return ResponseHandler.responseBuilder(e.getMessage(), HttpStatus.NOT_FOUND);
