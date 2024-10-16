@@ -1,5 +1,6 @@
 package fpt.swp.WorkSpace.service;
 
+import fpt.swp.WorkSpace.DTO.BookedSlotDTO;
 import fpt.swp.WorkSpace.DTO.CustomerServiceDTO;
 import fpt.swp.WorkSpace.DTO.OrderBookingDetailDTO;
 import fpt.swp.WorkSpace.models.*;
@@ -12,12 +13,13 @@ import org.springframework.util.MultiValueMap;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.IntStream;
 
 @Service
-public class OrderBookingService  implements IOrderBookingService {
+public class OrderBookingService implements IOrderBookingService {
     @Autowired
     private OrderBookingRepository orderBookingRepository;
 
@@ -115,6 +117,57 @@ public class OrderBookingService  implements IOrderBookingService {
         }
         return bookingList ;
     }
+
+    @Override
+    public List<OrderBookingDetailDTO> getBookedSlotByCheckinAndCheckout(String checkin, String checkout, String roomId) {
+        // get booking list checkin day and room avaiable
+        List<OrderBooking> bookings = orderBookingRepository.findBookingsByInOutDate(checkin, checkout);
+        List<OrderBookingDetailDTO> bookingList = new ArrayList<>();
+        if (bookings.isEmpty()) {
+            throw new RuntimeException("Tu ngay " + checkin + " toi ngay " + checkout + " chua co booking nao.");
+        }
+        for (OrderBooking orderBooking : bookings) {
+            OrderBookingDetailDTO dto = new OrderBookingDetailDTO();
+            dto.setBookingId(orderBooking.getBookingId());
+        }return bookingList;
+    }
+
+
+        @Override
+        public BookedSlotDTO getBookedSlotByEachDay(String checkin, String checkout, String roomId) {
+            BookedSlotDTO bookedSlotDTO = new BookedSlotDTO();
+            Map<String, ArrayList<Integer>> mapBookedSlots = new LinkedHashMap<>();
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            LocalDate checkinDate = LocalDate.parse(checkin);
+            LocalDate checkoutDate = LocalDate.parse(checkout);
+            long numberOfDays = ChronoUnit.DAYS.between(checkinDate, checkoutDate) + 1 ;
+            IntStream.range(0, (int) numberOfDays).forEach(i -> {
+                // increase date
+                LocalDate bookingDate = checkinDate.plusDays(i);
+                String bookingDateStr = bookingDate.format(formatter);
+                ArrayList<Integer> timeSlotIdBooked = new ArrayList<>();
+                // get all booked in a day
+                List<OrderBooking> bookings = orderBookingRepository.findBookingsByDate(bookingDateStr);
+                if (!bookings.isEmpty()){
+                    // loop each booking in day
+                    for (OrderBooking orderBooking : bookings){
+                        // get all timeslot booked in each booking
+                        List<TimeSlot> timeSlotBooked = orderBooking.getSlot();
+                        // create a list to save timeslotId
+                        // loop each slot, get slot id
+                        for (TimeSlot timeSlot : timeSlotBooked){
+                            int slotId = timeSlot.getTimeSlotId();
+                            timeSlotIdBooked.add(slotId);
+                            System.out.println(timeSlotIdBooked);
+                        }
+                    }
+                    // put avaiable date and slot id to map
+                    mapBookedSlots.put(bookingDateStr, timeSlotIdBooked);
+                }
+            });
+            bookedSlotDTO.setBookedSlots(mapBookedSlots);
+            return bookedSlotDTO ;
+        }
 
 
     @Override
