@@ -216,6 +216,16 @@ public class OrderBookingService implements IOrderBookingService {
         String username = jwtService.extractUsername(jwttoken);
         Customer customer = customerRepository.findCustomerByUsername(username);
 
+        UserNumberShip membership = customer.getMembership();
+        float discount = 0.0f;
+
+        if (membership != null) {
+            if ("Gold".equalsIgnoreCase(membership.getMembershipName())) {
+                discount = 0.1f;
+            } else if ("Silver".equalsIgnoreCase(membership.getMembershipName())) {
+                discount = 0.05f;
+            }
+        }
         Building building = buildingRepository.findById(buildingId).get();
 
         Room room = roomRepository.findById(roomId).get();
@@ -235,7 +245,8 @@ public class OrderBookingService implements IOrderBookingService {
         //days between checkin - checkout
         long numberDays = ChronoUnit.DAYS.between(checkinDate, checkoutDate) + 1;
         System.out.println(numberDays);
-        float totalPrice = room.getPrice() * countSlot * (int) numberDays;
+        float roomPrice  = room.getPrice() * countSlot * (int) numberDays;
+        float servicePriceTotal = 0.0f;
 
         OrderBooking orderBooking = new OrderBooking();
         orderBooking.setBookingId(Helper.generateRandomString(0, 5));
@@ -244,7 +255,6 @@ public class OrderBookingService implements IOrderBookingService {
         orderBooking.setBuilding(building);
         orderBooking.setCheckinDate(checkin);
         orderBooking.setCheckoutDate(checkout);
-        orderBooking.setTotalPrice(totalPrice);
         orderBooking.setSlot(timeSlots);
         orderBooking.setCreateAt(Helper.convertLocalDateTime());
         orderBooking.setNote(note);
@@ -267,23 +277,25 @@ public class OrderBookingService implements IOrderBookingService {
                     orderBookingDetail.setService(item);
                     orderBookingDetail.setBookingServiceQuantity(quantity);
                     orderBookingDetail.setBookingServicePrice(servicePrice);
-                    totalPrice += servicePrice  ;
+                    servicePriceTotal += servicePrice  ;
                     orderBookingDetailRepository.save(orderBookingDetail);
                 }
-
-                orderBooking.setTotalPrice(totalPrice);
-                System.out.println(totalPrice);
-                orderBookingRepository.save(orderBooking);
             }
-            Wallet wallet = walletRepository.findByUserId(customer.getUserId())
-                    .orElseThrow(() -> new RuntimeException("Wallet not found"));
-            if (wallet.getAmount() < totalPrice) {
+            float totalPriceWithServices = roomPrice + servicePriceTotal;
+            // Áp dụng giảm giá dựa trên loại membership
+            totalPriceWithServices -= totalPriceWithServices  * discount;
+
+            orderBooking.setTotalPrice(totalPriceWithServices);
+            orderBookingRepository.save(orderBooking);
+                Wallet wallet = walletRepository.findByUserId(customer.getUserId())
+                        .orElseThrow(() -> new RuntimeException("Wallet not found"));
+            if (wallet.getAmount() < totalPriceWithServices) {
                 throw new RuntimeException("Not enough money in the wallet");
             }
 
             Payment payment = new Payment();
             payment.setPaymentId(UUID.randomUUID().toString());
-            payment.setAmount((int) totalPrice);
+            payment.setAmount((int) totalPriceWithServices);
             payment.setStatus("completed");
             payment.setPaymentMethod("wallet");
             payment.setOrderBookingId(orderBooking.getBookingId());
@@ -292,7 +304,7 @@ public class OrderBookingService implements IOrderBookingService {
 
             Transaction transaction = new Transaction();
             transaction.setTransactionId(UUID.randomUUID().toString());
-            transaction.setAmount(totalPrice);
+            transaction.setAmount(totalPriceWithServices);
             transaction.setStatus("completed");
             transaction.setType("pay for Order");
             transaction.setTransaction_time(LocalDateTime.now());
@@ -301,7 +313,7 @@ public class OrderBookingService implements IOrderBookingService {
             paymentRepository.save(payment);
             transactionRepository.save(transaction);
             // Trừ tiền trong ví
-            wallet.setAmount(wallet.getAmount() - totalPrice);
+            wallet.setAmount(wallet.getAmount() - totalPriceWithServices);
             walletRepository.save(wallet);
         }
         return result;
