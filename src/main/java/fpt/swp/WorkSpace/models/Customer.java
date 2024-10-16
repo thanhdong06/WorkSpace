@@ -45,8 +45,8 @@ public class Customer  {
 
 
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "membershipID", referencedColumnName = "membershipID")
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "membership_id", referencedColumnName = "membership_id")
     private UserNumberShip membership;
 
     public String getRoleName() {
