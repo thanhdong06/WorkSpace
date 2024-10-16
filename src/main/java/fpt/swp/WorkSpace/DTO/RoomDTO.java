@@ -10,6 +10,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Data
@@ -18,15 +19,12 @@ import java.util.List;
 public class RoomDTO {
     private String roomId;
     private String roomName;
-    private float price;
+    private String price;
     private String[] roomImg;
     private String description;
     private String building;
     private String roomType;
 
-    @JsonProperty("price")
-    public Float getPrice() {
-        return price != 0 ? price : null;
-    }
+
 
 }

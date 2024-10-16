@@ -7,6 +7,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
@@ -21,7 +22,7 @@ public class OrderBookingDetailDTO {
         private String createAt;
         private String checkinDate;
         private String checkoutDate;
-        private float totalPrice;
+        private String totalPrice;
         private String note;
         private String status;
         private Map<String, Integer> serviceItems;

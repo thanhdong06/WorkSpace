@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Entity
@@ -21,7 +22,7 @@ public class Room {
 
     private String roomName;
 
-    private float price;
+    private BigDecimal price;
 
     @Column(nullable = false)
     private String creationTime;

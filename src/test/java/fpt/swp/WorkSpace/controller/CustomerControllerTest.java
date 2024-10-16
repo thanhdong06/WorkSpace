@@ -6,12 +6,14 @@ import fpt.swp.WorkSpace.auth.RegisterRequest;
 import fpt.swp.WorkSpace.service.AuthService;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
+import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.testng.AbstractTestNGSpringContextTests;
 import org.springframework.test.web.servlet.MockMvc;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import java.util.NoSuchElementException;
@@ -33,7 +35,16 @@ public class CustomerControllerTest extends AbstractTestNGSpringContextTests {
     @Autowired
     private ObjectMapper objectMapper;
 
+    @BeforeMethod
+    public void setUp() {
+        MockitoAnnotations.openMocks(this);
+    }
 
+    // TEST CASE 01
+    // DESCRIPTION: CHECK THE register() METHOD WITH A VALID REQUEST
+    //              Ensure that a valid registration request returns an HTTP 200 status code.
+    // STEPS/PROCEDURES: CALL register() WITH ARG registerRequest INCLUDING username, password, fullName, phoneNumber, and role.
+    // EXPECTED RESULT: RETURN HTTP STATUS CODE 200 AND STATUS CODE 200.
 
 //    @Test
 //    public void register_ShouldReturnOK_WhenValidRequest() throws Exception {
@@ -56,6 +67,13 @@ public class CustomerControllerTest extends AbstractTestNGSpringContextTests {
 //                .andExpect(jsonPath("$.statusCode").value(200));
 //    }
 
+
+    // TEST CASE 02
+    // DESCRIPTION: CHECK THE register() METHOD WITH AN INVALID REQUEST
+    //              Ensure that a request missing necessary information returns an HTTP 400 status code.
+    // STEPS/PROCEDURES: CALL register() WITH ARG registerRequest MISSING username.
+    // EXPECTED RESULT: RETURN HTTP STATUS CODE 400 AND STATUS CODE 400.
+
     @Test
     public void register_ShouldReturnBadRequest_WhenInvalidRequest() throws Exception {
         // Tạo yêu cầu không hợp lệ (ví dụ thiếu username)
@@ -70,6 +88,13 @@ public class CustomerControllerTest extends AbstractTestNGSpringContextTests {
                 .andExpect(status().isBadRequest()) // Kiểm tra mã trạng thái HTTP 400
                 .andExpect(jsonPath("$.statusCode").value(400));
     }
+
+
+    // TEST CASE 03
+    // DESCRIPTION: CHECK THE login() METHOD WITH A VALID LOGIN REQUEST
+    //              Ensure that a valid login request returns an HTTP 200 status code.
+    // STEPS/PROCEDURES: CALL login() WITH ARG loginRequest INCLUDING valid username and password.
+    // EXPECTED RESULT: RETURN HTTP STATUS CODE 200 AND roleName "CUSTOMER".
 
     @Test
     public void login_ShouldReturnOK_WhenValidLogin() throws Exception {
@@ -89,6 +114,11 @@ public class CustomerControllerTest extends AbstractTestNGSpringContextTests {
                 .andExpect(jsonPath("$.data.roleName").value("CUSTOMER")); // Kiểm tra roleName
     }
 
+    // TEST CASE 04
+    // DESCRIPTION: CHECK THE login() METHOD WITH A NON-EXISTENT USER
+    //              Ensure that a login request with a non-existent user returns an HTTP 404 status code.
+    // STEPS/PROCEDURES: CALL login() WITH ARG loginRequest INCLUDING non-existent username and password.
+    // EXPECTED RESULT: RETURN HTTP STATUS CODE 404 AND STATUS CODE 404.
     @Test
     public void login_ShouldReturnNotFound_WhenUserNotFound() throws Exception {
         // Tạo yêu cầu login không tồn tại
@@ -104,6 +134,13 @@ public class CustomerControllerTest extends AbstractTestNGSpringContextTests {
                 .andExpect(status().isNotFound()) // Kiểm tra mã trạng thái HTTP 404
                 .andExpect(jsonPath("$.statusCode").value(404)); // Kiểm tra statusCode là 404
     }
+
+    // TEST CASE 05
+    // DESCRIPTION: CHECK THE login() METHOD TO TRIGGER NullPointerException
+    //              Ensure that a login request with invalid data triggers a NullPointerException.
+    // STEPS/PROCEDURES: CALL login() WITH ARG loginRequest INCLUDING valid username and password.
+    // EXPECTED RESULT: SHOULD TRIGGER NullPointerException.
+
 
     @Test
     public void login_ShouldReturnNullPointerException_WhenUserNotFound() throws Exception {
@@ -124,6 +161,12 @@ public class CustomerControllerTest extends AbstractTestNGSpringContextTests {
 //                .andExpect(result -> assertTrue(result.getResolvedException() instanceof NullPointerException)); // Kiểm tra nếu có NullPointerException
     }
 
+    // TEST CASE 06
+    // DESCRIPTION: CHECK THE login() METHOD WITH A VALID LOGIN REQUEST USING RestAssured
+    //              Ensure that a valid login request returns an HTTP 200 status code.
+    // STEPS/PROCEDURES: CALL login() WITH ARG INCLUDING valid username and password via RestAssured.
+    // EXPECTED RESULT: RETURN HTTP STATUS CODE 200.
+
     @Test
     public void login_returnValidResponse_WhenValidLogin() throws Exception {
         RequestSpecification request = given();
@@ -142,6 +185,12 @@ public class CustomerControllerTest extends AbstractTestNGSpringContextTests {
         response.then().statusCode(200);
     }
 
+
+    // TEST CASE 07
+    // DESCRIPTION: CHECK THE login() METHOD WITH AN INVALID LOGIN REQUEST USING RestAssured
+    //              Ensure that an invalid login request returns an HTTP 404 status code.
+    // STEPS/PROCEDURES: CALL login() WITH ARG INCLUDING invalid username and password via RestAssured.
+    // EXPECTED RESULT: RETURN HTTP STATUS CODE 404.
     @Test
     public void login_returnInvalidValidResponse_WhenInvalidValidLogin() throws Exception {
         RequestSpecification request = given();

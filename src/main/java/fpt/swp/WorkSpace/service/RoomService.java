@@ -17,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.function.support.RouterFunctionMapping;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -55,7 +56,7 @@ public class RoomService implements IRoomService{
         Room room = new Room();
         room.setRoomId(Helper.generateRoomId());
         room.setRoomName(roomName);
-        room.setPrice(Float.parseFloat(price));
+        room.setPrice(new BigDecimal(price));
         room.setRoomImg(img);
 
         // set local day time
@@ -96,7 +97,7 @@ public class RoomService implements IRoomService{
         Room room = new Room();
         room.setRoomId(Helper.generateRoomId());
         room.setRoomName(roomName);
-        room.setPrice(Float.parseFloat(price));
+        room.setPrice(new BigDecimal(price));
         room.setRoomImg(imgUrl);
 
         // set local day time
@@ -210,7 +211,7 @@ public class RoomService implements IRoomService{
             RoomDTO roomDTO = new RoomDTO();
             roomDTO.setRoomId(room.getRoomId());
             roomDTO.setRoomName(room.getRoomName());
-            roomDTO.setPrice(room.getPrice());
+            roomDTO.setPrice(Helper.formatPrice(room.getPrice()));
             roomDTO.setRoomImg(room.getRoomImg().split(","));
             roomDTO.setDescription(room.getDescription());
             roomDTOList.add(roomDTO);
@@ -226,7 +227,7 @@ public class RoomService implements IRoomService{
             RoomDTO roomDTO = new RoomDTO();
             roomDTO.setRoomId(room.getRoomId());
             roomDTO.setRoomName(room.getRoomName());
-            roomDTO.setPrice(room.getPrice());
+            roomDTO.setPrice(Helper.formatPrice(room.getPrice()));
             roomDTO.setRoomImg(room.getRoomImg().split(","));
             roomDTO.setDescription(room.getDescription());
             roomDTOList.add(roomDTO);
@@ -267,7 +268,7 @@ public class RoomService implements IRoomService{
             room.setRoomName(roomName);
         }
         if (price != null) {
-            room.setPrice(Float.parseFloat(price));
+            room.setPrice(new BigDecimal(price));
         }
 //        if (imageUrl != null){
 //            room.setRoomImg(imageUrl);

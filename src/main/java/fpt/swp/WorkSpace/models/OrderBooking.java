@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.sql.Date;
 import java.util.List;
 
@@ -49,7 +50,7 @@ public class OrderBooking {
         private String checkoutDate;
 
         @Column(nullable = false)
-        private float totalPrice;
+        private BigDecimal totalPrice;
 
         private String note;
 

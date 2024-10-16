@@ -1,23 +1,17 @@
 package fpt.swp.WorkSpace.util;
 
-import com.amazonaws.auth.AWSStaticCredentialsProvider;
-import com.amazonaws.auth.BasicAWSCredentials;
-import com.amazonaws.regions.Regions;
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.AmazonS3ClientBuilder;
-import com.amazonaws.services.s3.model.ObjectMetadata;
+
 import fpt.swp.WorkSpace.DTO.RoomDTO;
 import fpt.swp.WorkSpace.DTO.ServiceItemsDTO;
 import fpt.swp.WorkSpace.models.Room;
 import fpt.swp.WorkSpace.models.ServiceItems;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-import java.io.InputStream;
+
+
+import java.math.BigDecimal;
+import java.text.DecimalFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
 
@@ -29,6 +23,12 @@ public class Helper {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
         String creationTime = now.format(formatter);
         return creationTime;
+    }
+
+    public static String formatPrice(BigDecimal price) {
+        DecimalFormat decimalFormat = new DecimalFormat("#,###");
+        String formattedPrice = decimalFormat.format(price);
+        return formattedPrice;
     }
 
     public static String generateRandomString(int begin, int end){
@@ -46,7 +46,7 @@ public class Helper {
         RoomDTO roomDTO = new RoomDTO();
         roomDTO.setRoomId(room.getRoomId());
         roomDTO.setRoomName(room.getRoomName());
-        roomDTO.setPrice(room.getPrice());
+        roomDTO.setPrice(Helper.formatPrice(room.getPrice()));
         roomDTO.setDescription(room.getDescription());
         if (room.getRoomImg() != null && !room.getRoomImg().isEmpty()) {
             roomDTO.setRoomImg(room.getRoomImg().split(", "));
@@ -62,7 +62,7 @@ public class Helper {
         ServiceItemsDTO serviceItemsDTO = new ServiceItemsDTO();
         serviceItemsDTO.setServiceId(serviceItems.getServiceId());
         serviceItemsDTO.setServiceName(serviceItems.getServiceName());
-        serviceItemsDTO.setPrice(serviceItems.getPrice());
+        serviceItemsDTO.setPrice(Helper.formatPrice(serviceItems.getPrice()));
         if (serviceItems.getServiceImg() != null && !serviceItems.getServiceImg().isEmpty()) {
             serviceItemsDTO.setServiceImg(serviceItems.getServiceImg().split(", "));
         } else {

@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.math.BigDecimal;
+
 @Entity
 @Table(name = "orderbookingdetail")
 @Data
@@ -23,7 +25,7 @@ public class OrderBookingDetail {
     private ServiceItems service;
 
     private int bookingServiceQuantity;
-    private float bookingServicePrice;
+    private BigDecimal bookingServicePrice;
 
 
 }
