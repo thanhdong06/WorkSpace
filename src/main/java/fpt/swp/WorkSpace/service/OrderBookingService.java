@@ -11,11 +11,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.MultiValueMap;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.IntStream;
 
 @Service
@@ -47,6 +45,14 @@ public class OrderBookingService  implements IOrderBookingService {
     @Autowired
     private ServiceItemsRepository serviceItemsRepository;
 
+    @Autowired
+    private WalletRepository walletRepository;
+
+    @Autowired
+    private PaymentRepository paymentRepository;
+
+    @Autowired
+    private TransactionRepository transactionRepository;
 
     @Override
     public List<OrderBookingDetailDTO> getBookedSlotByRoomAndDate(String date, String roomId) {
@@ -137,6 +143,7 @@ public class OrderBookingService  implements IOrderBookingService {
         orderBooking.setSlot(timeSlots);
         orderBooking.setCreateAt(Helper.convertLocalDateTime());
         orderBooking.setNote(note);
+
         OrderBooking result = orderBookingRepository.save(orderBooking);      // saved
 
 //        OrderBookingResponse orderBookingResponse = new OrderBookingResponse();
@@ -146,7 +153,7 @@ public class OrderBookingService  implements IOrderBookingService {
 //        orderBookingResponse.setSlotId(slotBooking);
 //        orderBookingResponse.setCheckinDate(orderBooking.getCheckinDate());
 //        orderBookingResponse.setTotalPrice(orderBooking.getTotalPrice());
-//        orderBookingResponse.setNote(orderBooking.getNote());
+//        orderBookingResponse.setNote(orderBooking.getNote())
 
         return result;
     }
@@ -212,9 +219,37 @@ public class OrderBookingService  implements IOrderBookingService {
                 }
 
                 orderBooking.setTotalPrice(totalPrice);
+                System.out.println(totalPrice);
                 orderBookingRepository.save(orderBooking);
             }
+            Wallet wallet = walletRepository.findByUserId(customer.getUserId())
+                    .orElseThrow(() -> new RuntimeException("Wallet not found"));
+            if (wallet.getAmount() < totalPrice) {
+                throw new RuntimeException("Not enough money in the wallet");
+            }
 
+            Payment payment = new Payment();
+            payment.setPaymentId(UUID.randomUUID().toString());
+            payment.setAmount((int) totalPrice);
+            payment.setStatus("completed");
+            payment.setPaymentMethod("wallet");
+            payment.setOrderBookingId(orderBooking.getBookingId());
+            payment.setCustomer(customer);
+
+
+            Transaction transaction = new Transaction();
+            transaction.setTransactionId(UUID.randomUUID().toString());
+            transaction.setAmount(totalPrice);
+            transaction.setStatus("completed");
+            transaction.setType("pay for Order");
+            transaction.setTransaction_time(LocalDateTime.now());
+            transaction.setPayment(payment);
+            payment.setTransactionId(transaction.getTransactionId());
+            paymentRepository.save(payment);
+            transactionRepository.save(transaction);
+            // Trừ tiền trong ví
+            wallet.setAmount(wallet.getAmount() - totalPrice);
+            walletRepository.save(wallet);
         }
         return result;
     }
