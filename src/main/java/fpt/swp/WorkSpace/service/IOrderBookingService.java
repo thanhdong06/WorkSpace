@@ -18,7 +18,7 @@ public interface IOrderBookingService {
 
     List<OrderBookingDetailDTO> getBookedSlotByCheckinAndCheckout(String checkin, String checkout, String roomId);
 
-    BookedSlotDTO getBookedSlotByEachDay(String checkin, String checkout, String roomId);
+    BookedSlotDTO getBookedSlotByEachDay(String checkin, String checkout, String roomId, String buildingId);
 
     OrderBooking createOrderBooking(String jwttoken, String roomId, String date, List<Integer> slotBooking, String note);
 

@@ -22,7 +22,7 @@ public class ServiceItemService implements IServiceItemService {
 
     @Override
     public List<ServiceItemsDTO> getAllRoomService() {
-        List<ServiceItems> list = serviceItemsRepository.findAll();
+        List<ServiceItems> list = serviceItemsRepository.getAllServiceItems();
         List<ServiceItemsDTO> serviceItemsDTOList = new ArrayList<>();
         for (ServiceItems serviceItems : list) {
             ServiceItemsDTO serviceItemsDTO = new ServiceItemsDTO();
@@ -38,6 +38,7 @@ public class ServiceItemService implements IServiceItemService {
         serviceItems.setServiceName(serviceName);
         serviceItems.setPrice(price);
         serviceItems.setQuantity(quantity);
+        serviceItems.setCreateAt(Helper.convertLocalDateTime());
         serviceItems.setServiceType(serviceType);
 
         String imgUrl = awsS3Service.saveMultiImgToS3(files);

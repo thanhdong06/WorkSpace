@@ -22,6 +22,8 @@ public class Building {
     @Column(name = "location", length = 50, nullable = false)
     private String buildingLocation;
 
+    private String buildingImg;
+
     @Column(name = "phone_contact", length = 50, nullable = false)
     private String phoneContact;
 
