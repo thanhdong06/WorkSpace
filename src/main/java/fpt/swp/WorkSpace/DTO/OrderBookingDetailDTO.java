@@ -21,7 +21,7 @@ public class OrderBookingDetailDTO {
         private String checkoutDate;
         private float totalPrice;
         private String note;
-        private String status;
+        private BookingStatus status;
         private Map<String, Integer> serviceItems;
 
 

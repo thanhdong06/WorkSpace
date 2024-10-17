@@ -375,7 +375,7 @@ public class OrderBookingService implements IOrderBookingService {
             dto.setCheckinDate(orderBooking.getCheckinDate());
             dto.setCheckoutDate(orderBooking.getCheckoutDate());
             dto.setTotalPrice(orderBooking.getTotalPrice());
-            dto.setStatus("FINISHED");
+            dto.setStatus(orderBooking.getStatus());
 
             // Get all timeslot in Booking
 //            List<TimeSlot> timeSlotIdBooked = new ArrayList<>();
