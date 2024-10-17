@@ -233,6 +233,18 @@ public class OrderBookingController {
         }
     }
 
+    @PostMapping("/customer/cancel-booking")
+    public ResponseEntity<Object> cancelBooking(@RequestHeader("Authorization") String token,
+                                                @RequestParam("bookingId") String bookingId) {
+        String jwtToken = token.substring(7);
+        System.out.println(jwtToken);
+        try {
+            String cancellationMessage = orderBookingService.cancelOrderBooking(jwtToken, bookingId);
+            return ResponseHandler.responseBuilder("ok", HttpStatus.OK, cancellationMessage);
+        } catch (Exception e) {
+            return ResponseHandler.responseBuilder(e.getMessage(), HttpStatus.BAD_REQUEST, null);
+        }
+    }
 }
 
 

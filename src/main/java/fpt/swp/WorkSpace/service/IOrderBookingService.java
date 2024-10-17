@@ -35,5 +35,6 @@ public interface IOrderBookingService {
 
     CustomerServiceDTO getCustomerService(String orderBookingId);
 
+    String cancelOrderBooking(String jwttoken,String orderBookingId);
 
 }
