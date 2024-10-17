@@ -465,7 +465,7 @@ public class OrderBookingService implements IOrderBookingService {
         OrderBooking orderBooking = orderBookingRepository.findById(orderBookingId).orElseThrow();
         int countSlot = orderBooking.getSlot().size();
         float totalPrice = orderBooking.getRoom().getPrice() * countSlot;
-
+        float totalServicePriceChange = 0.0f;
 
         if (!items.isEmpty()) {
             // Xử lý items (service id và số lượng)
@@ -478,10 +478,11 @@ public class OrderBookingService implements IOrderBookingService {
                     // If orderBookingDetail already exist
                 if (orderBookingDetail != null) {
                     // update quantity in table
+                    int oldQuantity = orderBookingDetail.getBookingServiceQuantity();
                     orderBookingDetail.setBookingServiceQuantity(quantities);
                     float servicePrice = orderBookingDetail.getService().getPrice() * quantities;
                     orderBookingDetail.setBookingServicePrice(servicePrice);
-                    totalPrice += servicePrice;
+                    totalServicePriceChange += servicePrice - (orderBookingDetail.getService().getPrice() * oldQuantity);
                     orderBookingDetailRepository.save(orderBookingDetail);
                 } else {
                     // Add new service
@@ -492,13 +493,27 @@ public class OrderBookingService implements IOrderBookingService {
                     neworderBookingDetail.setBookingServiceQuantity(quantities);
                     float servicePrice = item.getPrice() * quantities;
                     neworderBookingDetail.setBookingServicePrice(servicePrice);
-                    totalPrice += servicePrice;
+                    totalServicePriceChange += servicePrice;
                     orderBookingDetailRepository.save(neworderBookingDetail);
                 }
             }
         }
+        totalPrice += totalServicePriceChange;
         orderBooking.setTotalPrice(totalPrice);
         orderBookingRepository.save(orderBooking);
+
+        Wallet wallet = walletRepository.findByUserId(orderBooking.getCustomer().getUserId())
+                .orElseThrow(() -> new RuntimeException("Wallet not found"));
+
+        if (totalServicePriceChange > 0) {
+            if (wallet.getAmount() < totalServicePriceChange) {
+                throw new RuntimeException("Not enough money in the wallet");
+            }
+            wallet.setAmount(wallet.getAmount() - totalServicePriceChange);
+        } else if (totalServicePriceChange < 0) {
+            wallet.setAmount(wallet.getAmount() + Math.abs(totalServicePriceChange)); //Adding back
+        }
+        walletRepository.save(wallet);
     }
 
     @Override
