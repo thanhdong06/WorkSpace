@@ -1,3 +1,4 @@
+
 -- BUILDING --
 INSERT INTO building(building_id, location, building_name, phone_contact) VALUES ('BD001','01 Khu CNC, Thu Duc','FPT WorkSpace','0924797913');
 INSERT INTO building(building_id, location, building_name, phone_contact) VALUES ('BD002','100 Le Van Viet','FPT NVH','09204524');
@@ -43,4 +44,3 @@ INSERT INTO staff (create_at, date_of_birth, phone_number, work_shift, email, fu
 VALUES ('2024-10-13', '1990-05-20', '0123456789', 'Morning', 'example@example.com', 'John Doe', 'Mon,Tue,Wed', 'BD001', 'ST01', 'Active');
 INSERT INTO staff (create_at, date_of_birth, phone_number, work_shift, email, full_name, work_days, building_wsid, user_id, status)
 VALUES ('2024-10-13', '1990-05-20', '0123456789', 'Morning', 'example@example.com', 'Marry', 'Mon,Tue,Wed', 'BD001', 'ST02', 'Active');
-

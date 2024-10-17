@@ -1,3 +1,4 @@
+
 package fpt.swp.WorkSpace.service;
 
 import com.amazonaws.services.kms.model.NotFoundException;
@@ -128,13 +129,13 @@ public class RoomService implements IRoomService{
 //        if (room == null) {
 //            throw new  NoSuchElementException("Phong khong ton tai");
 //        }else {
-            RoomDTO roomDTO = new RoomDTO();
-            if (room.getRoomImg() != null && !room.getRoomImg().isEmpty()) {
-                roomDTO.setRoomImg(room.getRoomImg().split(", "));
-            } else {
-                roomDTO.setRoomImg(new String[]{""});
-            }
-            return roomDTO;
+        RoomDTO roomDTO = new RoomDTO();
+        if (room.getRoomImg() != null && !room.getRoomImg().isEmpty()) {
+            roomDTO.setRoomImg(room.getRoomImg().split(", "));
+        } else {
+            roomDTO.setRoomImg(new String[]{""});
+        }
+        return roomDTO;
         //}
     }
 
@@ -175,7 +176,7 @@ public class RoomService implements IRoomService{
         Room room = roomRepository.findById(id).orElseThrow();
         RoomDTO roomDTO = new RoomDTO();
         if (room != null) {
-             roomDTO = Helper.mapRoomToDTO(room);
+            roomDTO = Helper.mapRoomToDTO(room);
         }
         return roomDTO;
     }

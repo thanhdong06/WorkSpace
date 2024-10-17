@@ -3,6 +3,7 @@ package fpt.swp.WorkSpace.models;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Entity
@@ -14,7 +15,7 @@ public class ServiceItems {
     private int serviceId;
 
     private String serviceName;
-    private Float price;
+    private float price;
     private Integer quantity;
     private String serviceType;
 

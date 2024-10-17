@@ -10,6 +10,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.sql.Date;
 import java.util.List;
 
@@ -29,7 +30,7 @@ public class OrderBookingResponse {
 
     private String checkinDate;
 
-    private float totalPrice;
+    private BigDecimal totalPrice;
 
     private String note;
 

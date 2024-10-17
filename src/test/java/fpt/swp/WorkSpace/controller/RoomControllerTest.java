@@ -15,6 +15,7 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.testng.AbstractTestNGSpringContextTests;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import java.util.Collections;
@@ -40,10 +41,16 @@ public class RoomControllerTest  extends AbstractTestNGSpringContextTests {
     @InjectMocks
     private RoomController roomController; // Controller
 
-//    @BeforeEach
-//    public void setUp() {
-//        MockitoAnnotations.openMocks(this);
-//    }
+    @BeforeMethod
+    public void setUp() {
+        MockitoAnnotations.openMocks(this);
+    }
+
+    // TEST CASE 01
+    // DESCRIPTION: CHECK THE addNewRoomImg() METHOD WITH A VALID REQUEST
+    //              Ensure that adding a new room image returns an HTTP 200 status code and the message "Them phong thanh cong".
+    // STEPS/PROCEDURES: CALL addNewRoomImg() WITH VALID PARAMETERS INCLUDING A MOCK IMAGE FILE.
+    // EXPECTED RESULT: RETURN HTTP STATUS CODE 200 AND THE MESSAGE "Them phong thanh cong".
 
 //    @Test
 //    public void addNewRoomImg_ShouldReturnOK_WhenValidRequest() throws Exception {
@@ -72,7 +79,11 @@ public class RoomControllerTest  extends AbstractTestNGSpringContextTests {
 //                .andExpect(jsonPath("$.message").value("Them phong thanh cong")); // Kiểm tra thông điệp
 //    }
 
-
+    // TEST CASE 02
+    // DESCRIPTION: CHECK THE getAllRoom() METHOD WHEN NO ROOMS ARE AVAILABLE
+    //              Ensure that a GET request when no rooms are available returns an HTTP 204 status code.
+    // STEPS/PROCEDURES: CALL getAllRoom() WITH AN EMPTY ROOM LIST.
+    // EXPECTED RESULT: RETURN HTTP STATUS CODE 204 AND THE MESSAGE "Khong co phong. Vui long them phong".
     @Test
     public void getAllRoom_ShouldReturnNotFound_WhenNoRoomsAvailable() throws Exception {
         // Giả lập hành vi của roomService
@@ -84,13 +95,19 @@ public class RoomControllerTest  extends AbstractTestNGSpringContextTests {
                 .andExpect(jsonPath("$.message").value("Khong co phong . Vui long them phong")); // Kiểm tra thông điệp
     }
 
+    // TEST CASE 03
+    // DESCRIPTION: CHECK THE getAllRoom() METHOD WHEN ROOMS ARE AVAILABLE
+    //              Ensure that a GET request when rooms are available returns an HTTP 200 status code and a success message.
+    // STEPS/PROCEDURES: CALL getAllRoom() WITH A MOCK LIST OF ROOMS.
+    // EXPECTED RESULT: RETURN HTTP STATUS CODE 200 AND THE MESSAGE "Success".
+
     @Test
     public void getAllRoom_ShouldReturnOK_WhenRoomsAreAvailable() throws Exception {
         // Tạo danh sách phòng giả lập
         Room room1 = new Room();
         room1.setRoomId("S001");
         room1.setRoomName("Phòng đơn 1");
-        room1.setPrice(50);
+        //room1.setPrice(50);
 
         Room room2 = new Room();
         room2.setRoomId("S002");

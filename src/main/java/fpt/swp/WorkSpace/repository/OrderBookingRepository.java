@@ -30,7 +30,7 @@ public interface OrderBookingRepository extends JpaRepository<OrderBooking, Stri
     List<OrderBooking> findBookingsByInOutDate(@Param("checkin") String checkinDate,
                                                @Param("checkout") String checkoutDate);
 
-    @Query("SELECT b FROM OrderBooking b where (b.customer.user.userName = ?1) ")
+    @Query("SELECT b FROM OrderBooking b where (b.customer.user.userName = ?1) order by b.createAt desc ")
     List<OrderBooking> getCustomerHistoryBooking(String username );
 
     @Query("SELECT b FROM OrderBooking b WHERE b.customer.userId = ?1")
