@@ -10,11 +10,13 @@ import fpt.swp.WorkSpace.repository.PaymentRepository;
 import fpt.swp.WorkSpace.repository.TransactionRepository;
 import fpt.swp.WorkSpace.repository.WalletRepository;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -33,7 +35,9 @@ public class VNPAYService {
     @Autowired
     private CustomerRepository customerRepository;
 
-    public String createOrderTopUp(HttpServletRequest request, int amount, String userId, String urlReturn){
+
+
+    public String createRecharge(HttpServletRequest request, int amount, String userId){
         Customer customer = customerRepository.findCustomerByCustomerId(userId);
         if (customer == null) {
             throw new RuntimeException("User not found: " + userId);
@@ -67,9 +71,7 @@ public class VNPAYService {
 
         String locate = "vn";
         vnp_Params.put("vnp_Locale", locate);
-
-       // urlReturn += VNPAYConfig.vnp_Returnurl;
-        vnp_Params.put("vnp_ReturnUrl", urlReturn);
+        vnp_Params.put("vnp_ReturnUrl", VNPAYConfig.vnp_Returnurl);
         vnp_Params.put("vnp_IpAddr", vnp_IpAddr);
 
         Calendar cld = Calendar.getInstance(TimeZone.getTimeZone("Etc/GMT+7"));
@@ -116,7 +118,9 @@ public class VNPAYService {
         return paymentUrl;
     }
 
-    public ResponseEntity<Map<String, Object>> orderReturn(HttpServletRequest request){
+
+
+    public ResponseEntity<Map<String, Object>> returnRecharge(HttpServletRequest request, HttpServletResponse restResponse) throws IOException {
         Map<String, String> fields = new HashMap<>();
         for (Enumeration params = request.getParameterNames(); params.hasMoreElements();) {
             String fieldName = null;
@@ -181,11 +185,13 @@ public class VNPAYService {
                 response.put("message", "Top-up successful");
                 response.put("amountTopUp", amount);
                 response.put("currentWalletBalance", currentWalletBalance);
+                restResponse.sendRedirect("http://localhost:3000/");
                 return ResponseEntity.ok(response);
             } else {
                 response.put("message", "Transaction failed");
                 response.put("amountTopUp", 0);
                 response.put("currentWalletBalance", currentWalletBalance);
+                restResponse.sendRedirect("http://localhost:3000/");
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
             }
         } else {
