@@ -261,6 +261,9 @@ public class StaffService {
             dto.setRoomId(orderBooking.getRoom().getRoomId());
             dto.setTotalPrice(orderBooking.getTotalPrice());
             dto.setSlots(orderBooking.getSlot());
+            dto.setStatus(orderBooking.getStatus());
+            dto.setCheckinDate(orderBooking.getCheckinDate());
+            dto.setCheckoutDate(orderBooking.getCheckoutDate());
 
             List<OrderBookingDetail> bookingDetails = orderBookingDetailRepository.findDetailByBookingId(orderBooking.getBookingId());
             Map<String, Integer> serviceList = new HashMap<>();
