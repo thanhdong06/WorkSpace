@@ -257,6 +257,7 @@ public class OrderBookingService implements IOrderBookingService {
         orderBooking.setCheckinDate(checkin);
         orderBooking.setCheckoutDate(checkout);
         orderBooking.setSlot(timeSlots);
+        orderBooking.setStatus(BookingStatus.UPCOMING);
         orderBooking.setCreateAt(Helper.convertLocalDateTime());
         orderBooking.setNote(note);
         OrderBooking result = orderBookingRepository.save(orderBooking);
