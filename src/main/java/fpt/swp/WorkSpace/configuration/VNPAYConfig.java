@@ -14,7 +14,7 @@ public class VNPAYConfig {
     static String hashSecret = dotenv.get("HASHSECRET");
 
     public static String vnp_PayUrl = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
-    public static String vnp_Returnurl = "/orderReturn";
+    public static String vnp_Returnurl = "http://localhost:8080/vnpay/return/orderReturn";
     public static String vnp_TmnCode = tmnCode;
     public static String vnp_HashSecret = hashSecret ;
     public static String vnp_apiUrl = "https://sandbox.vnpayment.vn/merchant_webapi/api/transaction";
