@@ -282,43 +282,41 @@ public class OrderBookingService implements IOrderBookingService {
                     orderBookingDetailRepository.save(orderBookingDetail);
                 }
             }
-            float totalPriceWithServices = roomPrice + servicePriceTotal;
-            // Áp dụng giảm giá dựa trên loại membership
-            totalPriceWithServices -= totalPriceWithServices  * discount;
-            NumberFormat currencyFormatter = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
-            String formattedTotalPrice = currencyFormatter.format(totalPriceWithServices);
-
-            orderBooking.setTotalPrice(totalPriceWithServices);
-            orderBookingRepository.save(orderBooking);
-                Wallet wallet = walletRepository.findByUserId(customer.getUserId())
-                        .orElseThrow(() -> new RuntimeException("Wallet not found"));
-            if (wallet.getAmount() < totalPriceWithServices) {
-                throw new RuntimeException("Not enough money in the wallet");
-            }
-
-            Payment payment = new Payment();
-            payment.setPaymentId(UUID.randomUUID().toString());
-            payment.setAmount((int) totalPriceWithServices);
-            payment.setStatus("completed");
-            payment.setPaymentMethod("wallet");
-            payment.setOrderBookingId(orderBooking.getBookingId());
-            payment.setCustomer(customer);
-
-
-            Transaction transaction = new Transaction();
-            transaction.setTransactionId(UUID.randomUUID().toString());
-            transaction.setAmount(totalPriceWithServices);
-            transaction.setStatus("completed");
-            transaction.setType("pay for Order");
-            transaction.setTransaction_time(LocalDateTime.now());
-            transaction.setPayment(payment);
-            payment.setTransactionId(transaction.getTransactionId());
-            paymentRepository.save(payment);
-            transactionRepository.save(transaction);
-            // Trừ tiền trong ví
-            wallet.setAmount(wallet.getAmount() - totalPriceWithServices);
-            walletRepository.save(wallet);
         }
+        float totalPriceWithServices = roomPrice + servicePriceTotal;
+        // Áp dụng giảm giá dựa trên loại membership
+        totalPriceWithServices -= totalPriceWithServices  * discount;
+
+        orderBooking.setTotalPrice(totalPriceWithServices);
+        orderBookingRepository.save(orderBooking);
+        Wallet wallet = walletRepository.findByUserId(customer.getUserId())
+                .orElseThrow(() -> new RuntimeException("Wallet not found"));
+        if (wallet.getAmount() < totalPriceWithServices) {
+            throw new RuntimeException("Not enough money in the wallet");
+        }
+
+        Payment payment = new Payment();
+        payment.setPaymentId(UUID.randomUUID().toString());
+        payment.setAmount((int) totalPriceWithServices);
+        payment.setStatus("completed");
+        payment.setPaymentMethod("wallet");
+        payment.setOrderBookingId(orderBooking.getBookingId());
+        payment.setCustomer(customer);
+
+
+        Transaction transaction = new Transaction();
+        transaction.setTransactionId(UUID.randomUUID().toString());
+        transaction.setAmount(totalPriceWithServices);
+        transaction.setStatus("completed");
+        transaction.setType("pay for Order");
+        transaction.setTransaction_time(LocalDateTime.now());
+        transaction.setPayment(payment);
+        payment.setTransactionId(transaction.getTransactionId());
+        paymentRepository.save(payment);
+        transactionRepository.save(transaction);
+        // Trừ tiền trong ví
+        wallet.setAmount(wallet.getAmount() - totalPriceWithServices);
+        walletRepository.save(wallet);
         return result;
     }
 
