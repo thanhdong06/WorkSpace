@@ -15,8 +15,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/auth/staffs")
-public class
-StaffController {
+public class StaffController {
     @Autowired
     private StaffService staffService;
 
