@@ -1,9 +1,11 @@
 package fpt.swp.WorkSpace.controller;
 
+import fpt.swp.WorkSpace.DTO.RoomDTO;
 import fpt.swp.WorkSpace.auth.AuthenticationResponse;
 import fpt.swp.WorkSpace.models.Staff;
 import fpt.swp.WorkSpace.response.*;
 import fpt.swp.WorkSpace.service.StaffService;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -102,6 +104,26 @@ public class StaffController {
             return ResponseEntity.ok(updatedOrderStatus);
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+    }
+
+    @GetMapping("/room-assign")
+    public ResponseEntity<Object> getRoomsAssigned(@RequestHeader("Authorization") String token) {
+        String jwtToken = token.substring(7);
+        List<RoomDTO> listRoomAssign = staffService.getRoomsAssigned(jwtToken);
+        try{
+            return ResponseHandler.responseBuilder("Ok", HttpStatus.OK, listRoomAssign);
+        }catch (NullPointerException e){
+            return ResponseHandler.responseBuilder(e.getMessage(), HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @GetMapping("/check-order-booking")
+    public ResponseEntity<Object> getCheckOrderBooking() {
+        try {
+            return ResponseHandler.responseBuilder("Ok", HttpStatus.OK, staffService.getOrderBookingDetails());
+        }catch (NullPointerException e){
+            return ResponseHandler.responseBuilder(e.getMessage(), HttpStatus.NOT_FOUND);
         }
     }
 }

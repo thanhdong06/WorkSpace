@@ -17,7 +17,10 @@ public class RoomDTO {
     private String description;
     private String building;
     private String roomType;
+    private String roomStatus;
 
-
-
+    @JsonGetter("price")
+    public Float getPrice() {
+        return price == 0 ? null : price; // Return null if price is 0
+    }
 }
