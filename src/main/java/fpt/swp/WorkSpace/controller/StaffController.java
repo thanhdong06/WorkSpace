@@ -1,11 +1,8 @@
 package fpt.swp.WorkSpace.controller;
 
 import fpt.swp.WorkSpace.auth.AuthenticationResponse;
-import fpt.swp.WorkSpace.auth.RegisterRequest;
 import fpt.swp.WorkSpace.models.Staff;
-import fpt.swp.WorkSpace.models.Transaction;
 import fpt.swp.WorkSpace.response.*;
-import fpt.swp.WorkSpace.service.OrderBookingService;
 import fpt.swp.WorkSpace.service.StaffService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -75,14 +72,14 @@ StaffController {
         return ResponseEntity.ok(bookings);
     }
 
-    @GetMapping("status/{roomId}")
-    public ResponseEntity<APIResponse<RoomStatusResponse>> getRoomStatus(@PathVariable String roomId) {
+    @GetMapping("status")
+    public ResponseEntity<APIResponse<List<RoomStatusResponse>>> getAllRoomStatus() {
         try {
-            RoomStatusResponse roomStatus = staffService.getRoomStatus(roomId);
-            APIResponse<RoomStatusResponse> response = new APIResponse<>("successfully", roomStatus);
+            List<RoomStatusResponse> roomStatuses = staffService.getAllRoomStatus();
+            APIResponse<List<RoomStatusResponse>> response = new APIResponse<>("Successfully", roomStatuses);
             return ResponseEntity.status(HttpStatus.OK).body(response);
         } catch (RuntimeException e) {
-            APIResponse<RoomStatusResponse> response = new APIResponse<>(e.getMessage(), null);
+            APIResponse<List<RoomStatusResponse>> response = new APIResponse<>(e.getMessage(), null);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
         }
     }
@@ -99,4 +96,13 @@ StaffController {
         }
     }
 
+    @PutMapping("status/booking/{bookingId}")
+    public ResponseEntity<OrderStatusResponse> updateOrderStatus(@PathVariable String bookingId, @RequestBody UpdateOrderBookingStatusRequest request) {
+        try {
+            OrderStatusResponse updatedOrderStatus = staffService.updateOrderStatus(bookingId, request);
+            return ResponseEntity.ok(updatedOrderStatus);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+    }
 }

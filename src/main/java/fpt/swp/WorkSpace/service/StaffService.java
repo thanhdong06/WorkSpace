@@ -192,10 +192,14 @@ public class StaffService {
         });
     }
 
-    public RoomStatusResponse getRoomStatus(String roomId) {
-        Room room = roomRepository.findById(roomId)
-                .orElseThrow(() -> new RuntimeException("Room not found: " + roomId));
-        return new RoomStatusResponse(room.getRoomId(), room.getStatus());
+    public List<RoomStatusResponse> getAllRoomStatus() {
+        List<Room> rooms = roomRepository.findAll();
+        if (rooms.isEmpty()) {
+            throw new RuntimeException("No rooms found.");
+        }
+        return rooms.stream()
+                .map(room -> new RoomStatusResponse(room.getRoomId(), room.getStatus()))
+                .collect(Collectors.toList());
     }
 
     public RoomStatusResponse updateRoomStatus(String roomId, RoomStatusRequest request) {
@@ -204,5 +208,13 @@ public class StaffService {
         room.setStatus(request.getRoomStatus());
         roomRepository.save(room);
         return new RoomStatusResponse(room.getRoomId(), room.getStatus());
+    }
+
+    public OrderStatusResponse updateOrderStatus(String bookingId, UpdateOrderBookingStatusRequest request) {
+        OrderBooking order = orderBookingRepository.findByOrderId(bookingId)
+                .orElseThrow(() -> new RuntimeException("Order not found: " + bookingId));
+        order.setStatus(request.getOrderStatus());
+        orderBookingRepository.save(order);
+        return new OrderStatusResponse(order.getBookingId(), order.getStatus());
     }
 }
