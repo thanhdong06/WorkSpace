@@ -565,5 +565,4 @@ public class OrderBookingService implements IOrderBookingService {
             return "Booking cancelled. No payment was made, so no refund is required";
         }
     }
-
 }

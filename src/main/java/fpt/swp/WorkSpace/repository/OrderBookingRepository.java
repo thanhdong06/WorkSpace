@@ -10,6 +10,7 @@ import org.springframework.data.repository.query.Param;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 public interface OrderBookingRepository extends JpaRepository<OrderBooking, String> {
 //    @Query("SELECT b FROM OrderBooking b where ( b.checkinDate = ?1 and b.room.roomId = ?2) ")
@@ -36,4 +37,6 @@ public interface OrderBookingRepository extends JpaRepository<OrderBooking, Stri
     @Query("SELECT b FROM OrderBooking b WHERE b.customer.userId = ?1")
     Page<OrderBooking> findByCustomerCustomerId(String userId, Pageable pageable);
 
+    @Query("SELECT b FROM OrderBooking b WHERE b.bookingId = ?1")
+    Optional<OrderBooking> findByOrderId(String bookingId);
 }
