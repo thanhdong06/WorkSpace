@@ -11,21 +11,21 @@ INSERT INTO roomtype(id, room_type_name) VALUES ('RT004', 'Phòng sự kiện');
 
 
 -- ROOM --
-INSERT INTO room(room_id, creation_time, price, room_name, status, building_id, room_typeid) VALUES ('S001', '2024-10-09', 50, 'Phòng đơn 1', 'AVAILABLE', 'BD001', 'RT001');
-INSERT INTO room(room_id, creation_time, price, room_name, status, building_id, room_typeid) VALUES ('S002', '2024-10-09', 55, 'Phòng đơn 2', 'AVAILABLE', 'BD001', 'RT001');
-INSERT INTO room(room_id, creation_time, price, room_name, status, building_id, room_typeid) VALUES ('D001', '2024-10-09', 100, 'Phòng đôi 1', 'AVAILABLE', 'BD001', 'RT002');
-INSERT INTO room(room_id, creation_time, price, room_name, status, building_id, room_typeid) VALUES ('D002', '2024-10-09', 105, 'Phòng đôi 2', 'AVAILABLE', 'BD001', 'RT002');
-INSERT INTO room(room_id, creation_time, price, room_name, status, building_id, room_typeid) VALUES ('M001', '2024-10-09', 150, 'Phòng họp 1', 'AVAILABLE', 'BD001', 'RT003');
-INSERT INTO room(room_id, creation_time, price, room_name, status, building_id, room_typeid) VALUES ('M002', '2024-10-09', 150, 'Phòng họp 2', 'AVAILABLE', 'BD002', 'RT003');
-INSERT INTO room(room_id, creation_time, price, room_name, status, building_id, room_typeid) VALUES ('E001', '2024-10-09', 200, 'Phòng sự kiện 1', 'AVAILABLE', 'BD002', 'RT004');
-INSERT INTO room(room_id, creation_time, price, room_name, status, building_id, room_typeid) VALUES ('E002', '2024-10-09', 200, 'Phòng sự kiện 2', 'AVAILABLE', 'BD002', 'RT004');
+INSERT INTO room(room_id, creation_time, price, room_name, status, building_id, room_typeid, room_img) VALUES ('S001', '2024-10-09', 50, 'Phòng đơn 1', 'AVAILABLE', 'BD001', 'RT001', 'https://swp-workspace-images.s3.us-east-2.amazonaws.com/thiet-ke-noi-that-phong-hop.jpg');
+INSERT INTO room(room_id, creation_time, price, room_name, status, building_id, room_typeid, room_img) VALUES ('S002', '2024-10-09', 55, 'Phòng đơn 2', 'AVAILABLE', 'BD001', 'RT001', 'https://swp-workspace-images.s3.us-east-2.amazonaws.com/thiet-ke-noi-that-phong-hop.jpg');
+INSERT INTO room(room_id, creation_time, price, room_name, status, building_id, room_typeid, room_img) VALUES ('D001', '2024-10-09', 100, 'Phòng đôi 1', 'AVAILABLE', 'BD001', 'RT002', 'https://swp-workspace-images.s3.us-east-2.amazonaws.com/thiet-ke-noi-that-phong-hop.jpg');
+INSERT INTO room(room_id, creation_time, price, room_name, status, building_id, room_typeid, room_img) VALUES ('D002', '2024-10-09', 105, 'Phòng đôi 2', 'AVAILABLE', 'BD001', 'RT002', 'https://swp-workspace-images.s3.us-east-2.amazonaws.com/thiet-ke-noi-that-phong-hop.jpg');
+INSERT INTO room(room_id, creation_time, price, room_name, status, building_id, room_typeid, room_img) VALUES ('M001', '2024-10-09', 150, 'Phòng họp 1', 'AVAILABLE', 'BD001', 'RT003', 'https://swp-workspace-images.s3.us-east-2.amazonaws.com/thiet-ke-noi-that-phong-hop.jpg');
+INSERT INTO room(room_id, creation_time, price, room_name, status, building_id, room_typeid, room_img) VALUES ('M002', '2024-10-09', 150, 'Phòng họp 2', 'AVAILABLE', 'BD002', 'RT003', 'https://swp-workspace-images.s3.us-east-2.amazonaws.com/thiet-ke-noi-that-phong-hop.jpg');
+INSERT INTO room(room_id, creation_time, price, room_name, status, building_id, room_typeid, room_img) VALUES ('E001', '2024-10-09', 200, 'Phòng sự kiện 1', 'AVAILABLE', 'BD002', 'RT004', 'https://swp-workspace-images.s3.us-east-2.amazonaws.com/thiet-ke-noi-that-phong-hop.jpg');
+INSERT INTO room(room_id, creation_time, price, room_name, status, building_id, room_typeid, room_img) VALUES ('E002', '2024-10-09', 200, 'Phòng sự kiện 2', 'AVAILABLE', 'BD002', 'RT004', 'https://swp-workspace-images.s3.us-east-2.amazonaws.com/thiet-ke-noi-that-phong-hop.jpg');
 
 
 
 -- ITEMS --
-INSERT INTO serviceitems(price, quantity, service_name, service_type, status) VALUES (10, 10, 'Ổ cắm', 'Thiết bị', 'AVAILABLE');
-INSERT INTO serviceitems(price, quantity, service_name, service_type, status) VALUES (50, 10, 'Máy chiếu', 'Thiết bị', 'AVAILABLE');
-INSERT INTO serviceitems(price, quantity, service_name, service_type, status) VALUES (30, 10, 'Bàn', 'Thiết bị', 'AVAILABLE');
+INSERT INTO serviceitems(price, quantity, service_name, service_type, status, service_img) VALUES (10, 10, 'Ổ cắm', 'Thiết bị', 'AVAILABLE', 'https://swp-workspace-images.s3.us-east-2.amazonaws.com/o-cam-lioa-5-lo.webp');
+INSERT INTO serviceitems(price, quantity, service_name, service_type, status, service_img) VALUES (50, 10, 'Máy chiếu', 'Thiết bị', 'AVAILABLE', 'https://swp-workspace-images.s3.us-east-2.amazonaws.com/xiaomi-wanbo-x1-projektor-cover_1280x672-800-resize.jpg');
+INSERT INTO serviceitems(price, quantity, service_name, service_type, status, service_img) VALUES (30, 10, 'Bàn', 'Thiết bị', 'AVAILABLE', 'https://swp-workspace-images.s3.us-east-2.amazonaws.com/q8_b8d8b4205f684de989e1309f67ca4c2b_master.webp');
 
 -- TIMESLOT --
 INSERT INTO timeslot(time_slot_id, status, time_start, time_end) VALUES (1, 'AVAILABLE', '7:00:00.000000', '10:00:00.000000');

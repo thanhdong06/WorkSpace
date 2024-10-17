@@ -19,6 +19,8 @@ public class ServiceItems {
     private Integer quantity;
     private String serviceType;
 
+    private String createAt;
+
     private String serviceImg;
 
      @Enumerated(EnumType.STRING)

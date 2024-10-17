@@ -86,9 +86,10 @@ public class OrderBookingController {
     @GetMapping("/check-booked-slot-each-date")
     public ResponseEntity<Object> getBookedSlotEachDate(@RequestParam("checkinDate") String checkinDate,
                                                        @RequestParam("checkoutDate") String checkoutDate,
-                                                       @RequestParam("roomId") String roomId) {
+                                                       @RequestParam("roomId") String roomId,
+                                                        @RequestParam("buildingId") String buildingId) {
         try{
-            BookedSlotDTO bookedList = orderBookingService.getBookedSlotByEachDay(checkinDate, checkoutDate, roomId);
+            BookedSlotDTO bookedList = orderBookingService.getBookedSlotByEachDay(checkinDate, checkoutDate, roomId, buildingId);
             return ResponseHandler.responseBuilder("ok", HttpStatus.OK, bookedList);
         } catch (RuntimeException e) {
             return ResponseHandler.responseBuilder(e.getMessage(), HttpStatus.NOT_FOUND);
@@ -233,7 +234,7 @@ public class OrderBookingController {
         }
     }
 
-    @PostMapping("/customer/cancel-booking")
+    @PutMapping("/customer/cancel-booking")
     public ResponseEntity<Object> cancelBooking(@RequestHeader("Authorization") String token,
                                                 @RequestParam("bookingId") String bookingId) {
         String jwtToken = token.substring(7);
