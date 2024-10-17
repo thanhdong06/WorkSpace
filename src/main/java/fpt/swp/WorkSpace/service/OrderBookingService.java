@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.MultiValueMap;
 
+import java.text.NumberFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -284,6 +285,8 @@ public class OrderBookingService implements IOrderBookingService {
             float totalPriceWithServices = roomPrice + servicePriceTotal;
             // Áp dụng giảm giá dựa trên loại membership
             totalPriceWithServices -= totalPriceWithServices  * discount;
+            NumberFormat currencyFormatter = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
+            String formattedTotalPrice = currencyFormatter.format(totalPriceWithServices);
 
             orderBooking.setTotalPrice(totalPriceWithServices);
             orderBookingRepository.save(orderBooking);
@@ -520,5 +523,48 @@ public class OrderBookingService implements IOrderBookingService {
         return dto;
     }
 
+    @Override
+    public String cancelOrderBooking(String jwttoken,String orderBookingId) {
+        String username = jwtService.extractUsername(jwttoken);
+        Customer customer = customerRepository.findCustomerByUsername(username);
+
+        OrderBooking orderBooking = orderBookingRepository.findById(orderBookingId)
+                .orElseThrow(() -> new RuntimeException("Booking not found"));
+        if (!orderBooking.getCustomer().getUserId().equals(customer.getUserId())) {
+            throw new RuntimeException("Unauthorized access to this booking");
+        }
+        if (!orderBooking.getStatus().equals(BookingStatus.UPCOMING)) {
+            throw new RuntimeException("Booking cannot be canceled");
+        }
+        orderBooking.setStatus(BookingStatus.CANCELLED);
+        orderBookingRepository.save(orderBooking);
+
+        Payment payment = paymentRepository.findByOrderBookingId(orderBookingId)
+                .orElseThrow(() -> new RuntimeException("Payment not found for this booking"));
+
+        Wallet wallet = walletRepository.findByUserId(orderBooking.getCustomer().getUserId())
+                .orElseThrow(() -> new RuntimeException("Wallet not found"));
+
+        if (payment.getStatus().equals("completed")) {
+            // Hoàn lại tiền vào ví
+            wallet.setAmount(wallet.getAmount() + payment.getAmount());
+            walletRepository.save(wallet);
+
+            Transaction refundTransaction = new Transaction();
+            refundTransaction.setTransactionId(UUID.randomUUID().toString());
+            refundTransaction.setAmount(payment.getAmount());
+            refundTransaction.setStatus("completed");
+            refundTransaction.setType("refund");
+            refundTransaction.setTransaction_time(LocalDateTime.now());
+            refundTransaction.setPayment(payment);
+            transactionRepository.save(refundTransaction);
+            payment.setStatus("completed");
+            paymentRepository.save(payment);
+
+            return "Booking cancelled and payment refunded successfully";
+        } else {
+            return "Booking cancelled. No payment was made, so no refund is required";
+        }
+    }
 
 }

@@ -1,5 +1,5 @@
 package fpt.swp.WorkSpace.models;
 
 public enum BookingStatus {
-    USING, FINISHED, UPCOMING;
+    USING, FINISHED, UPCOMING, CANCELLED;
 }
