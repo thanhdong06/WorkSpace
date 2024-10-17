@@ -282,6 +282,7 @@ public class OrderBookingService implements IOrderBookingService {
                     orderBookingDetailRepository.save(orderBookingDetail);
                 }
             }
+
             float totalPriceWithServices = roomPrice + servicePriceTotal;
             // Áp dụng giảm giá dựa trên loại membership
             totalPriceWithServices -= totalPriceWithServices  * discount;

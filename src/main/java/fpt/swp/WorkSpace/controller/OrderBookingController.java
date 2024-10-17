@@ -233,7 +233,7 @@ public class OrderBookingController {
         }
     }
 
-    @PostMapping("/customer/cancel-booking")
+    @PutMapping("/customer/cancel-booking")
     public ResponseEntity<Object> cancelBooking(@RequestHeader("Authorization") String token,
                                                 @RequestParam("bookingId") String bookingId) {
         String jwtToken = token.substring(7);
