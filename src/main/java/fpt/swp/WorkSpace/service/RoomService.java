@@ -1,3 +1,4 @@
+
 package fpt.swp.WorkSpace.service;
 
 import com.amazonaws.services.kms.model.NotFoundException;
@@ -17,7 +18,6 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.function.support.RouterFunctionMapping;
 
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -56,7 +56,7 @@ public class RoomService implements IRoomService{
         Room room = new Room();
         room.setRoomId(Helper.generateRoomId());
         room.setRoomName(roomName);
-        room.setPrice(new BigDecimal(price));
+        room.setPrice(Float.parseFloat(price));
         room.setRoomImg(img);
 
         // set local day time
@@ -97,7 +97,7 @@ public class RoomService implements IRoomService{
         Room room = new Room();
         room.setRoomId(Helper.generateRoomId());
         room.setRoomName(roomName);
-        room.setPrice(new BigDecimal(price));
+        room.setPrice(Float.parseFloat(price));
         room.setRoomImg(imgUrl);
 
         // set local day time
@@ -129,13 +129,13 @@ public class RoomService implements IRoomService{
 //        if (room == null) {
 //            throw new  NoSuchElementException("Phong khong ton tai");
 //        }else {
-            RoomDTO roomDTO = new RoomDTO();
-            if (room.getRoomImg() != null && !room.getRoomImg().isEmpty()) {
-                roomDTO.setRoomImg(room.getRoomImg().split(", "));
-            } else {
-                roomDTO.setRoomImg(new String[]{""});
-            }
-            return roomDTO;
+        RoomDTO roomDTO = new RoomDTO();
+        if (room.getRoomImg() != null && !room.getRoomImg().isEmpty()) {
+            roomDTO.setRoomImg(room.getRoomImg().split(", "));
+        } else {
+            roomDTO.setRoomImg(new String[]{""});
+        }
+        return roomDTO;
         //}
     }
 
@@ -176,7 +176,7 @@ public class RoomService implements IRoomService{
         Room room = roomRepository.findById(id).orElseThrow();
         RoomDTO roomDTO = new RoomDTO();
         if (room != null) {
-             roomDTO = Helper.mapRoomToDTO(room);
+            roomDTO = Helper.mapRoomToDTO(room);
         }
         return roomDTO;
     }
@@ -211,7 +211,7 @@ public class RoomService implements IRoomService{
             RoomDTO roomDTO = new RoomDTO();
             roomDTO.setRoomId(room.getRoomId());
             roomDTO.setRoomName(room.getRoomName());
-            roomDTO.setPrice(Helper.formatPrice(room.getPrice()));
+            roomDTO.setPrice(room.getPrice());
             roomDTO.setRoomImg(room.getRoomImg().split(","));
             roomDTO.setDescription(room.getDescription());
             roomDTOList.add(roomDTO);
@@ -227,7 +227,7 @@ public class RoomService implements IRoomService{
             RoomDTO roomDTO = new RoomDTO();
             roomDTO.setRoomId(room.getRoomId());
             roomDTO.setRoomName(room.getRoomName());
-            roomDTO.setPrice(Helper.formatPrice(room.getPrice()));
+            roomDTO.setPrice(room.getPrice());
             roomDTO.setRoomImg(room.getRoomImg().split(","));
             roomDTO.setDescription(room.getDescription());
             roomDTOList.add(roomDTO);
@@ -268,7 +268,7 @@ public class RoomService implements IRoomService{
             room.setRoomName(roomName);
         }
         if (price != null) {
-            room.setPrice(new BigDecimal(price));
+            room.setPrice(Float.parseFloat(price));
         }
 //        if (imageUrl != null){
 //            room.setRoomImg(imageUrl);

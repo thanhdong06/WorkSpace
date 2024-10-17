@@ -25,12 +25,6 @@ public class Helper {
         return creationTime;
     }
 
-    public static String formatPrice(BigDecimal price) {
-        DecimalFormat decimalFormat = new DecimalFormat("#,###");
-        String formattedPrice = decimalFormat.format(price);
-        return formattedPrice;
-    }
-
     public static String generateRandomString(int begin, int end){
         String randomString =  UUID.randomUUID().toString().replace("-", "").substring(begin, end);
         return randomString ;
@@ -46,7 +40,7 @@ public class Helper {
         RoomDTO roomDTO = new RoomDTO();
         roomDTO.setRoomId(room.getRoomId());
         roomDTO.setRoomName(room.getRoomName());
-        roomDTO.setPrice(Helper.formatPrice(room.getPrice()));
+        roomDTO.setPrice(room.getPrice());
         roomDTO.setDescription(room.getDescription());
         if (room.getRoomImg() != null && !room.getRoomImg().isEmpty()) {
             roomDTO.setRoomImg(room.getRoomImg().split(", "));
@@ -62,7 +56,7 @@ public class Helper {
         ServiceItemsDTO serviceItemsDTO = new ServiceItemsDTO();
         serviceItemsDTO.setServiceId(serviceItems.getServiceId());
         serviceItemsDTO.setServiceName(serviceItems.getServiceName());
-        serviceItemsDTO.setPrice(Helper.formatPrice(serviceItems.getPrice()));
+        serviceItemsDTO.setPrice(serviceItems.getPrice());
         if (serviceItems.getServiceImg() != null && !serviceItems.getServiceImg().isEmpty()) {
             serviceItemsDTO.setServiceImg(serviceItems.getServiceImg().split(", "));
         } else {

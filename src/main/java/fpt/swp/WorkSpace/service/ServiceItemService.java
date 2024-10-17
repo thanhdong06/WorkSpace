@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,7 +36,7 @@ public class ServiceItemService implements IServiceItemService {
     public void addItem(String serviceName, MultipartFile[] files, float price, int quantity, String serviceType) {
         ServiceItems serviceItems = new ServiceItems();
         serviceItems.setServiceName(serviceName);
-        serviceItems.setPrice(new BigDecimal(Float.toString(price)));
+        serviceItems.setPrice(price);
         serviceItems.setQuantity(quantity);
         serviceItems.setServiceType(serviceType);
 

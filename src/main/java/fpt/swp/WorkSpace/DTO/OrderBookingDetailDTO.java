@@ -22,7 +22,7 @@ public class OrderBookingDetailDTO {
         private String createAt;
         private String checkinDate;
         private String checkoutDate;
-        private String totalPrice;
+        private float totalPrice;
         private String note;
         private String status;
         private Map<String, Integer> serviceItems;

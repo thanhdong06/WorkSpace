@@ -22,7 +22,7 @@ public class Room {
 
     private String roomName;
 
-    private BigDecimal price;
+    private float price;
 
     @Column(nullable = false)
     private String creationTime;

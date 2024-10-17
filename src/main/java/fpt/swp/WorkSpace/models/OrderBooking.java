@@ -50,7 +50,7 @@ public class OrderBooking {
         private String checkoutDate;
 
         @Column(nullable = false)
-        private BigDecimal totalPrice;
+        private float totalPrice;
 
         private String note;
 

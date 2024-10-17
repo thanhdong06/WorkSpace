@@ -25,7 +25,7 @@ public class OrderBookingDetail {
     private ServiceItems service;
 
     private int bookingServiceQuantity;
-    private BigDecimal bookingServicePrice;
+    private float bookingServicePrice;
 
 
 }

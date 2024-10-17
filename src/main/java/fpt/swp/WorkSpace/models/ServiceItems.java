@@ -15,7 +15,7 @@ public class ServiceItems {
     private int serviceId;
 
     private String serviceName;
-    private BigDecimal price;
+    private float price;
     private Integer quantity;
     private String serviceType;
 

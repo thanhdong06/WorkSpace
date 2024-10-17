@@ -19,7 +19,7 @@ import java.util.List;
 public class RoomDTO {
     private String roomId;
     private String roomName;
-    private String price;
+    private float price;
     private String[] roomImg;
     private String description;
     private String building;
