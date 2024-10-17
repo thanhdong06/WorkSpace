@@ -135,7 +135,7 @@ public class OrderBookingService implements IOrderBookingService {
 
 
         @Override
-        public BookedSlotDTO getBookedSlotByEachDay(String checkin, String checkout, String roomId) {
+        public BookedSlotDTO getBookedSlotByEachDay(String checkin, String checkout, String roomId, String buildingId) {
             BookedSlotDTO bookedSlotDTO = new BookedSlotDTO();
             Map<String, ArrayList<Integer>> mapBookedSlots = new LinkedHashMap<>();
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -148,7 +148,7 @@ public class OrderBookingService implements IOrderBookingService {
                 String bookingDateStr = bookingDate.format(formatter);
                 ArrayList<Integer> timeSlotIdBooked = new ArrayList<>();
                 // get all booked in a day
-                List<OrderBooking> bookings = orderBookingRepository.findBookingsByDate(bookingDateStr);
+                List<OrderBooking> bookings = orderBookingRepository.findBookingsByDate(bookingDateStr, buildingId);
                 if (!bookings.isEmpty()){
                     // loop each booking in day
                     for (OrderBooking orderBooking : bookings){
