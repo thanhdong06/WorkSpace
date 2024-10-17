@@ -1,5 +1,8 @@
 package fpt.swp.WorkSpace.service;
 
+import com.amazonaws.services.kms.model.NotFoundException;
+import fpt.swp.WorkSpace.DTO.OrderBookingDetailDTO;
+import fpt.swp.WorkSpace.DTO.RoomDTO;
 import fpt.swp.WorkSpace.auth.AuthenticationResponse;
 import fpt.swp.WorkSpace.models.*;
 import fpt.swp.WorkSpace.repository.*;
@@ -16,8 +19,7 @@ import org.springframework.stereotype.Service;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -25,6 +27,9 @@ public class StaffService {
 
     @Autowired
     private StaffRepository staffRepository;
+
+    @Autowired
+    private OrderBookingDetailRepository orderBookingDetailRepository;
 
     @Autowired
     private OrderBookingRepository orderBookingRepository;
@@ -40,6 +45,9 @@ public class StaffService {
 
     @Autowired
     private RoomRepository roomRepository;
+
+    @Autowired
+    private JWTService jwtService;
 
     public AuthenticationResponse createStaff(StaffRequest request) {
         AuthenticationResponse response = new AuthenticationResponse();
@@ -217,4 +225,56 @@ public class StaffService {
         orderBookingRepository.save(order);
         return new OrderStatusResponse(order.getBookingId(), order.getStatus());
     }
+
+    public List<RoomDTO> getRoomsAssigned(String token){
+        String userName = jwtService.extractUsername(token);
+        Staff staff = staffRepository.findStaffByUsername(userName);
+        if (staff == null) {
+            throw new NullPointerException("Staff not found");
+        }
+        List<Room> list = staff.getRooms();
+        if (!list.isEmpty()) {
+            List<RoomDTO> listRoomDTO = new ArrayList<>();
+            for (Room room : list) {
+                RoomDTO dto = new RoomDTO();
+                dto.setRoomId(room.getRoomId());
+                dto.setRoomName(room.getRoomName());
+                dto.setRoomStatus(room.getStatus());
+                listRoomDTO.add(dto);
+            }
+            return listRoomDTO;
+        }
+        return new ArrayList<>();
+    }
+
+    public List<OrderBookingDetailDTO> getOrderBookingDetails(){
+        List<OrderBooking> orderBookingList = orderBookingRepository.findAll();
+        if (orderBookingList.isEmpty()) {
+            throw new NotFoundException("No order bookings found.");
+        }
+        List<OrderBookingDetailDTO> orderBookingDetailDTOList = new ArrayList<>();
+
+        for (OrderBooking orderBooking : orderBookingList) {
+            OrderBookingDetailDTO dto = new OrderBookingDetailDTO();
+            dto.setBookingId(orderBooking.getBookingId());
+            dto.setCustomerId(orderBooking.getCustomer().getUserId());
+            dto.setRoomId(orderBooking.getRoom().getRoomId());
+            dto.setTotalPrice(orderBooking.getTotalPrice());
+            dto.setSlots(orderBooking.getSlot());
+
+            List<OrderBookingDetail> bookingDetails = orderBookingDetailRepository.findDetailByBookingId(orderBooking.getBookingId());
+            Map<String, Integer> serviceList = new HashMap<>();
+            for (OrderBookingDetail bookingDetail : bookingDetails){
+                String serviceName = bookingDetail.getService().getServiceName();
+                int quantity = bookingDetail.getBookingServiceQuantity();
+                serviceList.put(serviceName, quantity);
+            }
+            dto.setServiceItems(serviceList);
+            orderBookingDetailDTOList.add(dto);
+        }
+        return orderBookingDetailDTOList;
+
+    }
+
+
 }
